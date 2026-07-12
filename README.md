@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # uni_connect
 
 A new Flutter project.
@@ -14,3 +15,7 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+=======
+# Uni_Connect
+This project is a social media platform designed specifically for university students. The app provides a secure and interactive environment where students can collaborate, communicate, and share information within university-based groups.
+>>>>>>> b7aa33a81ae96a4ddb0eb678dd443eefc7ff34b7
