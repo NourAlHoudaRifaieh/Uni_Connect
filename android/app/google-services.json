@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1074448644698",
+    "project_id": "uniconnect-app-c600b",
+    "storage_bucket": "uniconnect-app-c600b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1074448644698:android:a1862ecf935b2ce48d3663",
+        "android_client_info": {
+          "package_name": "com.example.uni_connect"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB_lRcEP4CWvmA2qIkr5dpVXJoRAQoG638"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
