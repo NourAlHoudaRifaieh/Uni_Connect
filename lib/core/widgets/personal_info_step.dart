@@ -58,6 +58,12 @@ class PersonalInfoStep extends StatelessWidget {
                 if(value == null || value.isEmpty){
                   return 'Email is required';
                 }
+                final email = value.toLowerCase();
+                final isStudent = email.endsWith('@st.ul.edu.lb');
+                final isAdmin = email.endsWith('@admin.ul.edu.lb');
+                if(!isStudent && !isAdmin){
+                  return 'Use your university email';
+                }
                 return null;
               },
             ),

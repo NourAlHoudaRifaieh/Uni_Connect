@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../core/widgets/custom_form_field.dart';
 import 'package:go_router/go_router.dart';
 import 'package:uni_connect/core/widgets/auth_header.dart';
+import 'package:uni_connect/features/auth/data/auth_repository.dart';
 
 class LoginScreen extends StatefulWidget {
   LoginScreen({Key? key}) : super(key: key);
@@ -16,7 +17,9 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final bool _isLoading = false;
+  bool _isLoading = false;
+
+  final _authRepository = AuthRepository();
 
 
   @override
@@ -31,12 +34,36 @@ class _LoginScreenState extends State<LoginScreen> {
     _passwordController.dispose();
   }
 
-  void _handleLogin() {
+  void _handleLogin() async {
     if (!_formKey.currentState!.validate()) return;
 
-    //firebase Auth logic goes here
-    print('Email: ${_emailController.text}');
-    print('Password: ${_passwordController.text}');
+      setState(() {
+        _isLoading= true;
+      });
+
+      final error = await _authRepository.login(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      );
+
+      if(!mounted) return;
+      setState(() {
+        _isLoading= false;
+      });
+
+      if(error != null){
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(error),
+            backgroundColor: Colors.red
+          ),
+        );
+      }else{
+        context.go('/home');// the placeholder route, I'll build the home next
+      }
+    // //firebase Auth logic goes here
+    // print('Email: ${_emailController.text}');
+    // print('Password: ${_passwordController.text}');
   }
 
   @override
@@ -72,8 +99,11 @@ class _LoginScreenState extends State<LoginScreen> {
                           if( value == null || value.isEmpty){
                             return 'Email is required';
                           }
-                          if(!value.contains('@')){
-                            return 'Enter a valid email';
+                          final email = value.toLowerCase();
+                          final isStudent = email.endsWith('@st.ul.edu.lb');
+                          final isAdmin = email.endsWith('@admin.ul.edu.lb');
+                          if (!isStudent && !isAdmin) {
+                            return 'Use your university email';
                           }
                           return null;
                         },

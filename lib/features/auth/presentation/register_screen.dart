@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:uni_connect/core/widgets/academic_info_step.dart';
 import 'package:uni_connect/core/widgets/personal_info_step.dart';
 import 'package:uni_connect/core/widgets/auth_header.dart';
+import 'package:uni_connect/features/auth/data/auth_repository.dart';
 
 class RegisterScreen extends StatefulWidget {
   RegisterScreen({Key? key}) : super(key: key);
@@ -23,6 +24,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
+  final _authRepository = AuthRepository();
+
   String? _selectedFaculty;
   String? _selectedYear;
   bool _isLoading = false;
@@ -41,9 +44,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _passwordController.dispose();
   }
 
-  void _goToStep2(){
-    if(!_formKeyStep1.currentState!.validate())
+  bool get _isAminEmail =>
+      _emailController.text.trim().toLowerCase().endsWith('@admin.ul.edu.lb');
+
+  Future <void> _goToStep2() async{
+    if(!_formKeyStep1.currentState!.validate()) return;
+    if(_isAminEmail){
+      // this for to skip the academic information
+      await _handleAdminCreateAccount();
       return;
+    }
     setState(() {
       _currentStep = 1;
     });
@@ -51,6 +61,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
     );
+  }
+
+  Future<void> _handleAdminCreateAccount() async {
+    setState(() => _isLoading = true);
+
+    final error = await _authRepository.register(
+      fullName: _fullNameController.text.trim(),
+      email: _emailController.text.trim(),
+      password: _passwordController.text,
+      // faculty and academicYear left null for admins
+    );
+
+    if (!mounted) return;
+    setState(() => _isLoading = false);
+
+    if (error != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(error), backgroundColor: Colors.red),
+      );
+    } else {
+      context.go('/home'); // later this becomes '/admin-dashboard'
+    }
   }
 
   void _goBackToStep1(){
@@ -63,14 +95,44 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  void _handleCreateAccount() {
+  void _handleCreateAccount() async {
     if(_selectedFaculty == null || _selectedYear == null) return;
+      setState(() {
+        _isLoading = true;
+      });
+      final error = await _authRepository.register(
+        fullName: _fullNameController.text.trim(),
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+        faculty: _selectedFaculty!,
+        academicYear: _selectedYear!,
+      );
 
+      if(!mounted) return;
+      setState(() {
+        _isLoading = false;
+      });
+
+      if(error != null){
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(error),
+            backgroundColor: Colors.red
+          ),
+        );
+      }else{
+        context.go('login');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Account created! Please sign in.'),
+          ),
+        );
+      }
     //Firebase Auth + Firestore logic goes here next
-    print('Name: ${_fullNameController.text}');
-    print('Email: ${_emailController.text}');
-    print('Faculty: ${_selectedFaculty}');
-    print('Auto-assigned group: $_selectedFaculty - $_selectedYear');
+    // print('Name: ${_fullNameController.text}');
+    // print('Email: ${_emailController.text}');
+    // print('Faculty: ${_selectedFaculty}');
+    // print('Auto-assigned group: $_selectedFaculty - $_selectedYear');
   }
 
   @override
