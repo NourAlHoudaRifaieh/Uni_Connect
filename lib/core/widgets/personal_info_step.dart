@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:uni_connect/core/widgets/custom_elevated_button.dart';
 import '../../../../core/widgets/custom_form_field.dart';
+import "package:google_fonts/google_fonts.dart";
 
 class PersonalInfoStep extends StatelessWidget {
 
@@ -28,12 +30,16 @@ class PersonalInfoStep extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text(
+            Text(
               'Personal Information',
-              style: TextStyle(
+              style: GoogleFonts.inter(
                 fontSize:16,
-                fontWeight:FontWeight.bold,
+                fontWeight: FontWeight.bold,
               ),
+              // style: TextStyle(
+              //   fontSize:16,
+              //   fontWeight:FontWeight.bold,
+              // ),
             ),
             const SizedBox(height: 16),
             CustomFormField(
@@ -83,23 +89,33 @@ class PersonalInfoStep extends StatelessWidget {
             const SizedBox(height:24),
             SizedBox(
               height:50,
-              child: ElevatedButton(
-                onPressed: onContinue,
-                style:ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF2563EB),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                ),
-                child: const Text(
-                  'Continue',
-                  style: TextStyle(
-                    color:Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize:16,
-                  ),
-                ),
+              child: CustomElevatedButton(
+                  text: 'Continue',
+                  onPressed: (){
+                    if(formKey.currentState?.validate() ?? false){
+                      onContinue();
+                    }
+                  },
               ),
+              // child: ElevatedButton(
+              //   onPressed: onContinue,
+              //   style:ElevatedButton.styleFrom(
+              //     backgroundColor: const Color(0xFF2563EB),
+              //     shape: RoundedRectangleBorder(
+              //       borderRadius: BorderRadius.circular(20),
+              //     ),
+              //     elevation:5,
+              //     shadowColor:Colors.blue,
+              //   ),
+              //   child: const Text(
+              //     'Continue',
+              //     style: TextStyle(
+              //       color:Colors.white,
+              //       fontWeight: FontWeight.bold,
+              //       fontSize:16,
+              //     ),
+              //   ),
+              // ),
             ),
           ],
         ),

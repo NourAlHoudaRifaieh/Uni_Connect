@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class AuthHeader extends StatelessWidget {
   // AuthHeader({Key? key}) : super(key: key);
@@ -43,10 +44,15 @@ class AuthHeader extends StatelessWidget {
                   const Icon(Icons.chevron_left, color: Colors.white, size:20),
                   Text(
                     backLabel!,
-                    style: TextStyle(
+                    style: GoogleFonts.inter(
                       color: Colors.white,
                       fontSize:14,
+                      fontWeight: FontWeight.w500,
                     ),
+                    // style: TextStyle(
+                    //   color: Colors.white,
+                    //   fontSize:14,
+                    // ),
                   ),
                 ],
               ),
@@ -70,19 +76,29 @@ class AuthHeader extends StatelessWidget {
           const SizedBox(height:16),
           Text(
             title,
-            style: const TextStyle(
+            style: GoogleFonts.inter(
               color: Colors.white,
-              fontSize:28,
-              fontWeight: FontWeight.bold,
+                fontSize:28,
+                fontWeight: FontWeight.bold,
             ),
+            // style: const TextStyle(
+            //   color: Colors.white,
+            //   fontSize:28,
+            //   fontWeight: FontWeight.bold,
+            // ),
           ),
           const SizedBox(height:4),
           Text(
             subtitle,
-            style: TextStyle(
-              color: Colors.white70,
-              fontSize:16,
+            style: GoogleFonts.inter(
+              color: Colors.white.withOpacity(0.85),
+              fontSize:14,
+              fontWeight: FontWeight.w300,
             ),
+            // style: TextStyle(
+            //   color: Colors.white70,
+            //   fontSize:16,
+            // ),
           ),
           if (progressBar != null) ...[
             const SizedBox(height:16),

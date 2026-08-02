@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:uni_connect/core/widgets/custom_elevated_button.dart';
 import '../../../core/widgets/custom_form_field.dart';
 import 'package:go_router/go_router.dart';
 import 'package:uni_connect/core/widgets/auth_header.dart';
 import 'package:uni_connect/features/auth/data/auth_repository.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class LoginScreen extends StatefulWidget {
   LoginScreen({Key? key}) : super(key: key);
@@ -91,7 +93,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     children: [
                       //CustomFormField for Email
                       CustomFormField(
-                        label: 'Email',
+                        label: 'University Email',
                         hint: 'name@ul.edu.lb',
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
@@ -111,7 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(height:18),
                       //CustomFormField for password
                       CustomFormField(
-                        label: 'password',
+                        label: 'Password',
                         hint: 'Enter your password',
                         controller: _passwordController,
                         obscureText: true,
@@ -130,51 +132,75 @@ class _LoginScreenState extends State<LoginScreen> {
                       Align(
                         alignment:Alignment.centerRight,
                         child: TextButton(
+                          style: TextButton.styleFrom(
+                            foregroundColor: Color(0xFF2563EB),
+                          ).copyWith(
+                            overlayColor: WidgetStateProperty.all(Colors.transparent),
+                          ),
                           onPressed: () {
                             //to handle the forgot password later
                           },
-                          child: const Text('Forgot password?'),
+                          child: Text('Forgot password?',
+                            style: GoogleFonts.inter(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                         ),
                       ),
-                      SizedBox(height:8),
+                      SizedBox(height:38),
                       //Login Button
                       SizedBox(
                         height:50,
-                        child:ElevatedButton(
-                          onPressed: _isLoading ? null : _handleLogin,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF2563EB),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(25),
-                            ),
-                          ),
-                          child: _isLoading
-                              ? const CircularProgressIndicator(color: Colors.white)
-                              : const Text(
-                            'Sign In',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize:16,
-                            ) ,
-                          ),
+                        child: CustomElevatedButton(
+                            text: 'Sign In',
+                            onPressed: _handleLogin,
+                            isLoading: _isLoading,
                         ),
+                        // child:ElevatedButton(
+                        //   onPressed: _isLoading ? null : _handleLogin,
+                        //   style: ElevatedButton.styleFrom(
+                        //     backgroundColor: const Color(0xFF2563EB),
+                        //     shape: RoundedRectangleBorder(
+                        //       borderRadius: BorderRadius.circular(20),
+                        //     ),
+                        //     elevation: 5,
+                        //     shadowColor: Colors.blue,
+                        //   ),
+                        //   child: _isLoading
+                        //       ? const CircularProgressIndicator(color: Colors.white)
+                        //       : const Text(
+                        //     'Sign In',
+                        //     style: TextStyle(
+                        //       color: Colors.white,
+                        //       fontWeight: FontWeight.bold,
+                        //       fontSize:16,
+                        //     ) ,
+                        //   ),
+                        // ),
                       ),
                       const SizedBox(height:16),
                       //Register link
                       Row(
                         mainAxisAlignment : MainAxisAlignment.center,
                         children :[
-                          const Text(" Don't have an account? "),
+                          Text(" Don't have an account?",
+                            style: GoogleFonts.inter(
+                              fontSize:14,
+                              color: Color(0xFF2F3A4A),
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                           GestureDetector(
                             onTap: () {
                               //navigate to register screen next
                               context.go('/register');
                             },
-                            child: const Text(
+                            child: Text(
                               ' Register',
-                              style: TextStyle(
+                              style: GoogleFonts.inter(
                                 color: Color(0xFF2563EB),
+                                fontSize:14,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
