@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:uni_connect/core/widgets/custom_dropdown.dart';
 import 'package:uni_connect/core/widgets/custom_elevated_button.dart';
-
+import 'package:google_fonts/google_fonts.dart';
 
 const List<String> kFaculties = [
   'Business Administration',
@@ -47,36 +48,74 @@ class AcademicInfoStep extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Text(
+           Text(
             'Academic Information',
-            style: TextStyle(
+            style: GoogleFonts.inter(
               fontSize:16,
-              fontWeight:FontWeight.bold
-            ),
-          ),
-          const SizedBox(height:6),
-          Container(
-            decoration: BoxDecoration(
-              color: Color(0xFFF3F4F6),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            padding: const EdgeInsets.symmetric(horizontal:12),
-            child:DropdownButtonHideUnderline(
-              child: DropdownButton<String>(
-                isExpanded: true,
-                hint: const Text(' Select your faculty'),
-                value: selectedFaculty,
-                items: kFaculties
-                  .map( (f) => DropdownMenuItem(value: f, child: Text(f)))
-                  .toList(),
-                onChanged: onFacultyChanged,
-              ),
+              fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height:20),
-          const Text(
+          Text(
+            'Faculty',
+            style: GoogleFonts.inter(
+              fontSize:14,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF2F3A4A),
+            ),
+          ),
+          const SizedBox(height: 8),
+          CustomDropdown(
+              value: selectedFaculty,
+              hint: 'Select your faculty',
+              items: kFaculties,
+              onChanged: onFacultyChanged,
+          ),
+          // Container(
+          //   decoration: BoxDecoration(
+          //     color: Color(0xFFF3F4F6),
+          //     borderRadius: BorderRadius.circular(16),
+          //     border: Border.all(
+          //       color: Color(0xFFE2E8F0),
+          //       width:1,
+          //     ),
+          //   ),
+          //   // padding: const EdgeInsets.symmetric(horizontal:12),
+          //   child:DropdownButtonHideUnderline(
+          //     child: DropdownButton<String>(
+          //       isExpanded: true,
+          //       hint:  Text(' Select your faculty',
+          //         style: GoogleFonts.inter(
+          //           fontSize:13,
+          //           color: Color(0xFFB5B5C3),
+          //           // fontWeight: FontWeight.w400,
+          //         ),
+          //       ),
+          //       icon: Icon(Icons.keyboard_arrow_down_rounded,
+          //         color: Color(0xFF94A3B8), size:12,
+          //       ),
+          //       value: selectedFaculty,
+          //       dropdownColor: Colors.white,
+          //       style: GoogleFonts.inter(
+          //         color: Color(0xFF1E293B),
+          //         fontSize:14,
+          //         fontWeight: FontWeight.w500,
+          //       ),
+          //       items: kFaculties
+          //         .map( (f) => DropdownMenuItem(value: f, child: Text(f)))
+          //         .toList(),
+          //       onChanged: onFacultyChanged,
+          //     ),
+          //   ),
+          // ),
+          const SizedBox(height:20),
+          Text(
             'Academic Year',
-            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+            style: GoogleFonts.inter(
+              fontSize:14,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF2F3A4A),
+            ),
           ),
           const SizedBox(height: 8),
           Wrap(
@@ -90,12 +129,20 @@ class AcademicInfoStep extends StatelessWidget {
                   width: (MediaQuery.of(context).size.width - 24 * 2 - 10) / 2,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   alignment: Alignment.center,
+                  // decoration: BoxDecoration(
+                  //   color: Color(0xFFF3F4F6),
+                  //   borderRadius: BorderRadius.circular(20),
+                  //   border: Border.all(
+                  //     color: Color(0xFFE2E8F0),
+                  //     width:1,
+                  //   ),
                   decoration: BoxDecoration(
-                    color: selected ? const Color(0xFF2563EB) : Colors.white,
+                    color: selected ?  Color(0xFF2563EB) : Color(0xFFF3F4F6),
                     border: Border.all(
                       color: selected
-                          ? const Color(0xFF2563EB)
+                          ?  Color(0xFFE2E8F0)
                           : Colors.grey.shade300,
+                      width: 1,
                     ),
                     borderRadius: BorderRadius.circular(20),
                   ),
@@ -116,26 +163,31 @@ class AcademicInfoStep extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: const Color(0xFFEFF6FF),
+                color:  Color(0xFFEFF6FF),
                 borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: Color(0xFF2563EB),
+                  width:1,
+                ),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Auto-assigned group',
-                    style: TextStyle(
+                    style: GoogleFonts.inter(
                       color: Color(0xFF2563EB),
                       fontWeight: FontWeight.bold,
-                      fontSize: 13,
+                      fontSize: 14,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     '$selectedFaculty · $selectedYear',
-                    style: const TextStyle(
+                    style: GoogleFonts.inter(
                       color: Color(0xFF2563EB),
                       fontSize: 13,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ],
