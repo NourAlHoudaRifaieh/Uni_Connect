@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:uni_connect/core/widgets/custom_elevated_button.dart';
-import '../../../../core/widgets/custom_form_field.dart';
+import '../../../../../../core/widgets/custom_form_field.dart';
 import "package:google_fonts/google_fonts.dart";
 
 class PersonalInfoStep extends StatelessWidget {

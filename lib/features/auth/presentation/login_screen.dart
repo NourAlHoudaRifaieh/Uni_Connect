@@ -20,6 +20,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
+  bool isChecked = false;
 
   final _authRepository = AuthRepository();
 
@@ -127,28 +128,60 @@ class _LoginScreenState extends State<LoginScreen> {
                           return null;
                         },
                       ),
-                      const SizedBox(height:8),
-                      //Forgot Password
-                      Align(
-                        alignment:Alignment.centerRight,
-                        child: TextButton(
-                          style: TextButton.styleFrom(
-                            foregroundColor: Color(0xFF2563EB),
-                          ).copyWith(
-                            overlayColor: WidgetStateProperty.all(Colors.transparent),
+                      const SizedBox(height:38),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          //Remember Me
+                          Row(
+                            children: [
+                              SizedBox(
+                                height: 24,
+                                width: 24,
+                                child: Checkbox(
+                                  value: isChecked,
+                                  activeColor: const Color(0xFF2563EB),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  onChanged: (value) {
+                                    setState(() {
+                                      isChecked = value ?? false;
+                                    });
+                                  },
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                "Remember Me",
+                                style: GoogleFonts.inter(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  color: const Color(0xFF2F3A4A),
+                                ),
+                              ),
+                            ],
                           ),
-                          onPressed: () {
-                            //to handle the forgot password later
-                          },
-                          child: Text('Forgot password?',
-                            style: GoogleFonts.inter(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
+                          //Forgot Password
+                          TextButton(
+                            style: TextButton.styleFrom(
+                              foregroundColor: Color(0xFF2563EB),
+                            ).copyWith(
+                              overlayColor: WidgetStateProperty.all(Colors.transparent),
+                            ),
+                            onPressed: () {
+                              //to handle the forgot password later
+                            },
+                            child: Text('Forgot password?',
+                              style: GoogleFonts.inter(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ),
-                        ),
+                        ],
                       ),
-                      SizedBox(height:38),
+                      SizedBox(height:8),
                       //Login Button
                       SizedBox(
                         height:50,

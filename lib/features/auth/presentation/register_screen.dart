@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:uni_connect/core/widgets/academic_info_step.dart';
-import 'package:uni_connect/core/widgets/personal_info_step.dart';
+import 'package:uni_connect/features/auth/presentation/widgets/academic_info_step.dart';
+import 'package:uni_connect/features/auth/presentation/widgets/personal_info_step.dart';
 import 'package:uni_connect/core/widgets/auth_header.dart';
 import 'package:uni_connect/features/auth/data/auth_repository.dart';
 
@@ -121,10 +121,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
         );
       }else{
-        context.go('login');
+        // direct navigation to home
+        context.go('/home');
+        //welcome notification snackbar
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Account created! Please sign in.'),
+            content: Text('Account created successfully! Welcome!'),
           ),
         );
       }
@@ -196,7 +198,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   onFacultyChanged: (value) =>
                       setState(() => _selectedFaculty = value),
                   onYearChanged: (value) =>
-                      setState(() => _selectedYear = value),//i have a problem in this part
+                      setState(() => _selectedYear = value),
                   onBack: _goBackToStep1,
                   onCreateAccount: _handleCreateAccount,
                 ),

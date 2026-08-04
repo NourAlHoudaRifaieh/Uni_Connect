@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class PostCardData{
   final String authorName;
@@ -46,8 +47,15 @@ class PostCard extends StatelessWidget{
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(20),
           border: Border.all(color: Colors.grey.shade200),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.03),
+              blurRadius: 10,
+              offset:Offset(0,8),
+            ),
+          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -59,7 +67,7 @@ class PostCard extends StatelessWidget{
                   backgroundColor:  data.avatarColor,
                   child: Text(
                     data.authorInitials,
-                    style: const TextStyle(
+                    style: GoogleFonts.inter(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
                       fontSize:13,
@@ -73,14 +81,14 @@ class PostCard extends StatelessWidget{
                     children: [
                       Text(
                         data.authorName,
-                        style: const TextStyle(
+                        style: GoogleFonts.inter(
                             fontWeight: FontWeight.bold,
                             fontSize:14
                         ),
                       ),
                       Text(
                         data.timeAgo + ' . ' + data.subjectCode,
-                        style: TextStyle(
+                        style: GoogleFonts.inter(
                             fontSize: 12,
                             color: Colors.grey.shade600
                         ),
@@ -96,7 +104,7 @@ class PostCard extends StatelessWidget{
                   ),
                   child: Text(
                     data.category,
-                    style: TextStyle(
+                    style: GoogleFonts.inter(
                       color: data.categoryColor,
                       fontWeight: FontWeight.w600,
                       fontSize:12,
@@ -108,7 +116,7 @@ class PostCard extends StatelessWidget{
             const SizedBox(height:10),
             Text(
               data.title,
-              style: TextStyle(
+              style: GoogleFonts.inter(
                 fontWeight: FontWeight.bold,
                 fontSize:15,
               ),
@@ -118,7 +126,7 @@ class PostCard extends StatelessWidget{
               data.preview,
               maxLines:3,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(
+              style: GoogleFonts.inter(
                 fontSize:13,
                 color: Colors.grey.shade700,
               ),

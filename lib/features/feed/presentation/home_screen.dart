@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:uni_connect/core/widgets/custom_bottom_nav_bar.dart';
 import 'package:uni_connect/core/widgets/custom_form_field.dart';
-import '../widgets/post_card.dart';
+import 'package:uni_connect/features/feed/presentation/widgets/category_selector.dart';
+import 'widgets/post_card.dart';
 
 class HomeScreen extends StatefulWidget{
   HomeScreen({Key? key}): super(key:key);
@@ -10,6 +12,7 @@ class HomeScreen extends StatefulWidget{
 
 class _HomeScreenState extends State <HomeScreen>{
 
+  int _currentIndex = 0;
   TextEditingController _searchController = TextEditingController();
   List <String> categories = ['All','Exams','General help', 'Programming', 'Assignments', 'Math','Physics'];
   String selectedCategory = 'All';
@@ -57,6 +60,19 @@ class _HomeScreenState extends State <HomeScreen>{
   ];
 
 
+  void _onCreatePost(){
+    showModalBottomSheet(
+        context: context,
+        builder: (context) =>
+          SizedBox(
+            height:200,
+            child: Center(
+              child: Text('New Page'),
+            ),
+          ),
+        );
+  }
+
   @override
   Widget build(BuildContext context){
     final filteredPosts = selectedCategory == 'All'
@@ -67,10 +83,10 @@ class _HomeScreenState extends State <HomeScreen>{
       body: SafeArea(
         child:Column(
           children: [
+            // for top header
             Padding(
-              padding: EdgeInsets.symmetric(horizontal:20, vertical:15),
+              padding: EdgeInsets.fromLTRB(20,40,20,8),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children:[
@@ -78,11 +94,12 @@ class _HomeScreenState extends State <HomeScreen>{
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: const[
-                            Text('Good day, nour! ', style: TextStyle(fontSize:20, fontWeight: FontWeight.bold)),
-                            Text('Business Administration, Master 2', style: TextStyle(fontSize:12, color: Colors.grey)),
+                            Text('Good day, nour! ', style: TextStyle(fontSize:22, fontWeight: FontWeight.bold)),
+                            Text('Business Administration, Master 2', style: TextStyle(fontSize:13, color: Colors.grey)),
                           ],
                         ),
                       ),
+                      //Notification Bell
                       Stack(
                         clipBehavior: Clip.none,
                         children: [
@@ -94,23 +111,24 @@ class _HomeScreenState extends State <HomeScreen>{
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all( color: Color(0xFFF3F4F6)),
                             ),
-                            child: Icon(Icons.notifications_none, color: Colors.black54),
+                            child: Icon(Icons.notifications_none, color: Colors.black54, size:22),
                           ),
                           Positioned(
-                            top:-2,
-                            right: -2,
+                            top:0,
+                            right: 0,
                             child: Container(
                               padding: const EdgeInsets.all(4),
                               decoration: BoxDecoration(
                                 color: Colors.red,
                                 shape: BoxShape.circle
                               ),
-                              child: Text('3', style:TextStyle(color:Colors.white, fontSize:12))
+                              child: Text('3', style:TextStyle(color:Colors.white, fontSize:10))
                             ),
                           ),
                         ],
                       ),
                       SizedBox(width:10),
+                      //User Avatar
                       CircleAvatar(
                         radius:20,
                         backgroundColor:Colors.deepPurple,
@@ -118,75 +136,28 @@ class _HomeScreenState extends State <HomeScreen>{
                       ),
                     ],
                   ),
-                  SizedBox(height:16),
+                  SizedBox(height:8),
+                  // Search Bar
                   CustomFormField(
-                      hint: 'Search posts, students...',
-                      controller: _searchController,
-                      prefixIcon: Icon(Icons.search),
-                      validator: (value) =>
-                          value!.isEmpty ? 'Cannot be empty' : null
+                    hint: 'Search posts, students...',
+                    controller: _searchController,
+                    prefixIcon: Icon(Icons.search,
+                      color: Color(0xFFB5B5C3),
+                    ),
+                    validator: (value) =>
+                        value!.isEmpty ? 'Cannot be empty' : null
                   ),
-                  // SizedBox(height:14),
-
-
                 ],
               ),
             ),
-            Divider(
-              color:Colors.grey,
-              thickness: 1,
-              // indent:10,
-              // endIndent: 10,
-            ),
-            SizedBox(height:4),
-            SizedBox(
-              height:32,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                padding: EdgeInsets.symmetric(horizontal:20),
-                // physics: BouncingScrollPhysics(),
-                itemCount: categories.length,
-                // separatorBuilder: (_, __) => const SizedBox(width: 8),
-                itemBuilder: (context, index){
-                  String cat = categories[index];
-                  bool isSelected = cat == selectedCategory;
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        selectedCategory = cat;
-                      });
-                    },
-                    child: Container(
-                      margin: EdgeInsets.only(right:8),
-                      padding: EdgeInsets.symmetric(horizontal:20),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: isSelected ? Color(0xFF2563EB) : Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: isSelected ? Color(0xFF2563EB) : Colors.grey.shade300,
-                        ),
-                      ),
-                      child: Text(
-                        cat,
-                        style: TextStyle(
-                          color: isSelected ? Colors.white : Colors.black87,
-                          fontWeight: FontWeight.w600,
-                          fontSize:13,
-                        ),
-                      ),
-                    ),
-                  );
+            CategorySelector(
+                categories: categories,
+                onCategorySelected: (category){
+                  setState(() {
+                    selectedCategory = category;
+                  });
                 },
-              ),
-            ),
-            SizedBox(height:4),
-
-            Divider(
-              color:Colors.grey,
-              thickness: 1,
-              // indent:10,
-              // endIndent: 10,
+                selectedCategory: selectedCategory
             ),
             SizedBox(height:10),
             Expanded(
@@ -203,10 +174,18 @@ class _HomeScreenState extends State <HomeScreen>{
                 },
               ),
             ),
-            SizedBox(height:10),
           ],
         ),
       ),
+      // bottomNavigationBar: CustomBottomNavBar(
+      //     currentIndex: _currentIndex,
+      //     onTap: (index){
+      //       setState(() {
+      //         _currentIndex = index;
+      //       });
+      //     },
+      //     onCreatePost: _onCreatePost
+      // ),
     );
   }
 }
