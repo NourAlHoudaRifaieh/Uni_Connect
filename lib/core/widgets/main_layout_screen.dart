@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:uni_connect/core/widgets/custom_bottom_nav_bar.dart';
 import 'package:uni_connect/features/feed/presentation/home_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:uni_connect/features/feed/presentation/subject_screen.dart';
 
 class MainLayoutScreen extends StatefulWidget{
   const MainLayoutScreen({super.key});
@@ -16,13 +17,14 @@ class _MainLayoutScreenState extends State <MainLayoutScreen>{
   //the list of screens of each tab index
   late final List<Widget> _screens= [
     HomeScreen(),
-    Center(
-      child: Text('Subjects Screen',
-        style: GoogleFonts.inter(
-          fontSize:20,
-        ),
-      ),
-    ),
+    SubjectScreen(),
+    // Center(
+    //   child: Text('Subjects Screen',
+    //     style: GoogleFonts.inter(
+    //       fontSize:20,
+    //     ),
+    //   ),
+    // ),
     Center(
       child: Text('Search Screen',
         style: GoogleFonts.inter(
