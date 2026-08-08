@@ -17,7 +17,7 @@ class CustomBottomNavBar extends StatelessWidget{
   Widget build(BuildContext context) {
     // TODO: implement build
     return Container(
-      height:72,
+      height:90,
       decoration: BoxDecoration(
         border: Border(
           top: BorderSide(

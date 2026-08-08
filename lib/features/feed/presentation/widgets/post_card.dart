@@ -43,7 +43,7 @@ class PostCard extends StatelessWidget{
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.only(bottom:12),
+        margin: const EdgeInsets.only(bottom:14),
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -87,7 +87,7 @@ class PostCard extends StatelessWidget{
                         ),
                       ),
                       Text(
-                        data.timeAgo + ' . ' + data.subjectCode,
+                        '${data.timeAgo} . ${data.subjectCode}',
                         style: GoogleFonts.inter(
                             fontSize: 12,
                             color: Colors.grey.shade600
@@ -106,8 +106,8 @@ class PostCard extends StatelessWidget{
                     data.category,
                     style: GoogleFonts.inter(
                       color: data.categoryColor,
-                      fontWeight: FontWeight.w600,
-                      fontSize:12,
+                      fontWeight: FontWeight.bold,
+                      fontSize:13,
                     ),
                   ),
                 ),

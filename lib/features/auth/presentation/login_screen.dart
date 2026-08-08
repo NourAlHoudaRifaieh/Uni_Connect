@@ -7,7 +7,7 @@ import 'package:uni_connect/features/auth/data/auth_repository.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class LoginScreen extends StatefulWidget {
-  LoginScreen({Key? key}) : super(key: key);
+  const LoginScreen({super.key});
 
   @override
   _LoginScreenState createState() {
@@ -78,7 +78,7 @@ class _LoginScreenState extends State<LoginScreen> {
         child: SingleChildScrollView(
           // padding: const EdgeInsets.symmetric(horizontal: 24),
           child:Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
                AuthHeader(
                 icon: Icons.school,
@@ -155,7 +155,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               Text(
                                 "Remember Me",
                                 style: GoogleFonts.inter(
-                                  fontSize: 14,
+                                  fontSize: 16,
                                   fontWeight: FontWeight.w500,
                                   color: const Color(0xFF2F3A4A),
                                 ),
@@ -174,7 +174,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             },
                             child: Text('Forgot password?',
                               style: GoogleFonts.inter(
-                                fontSize: 14,
+                                fontSize: 16,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -219,7 +219,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         children :[
                           Text(" Don't have an account?",
                             style: GoogleFonts.inter(
-                              fontSize:14,
+                              fontSize:16,
                               color: Color(0xFF2F3A4A),
                               fontWeight: FontWeight.w600,
                             ),
@@ -233,7 +233,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ' Register',
                               style: GoogleFonts.inter(
                                 color: Color(0xFF2563EB),
-                                fontSize:14,
+                                fontSize:16,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),

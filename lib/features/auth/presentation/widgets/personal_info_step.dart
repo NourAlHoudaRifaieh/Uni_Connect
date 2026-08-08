@@ -36,10 +36,6 @@ class PersonalInfoStep extends StatelessWidget {
                 fontSize:16,
                 fontWeight: FontWeight.bold,
               ),
-              // style: TextStyle(
-              //   fontSize:16,
-              //   fontWeight:FontWeight.bold,
-              // ),
             ),
             const SizedBox(height: 16),
             CustomFormField(
@@ -97,25 +93,6 @@ class PersonalInfoStep extends StatelessWidget {
                     }
                   },
               ),
-              // child: ElevatedButton(
-              //   onPressed: onContinue,
-              //   style:ElevatedButton.styleFrom(
-              //     backgroundColor: const Color(0xFF2563EB),
-              //     shape: RoundedRectangleBorder(
-              //       borderRadius: BorderRadius.circular(20),
-              //     ),
-              //     elevation:5,
-              //     shadowColor:Colors.blue,
-              //   ),
-              //   child: const Text(
-              //     'Continue',
-              //     style: TextStyle(
-              //       color:Colors.white,
-              //       fontWeight: FontWeight.bold,
-              //       fontSize:16,
-              //     ),
-              //   ),
-              // ),
             ),
           ],
         ),

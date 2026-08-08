@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class CustomFormField extends StatelessWidget {
@@ -34,7 +35,7 @@ class CustomFormField extends StatelessWidget {
           Text(
             label!,
             style: GoogleFonts.inter(
-              fontSize:14,
+              fontSize:16,
               fontWeight: FontWeight.w600,
               color: Color(0xFF2F3A4A),
             ),
@@ -46,14 +47,14 @@ class CustomFormField extends StatelessWidget {
           keyboardType: keyboardType,
           validator: validator,
           style: GoogleFonts.inter(
-            fontSize:14,
+            fontSize:16,
             color: Color(0xFF2F3A4A),
             fontWeight: FontWeight.w400,
           ),
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: GoogleFonts.inter(
-              fontSize:13,
+              fontSize:15,
               color: Color(0xFFB5B5C3),
               fontWeight: FontWeight.w400,
             ),

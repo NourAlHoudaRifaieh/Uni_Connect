@@ -1,25 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:uni_connect/core/widgets/custom_bottom_nav_bar.dart';
 import 'package:uni_connect/core/widgets/custom_form_field.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/category_selector.dart';
 import 'widgets/post_card.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class HomeScreen extends StatefulWidget{
-  HomeScreen({Key? key}): super(key:key);
+  const HomeScreen({super.key});
   @override
   State <HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State <HomeScreen>{
 
-  int _currentIndex = 0;
-  TextEditingController _searchController = TextEditingController();
+  // final int _currentIndex = 0;
+  final TextEditingController _searchController = TextEditingController();
   List <String> categories = ['All','Exams','General help', 'Programming', 'Assignments', 'Math','Physics'];
   String selectedCategory = 'All';
 
   final List<PostCardData> posts =[
     PostCardData(
-        title: 'DataBase Normalization - Final Exam Tips',
+        title: 'Database Normalization - Final Exam Tips',
         authorInitials: 'AK',
         authorName: 'Ahmad Khoury',
         avatarColor: Colors.deepPurple,
@@ -30,6 +30,19 @@ class _HomeScreenState extends State <HomeScreen>{
         preview: 'Hey everyone! The final exam is next week. Professor Hajj mentioned that 3NF will be heavily testes...',
         subjectCode: 'DB201',
         timeAgo: '3h ago'
+    ),
+    PostCardData(
+        title: 'Python  — Inheritance Pattern for AI Assignment',
+        authorInitials: 'RF',
+        authorName: 'Hani Farhat',
+        avatarColor: Colors.orange,
+        category: 'Programming',
+        categoryColor: Colors.green,
+        comments: 1,
+        likes: 14,
+        preview: 'For the AI assignment I structured my neural network using Python inheritance: Layer → DenseLayer...',
+        subjectCode: 'DB135',
+        timeAgo: '2d ago'
     ),
     PostCardData(
         title: 'Assignment 3 - ER Diagram help Needed',
@@ -57,6 +70,7 @@ class _HomeScreenState extends State <HomeScreen>{
         subjectCode: 'DB105',
         timeAgo: '1d ago'
     ),
+
   ];
 
 
@@ -85,7 +99,7 @@ class _HomeScreenState extends State <HomeScreen>{
           children: [
             // for top header
             Padding(
-              padding: EdgeInsets.fromLTRB(20,40,20,8),
+              padding: EdgeInsets.fromLTRB(20,40,20,10),
               child: Column(
                 children: [
                   Row(
@@ -93,9 +107,9 @@ class _HomeScreenState extends State <HomeScreen>{
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const[
-                            Text('Good day, nour! ', style: TextStyle(fontSize:22, fontWeight: FontWeight.bold)),
-                            Text('Business Administration, Master 2', style: TextStyle(fontSize:13, color: Colors.grey)),
+                          children: [
+                            Text('Good day, nour! ', style: GoogleFonts.inter(fontSize:25, fontWeight: FontWeight.bold)),
+                            Text('Business Administration, Master 2', style: GoogleFonts.inter(fontSize:15, color: Colors.grey)),
                           ],
                         ),
                       ),
@@ -111,18 +125,18 @@ class _HomeScreenState extends State <HomeScreen>{
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all( color: Color(0xFFF3F4F6)),
                             ),
-                            child: Icon(Icons.notifications_none, color: Colors.black54, size:22),
+                            child: Icon(Icons.notifications_none, color: Colors.black54, size:25),
                           ),
                           Positioned(
-                            top:0,
-                            right: 0,
+                            top:-8,
+                            right: -4,
                             child: Container(
                               padding: const EdgeInsets.all(4),
                               decoration: BoxDecoration(
                                 color: Colors.red,
                                 shape: BoxShape.circle
                               ),
-                              child: Text('3', style:TextStyle(color:Colors.white, fontSize:10))
+                              child: Text('3', style:GoogleFonts.inter(color:Colors.white, fontSize:15))
                             ),
                           ),
                         ],
@@ -132,7 +146,7 @@ class _HomeScreenState extends State <HomeScreen>{
                       CircleAvatar(
                         radius:20,
                         backgroundColor:Colors.deepPurple,
-                        child: Text('N', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold))
+                        child: Text('N', style: GoogleFonts.inter(color: Colors.white, fontWeight: FontWeight.bold))
                       ),
                     ],
                   ),

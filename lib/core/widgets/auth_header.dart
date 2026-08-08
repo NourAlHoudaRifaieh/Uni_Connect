@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AuthHeader extends StatelessWidget {
-  // AuthHeader({Key? key}) : super(key: key);
   final String title;
   final String subtitle;
   final IconData? icon;
@@ -10,7 +9,7 @@ class AuthHeader extends StatelessWidget {
   final String? backLabel;
   final Widget? progressBar;
 
-  AuthHeader({
+  const AuthHeader({
     super.key,
     required this.title,
     required this.subtitle,
@@ -25,7 +24,7 @@ class AuthHeader extends StatelessWidget {
     // TODO: implement build
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(24,16,24,24),
+      padding: const EdgeInsets.fromLTRB(24,70,24,24),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [Color(0xFF2563EB), Color(0xFF1E3A8A)],
@@ -36,34 +35,33 @@ class AuthHeader extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children:[
-          if (onBack !=null && backLabel != null)
+          //back button
+          if (onBack !=null && backLabel != null) ...[
             GestureDetector(
               onTap: onBack,
               child: Row(
                 children:[
-                  const Icon(Icons.chevron_left, color: Colors.white, size:20),
+                  const Icon(Icons.chevron_left, color: Colors.white, size:22),
                   Text(
                     backLabel!,
                     style: GoogleFonts.inter(
                       color: Colors.white,
-                      fontSize:14,
+                      fontSize:15,
                       fontWeight: FontWeight.w500,
                     ),
-                    // style: TextStyle(
-                    //   color: Colors.white,
-                    //   fontSize:14,
-                    // ),
                   ),
                 ],
               ),
             ),
+            SizedBox(height:24),
+          ],
+          //Icon Container
           if(icon != null) ...[
             const SizedBox(height: 8),
             Container(
               width: 55,
               height:55,
               decoration: BoxDecoration(
-                // color: Colors.white,
                 borderRadius: BorderRadius.circular(14),
                 border:Border.all(
                   color: Colors.white,
@@ -73,32 +71,25 @@ class AuthHeader extends StatelessWidget {
               child: Icon(icon, color: Colors.white, size:28),
             ),
           ],
-          const SizedBox(height:16),
+          const SizedBox(height:40),
+          //Title
           Text(
             title,
             style: GoogleFonts.inter(
               color: Colors.white,
-                fontSize:28,
+                fontSize:30,
                 fontWeight: FontWeight.bold,
             ),
-            // style: const TextStyle(
-            //   color: Colors.white,
-            //   fontSize:28,
-            //   fontWeight: FontWeight.bold,
-            // ),
           ),
-          const SizedBox(height:4),
+          const SizedBox(height:6),
+          //Subtitle
           Text(
             subtitle,
             style: GoogleFonts.inter(
               color: Colors.white.withOpacity(0.85),
-              fontSize:14,
-              fontWeight: FontWeight.w300,
+              fontSize:16,
+              fontWeight: FontWeight.w400,
             ),
-            // style: TextStyle(
-            //   color: Colors.white70,
-            //   fontSize:16,
-            // ),
           ),
           if (progressBar != null) ...[
             const SizedBox(height:16),

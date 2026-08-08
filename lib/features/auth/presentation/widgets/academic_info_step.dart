@@ -71,43 +71,6 @@ class AcademicInfoStep extends StatelessWidget {
               items: kFaculties,
               onChanged: onFacultyChanged,
           ),
-          // Container(
-          //   decoration: BoxDecoration(
-          //     color: Color(0xFFF3F4F6),
-          //     borderRadius: BorderRadius.circular(16),
-          //     border: Border.all(
-          //       color: Color(0xFFE2E8F0),
-          //       width:1,
-          //     ),
-          //   ),
-          //   // padding: const EdgeInsets.symmetric(horizontal:12),
-          //   child:DropdownButtonHideUnderline(
-          //     child: DropdownButton<String>(
-          //       isExpanded: true,
-          //       hint:  Text(' Select your faculty',
-          //         style: GoogleFonts.inter(
-          //           fontSize:13,
-          //           color: Color(0xFFB5B5C3),
-          //           // fontWeight: FontWeight.w400,
-          //         ),
-          //       ),
-          //       icon: Icon(Icons.keyboard_arrow_down_rounded,
-          //         color: Color(0xFF94A3B8), size:12,
-          //       ),
-          //       value: selectedFaculty,
-          //       dropdownColor: Colors.white,
-          //       style: GoogleFonts.inter(
-          //         color: Color(0xFF1E293B),
-          //         fontSize:14,
-          //         fontWeight: FontWeight.w500,
-          //       ),
-          //       items: kFaculties
-          //         .map( (f) => DropdownMenuItem(value: f, child: Text(f)))
-          //         .toList(),
-          //       onChanged: onFacultyChanged,
-          //     ),
-          //   ),
-          // ),
           const SizedBox(height:20),
           Text(
             'Academic Year',
@@ -129,13 +92,6 @@ class AcademicInfoStep extends StatelessWidget {
                   width: (MediaQuery.of(context).size.width - 24 * 2 - 10) / 2,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   alignment: Alignment.center,
-                  // decoration: BoxDecoration(
-                  //   color: Color(0xFFF3F4F6),
-                  //   borderRadius: BorderRadius.circular(20),
-                  //   border: Border.all(
-                  //     color: Color(0xFFE2E8F0),
-                  //     width:1,
-                  //   ),
                   decoration: BoxDecoration(
                     color: selected ?  Color(0xFF2563EB) : Color(0xFFF3F4F6),
                     border: Border.all(
@@ -204,15 +160,6 @@ class AcademicInfoStep extends StatelessWidget {
                       onPressed: onBack,
                       type: ButtonType.outlined,
                   ),
-                  // child: OutlinedButton(
-                  //   onPressed: onBack,
-                  //   style: OutlinedButton.styleFrom(
-                  //     shape: RoundedRectangleBorder(
-                  //       borderRadius: BorderRadius.circular(25),
-                  //     ),
-                  //   ),
-                  //   child: const Text('Back'),
-                  // ),
                 ),
               ),
               const SizedBox(width: 12),
@@ -224,25 +171,6 @@ class AcademicInfoStep extends StatelessWidget {
                       onPressed: (hasGroup && !isLoading) ? onCreateAccount : null,
                       isLoading: isLoading,
                   ),
-                  // child: ElevatedButton(
-                  //   onPressed:
-                  //   (hasGroup && !isLoading) ? onCreateAccount : null,
-                  //   style: ElevatedButton.styleFrom(
-                  //     backgroundColor: const Color(0xFF2563EB),
-                  //     shape: RoundedRectangleBorder(
-                  //       borderRadius: BorderRadius.circular(25),
-                  //     ),
-                  //   ),
-                  //   child: isLoading
-                  //       ? const CircularProgressIndicator(color: Colors.white)
-                  //       : const Text(
-                  //     'Create Account',
-                  //     style: TextStyle(
-                  //       color: Colors.white,
-                  //       fontWeight: FontWeight.bold,
-                  //     ),
-                  //   ),
-                  // ),
                 ),
               ),
             ],

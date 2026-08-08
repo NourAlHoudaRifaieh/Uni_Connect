@@ -6,7 +6,7 @@ import 'package:uni_connect/core/widgets/auth_header.dart';
 import 'package:uni_connect/features/auth/data/auth_repository.dart';
 
 class RegisterScreen extends StatefulWidget {
-  RegisterScreen({Key? key}) : super(key: key);
+  const RegisterScreen({super.key});
 
   @override
   _RegisterScreenState createState() {
@@ -143,6 +143,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body:Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           AuthHeader(
             title: 'Create Account',

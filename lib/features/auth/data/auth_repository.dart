@@ -68,6 +68,7 @@ class AuthRepository {
     }catch(e){
       return ' Something went wrong. Please try again.';
     }
+    return null;
   }
 
   String _mapAuthError(String code){
