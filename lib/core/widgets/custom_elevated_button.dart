@@ -12,6 +12,7 @@ class CustomElevatedButton extends StatelessWidget{
   final Color textColor;
   final double height;
   final double borderRadius;
+  final bool? selected;
 
   const CustomElevatedButton({
     super.key,
@@ -23,6 +24,7 @@ class CustomElevatedButton extends StatelessWidget{
     this.textColor= Colors.white,
     this.height= 50.0,
     this.borderRadius= 20.0,
+    this.selected,
   });
 
   @override

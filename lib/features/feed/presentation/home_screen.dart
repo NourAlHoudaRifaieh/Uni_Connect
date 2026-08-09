@@ -70,7 +70,6 @@ class _HomeScreenState extends State <HomeScreen>{
         subjectCode: 'DB105',
         timeAgo: '1d ago'
     ),
-
   ];
 
 

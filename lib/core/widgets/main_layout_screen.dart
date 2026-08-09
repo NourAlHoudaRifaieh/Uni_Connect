@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:uni_connect/core/widgets/custom_bottom_nav_bar.dart';
 import 'package:uni_connect/features/feed/presentation/home_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:uni_connect/features/feed/presentation/search_screen.dart';
 import 'package:uni_connect/features/feed/presentation/subject_screen.dart';
 
 class MainLayoutScreen extends StatefulWidget{
@@ -25,13 +26,14 @@ class _MainLayoutScreenState extends State <MainLayoutScreen>{
     //     ),
     //   ),
     // ),
-    Center(
-      child: Text('Search Screen',
-        style: GoogleFonts.inter(
-          fontSize:20,
-        ),
-      ),
-    ),
+    SearchScreen(),
+    // Center(
+    //   child: Text('Search Screen',
+    //     style: GoogleFonts.inter(
+    //       fontSize:20,
+    //     ),
+    //   ),
+    // ),
     Center(
       child: Text('Profile Screen',
         style: GoogleFonts.inter(

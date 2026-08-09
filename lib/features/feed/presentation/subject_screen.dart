@@ -62,7 +62,7 @@ class SubjectScreen extends StatelessWidget {
                       style: GoogleFonts.inter(fontSize: 22, fontWeight:  FontWeight.bold)
                   ),
                   SizedBox(height:4),
-                  Text('Master 2 . ${subjects.length} subjects enrolled',
+                  Text('Master 2 - ${subjects.length} subjects enrolled',
                     style: GoogleFonts.inter(
                         fontSize: 13, color: Colors.grey.shade600
                     ),
@@ -176,13 +176,13 @@ class SubjectScreen extends StatelessWidget {
                           width:1,
                         ),
                       ),
-                      child: Row(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(Icons.apartment, color: Color(0xFF2563EB),size:20),
-                          SizedBox(width:10),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          Row(
                             children: [
+                              Icon(Icons.apartment, color: Color(0xFF2563EB),size:20),
+                              SizedBox(width:10),
                               Text(
                                 'Academic Group',
                                 style: GoogleFonts.inter(
@@ -191,15 +191,15 @@ class SubjectScreen extends StatelessWidget {
                                   fontSize: 14,
                                 ),
                               ),
-                              Text(
-                                'Business Administration. Master 2',
-                                style: GoogleFonts.inter(
-                                  color: Color(0xFF2563EB),
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
                             ],
+                          ),
+                          Text(
+                            'Business Administration. Master 2',
+                            style: GoogleFonts.inter(
+                              color: Color(0xFF2563EB),
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ],
                       ),
