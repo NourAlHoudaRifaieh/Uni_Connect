@@ -72,6 +72,20 @@ class _HomeScreenState extends State <HomeScreen>{
     ),
   ];
 
+  List <PostCardData> get _filteredPosts{
+    final query = _searchController.text.trim().toLowerCase();
+
+    return posts.where((post){
+      final matchesCategory = selectedCategory == 'All' || post.category == selectedCategory;
+      final matchesSearch = query.isEmpty ||
+            post.title.toLowerCase().contains(query) ||
+            post.preview.toLowerCase().contains(query) ||
+            post.subjectCode.toLowerCase().contains(query) ||
+            post.category.toLowerCase().contains(query) ||
+            post.authorName.toLowerCase().contains(query);
+      return matchesCategory && matchesSearch;
+    }).toList();
+  }
 
   void _onCreatePost(){
     showModalBottomSheet(
@@ -87,10 +101,28 @@ class _HomeScreenState extends State <HomeScreen>{
   }
 
   @override
+  void initState(){
+    super.initState();
+    _searchController.addListener((){
+      setState(() {
+
+      });
+    });
+  }
+
+  @override
+  void dispose(){
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context){
-    final filteredPosts = selectedCategory == 'All'
-        ? posts
-        : posts.where((p) => p.category == selectedCategory).toList();
+    // final filteredPosts = selectedCategory == 'All'
+    //     ? posts
+    //     : posts.where((p) => p.category == selectedCategory).toList();
+    final displyadPosts = _filteredPosts;
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -174,52 +206,52 @@ class _HomeScreenState extends State <HomeScreen>{
             ),
             SizedBox(height:10),
             Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                itemCount: filteredPosts.length,
-                itemBuilder: (context, index) {
-                  return PostCard(
-                    data: filteredPosts[index],
-                    onTap: () {
-                      // will open post detail screen later
-                    },
-                  );
-                },
-              ),
+              child: displyadPosts.isEmpty
+                ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        width:70,
+                        height:70,
+                        decoration: BoxDecoration(
+                          color: Color(0xFFF3F4F6),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child:  Icon(Icons.article_outlined , size:36, color: Color(0xFF9CA3AF)),
+                      ),
+                      SizedBox(height:16),
+                      Text(
+                        _searchController.text.trim().isEmpty ? 'No results found for ${_searchController.text.trim()}' : 'No posts in this category',
+                        style: GoogleFonts.inter(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF6B7280),
+                        ),
+                      ),
+                    ],
+                  ),
+                  )
+                : ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  itemCount: displyadPosts.length,
+                  itemBuilder: (context, index) {
+                    return PostCard(
+                      data: displyadPosts[index],
+                      onTap: () {
+                        // will open post detail screen later
+                      },
+                    );
+                  },
+                ),
             ),
             // Expanded(
-            //   child: filteredPosts.isEmpty
-            //       ? Center(
-            //     child: Column(
-            //       mainAxisAlignment: MainAxisAlignment.center,
-            //       children: [
-            //         Container(
-            //           width:70,
-            //           height:70,
-            //           decoration: BoxDecoration(
-            //             color: Color(0xFFF3F4F6),
-            //             borderRadius: BorderRadius.circular(20),
-            //           ),
-            //           child:  Icon(Icons.article_outlined , size:36, color: Color(0xFF9CA3AF)),
-            //         ),
-            //         SizedBox(height:16),
-            //         Text(
-            //           'No posts in this category',
-            //           style: GoogleFonts.inter(
-            //             fontSize: 16,
-            //             fontWeight: FontWeight.bold,
-            //             color: Color(0xFF6B7280),
-            //           ),
-            //         ),
-            //       ],
-            //     ),
-            //   )
-            //       : ListView.builder(
+            //   child: ListView.builder(
             //     padding: const EdgeInsets.symmetric(horizontal: 20),
-            //     itemCount: filteredPosts.length,
+            //     itemCount: _filteredPosts.length,
             //     itemBuilder: (context, index) {
             //       return PostCard(
-            //         data: filteredPosts[index],
+            //         data: _filteredPosts[index],
             //         onTap: () {
             //           // will open post detail screen later
             //         },
@@ -227,6 +259,46 @@ class _HomeScreenState extends State <HomeScreen>{
             //     },
             //   ),
             // ),
+              // Expanded(
+              //   child: filteredPosts.isEmpty
+              //       ? Center(
+              //     child: Column(
+              //       mainAxisAlignment: MainAxisAlignment.center,
+              //       children: [
+              //         Container(
+              //           width:70,
+              //           height:70,
+              //           decoration: BoxDecoration(
+              //             color: Color(0xFFF3F4F6),
+              //             borderRadius: BorderRadius.circular(20),
+              //           ),
+              //           child:  Icon(Icons.article_outlined , size:36, color: Color(0xFF9CA3AF)),
+              //         ),
+              //         SizedBox(height:16),
+              //         Text(
+              //           'No posts in this category',
+              //           style: GoogleFonts.inter(
+              //             fontSize: 16,
+              //             fontWeight: FontWeight.bold,
+              //             color: Color(0xFF6B7280),
+              //           ),
+              //         ),
+              //       ],
+              //     ),
+              //   )
+              //       : ListView.builder(
+              //     padding: const EdgeInsets.symmetric(horizontal: 20),
+              //     itemCount: filteredPosts.length,
+              //     itemBuilder: (context, index) {
+              //       return PostCard(
+              //         data: filteredPosts[index],
+              //         onTap: () {
+              //           // will open post detail screen later
+              //         },
+              //       );
+              //     },
+              //   ),
+              // ),
           ],
         ),
       ),

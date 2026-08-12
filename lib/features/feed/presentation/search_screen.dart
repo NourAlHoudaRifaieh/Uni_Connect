@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:uni_connect/core/widgets/custom_elevated_button.dart';
 import 'package:uni_connect/core/widgets/custom_form_field.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/seach_post_card.dart';
+import 'package:uni_connect/features/feed/presentation/widgets/search_student_card.dart';
 
 class SearchScreen extends StatefulWidget{
   SearchScreen({super.key,});
@@ -62,6 +63,43 @@ class SearchScreenState extends State<SearchScreen>{
     ),
   ];
 
+  final List<SearchStudentCardData> students =[
+    SearchStudentCardData(
+        authorInitials: 'Lara Haddad',
+        avatarColor: Colors.pink,
+        authorName: 'LH',
+        email: 'lara.haddad@st.ul.edu.lb',
+        faculty: 'Business Administration',
+        year: 'Year 2',
+        postCount: 5
+    ),
+    SearchStudentCardData(
+        authorInitials: 'Ahmad Khoury',
+        avatarColor: Colors.deepPurple,
+        authorName: 'AK',
+        email: 'ahmad.khoury@st.ul.edu.lb',
+        faculty: 'Business Administration',
+        year: 'Year 2',
+        postCount: 15
+    ),   SearchStudentCardData(
+        authorInitials: 'Maya Nassar',
+        avatarColor: Colors.teal,
+        authorName: 'MN',
+        email: 'maya.nassar@st.ul.edu.lb',
+        faculty: 'Business Administration',
+        year: 'Year 1',
+        postCount: 2
+    ),   SearchStudentCardData(
+        authorInitials: 'Rami Farhat',
+        avatarColor: Colors.green,
+        authorName: 'RF',
+        email: 'rami.farhat@st.ul.edu.lb',
+        faculty: 'Business Administration',
+        year: 'Year 3',
+        postCount: 22
+    ),
+  ];
+
   @override
   void initState(){
     super.initState();
@@ -80,20 +118,49 @@ class SearchScreenState extends State<SearchScreen>{
 
   List <SearchPostCardData> get _filteredPosts{
     final query = _searchController.text.trim().toLowerCase();
+    if (query.isEmpty) return posts;
+    
     return posts.where((post){
-      if(_selectedIndex ==0){
+      // if(_selectedIndex ==0){
         return post.title.toLowerCase().contains(query) ||
               post.preview.toLowerCase().contains(query) ||
-              post.subjectCode.toLowerCase().contains(query);
-      }else{
-        return post.authorName.toLowerCase().contains(query);
-      }
+              post.subjectCode.toLowerCase().contains(query) ||
+              post.category.toLowerCase().contains(query)
+        ;
+      // }else{
+      //   return post.authorName.toLowerCase().contains(query);
+      // }
     }).toList();
   }
+
+  List <SearchStudentCardData> get _filteredStudents{
+    final query = _searchController.text.trim().toLowerCase();
+    if (query.isEmpty) return students;
+    return students.where((student){
+      // if(_selectedIndex ==0){
+        return student.authorName.toLowerCase().contains(query) ||
+              student.email.toLowerCase().contains(query) ||
+              student.faculty.toLowerCase().contains(query)
+        ;
+      // }else{
+      //   return student.authorName.toLowerCase().contains(query) ;
+      
+      // }
+    }).toList();
+  }
+
+  // List <SearchStudentCardData> get _filteredStudents{
+  //   final query = _searchController.text.trim().toLowerCase();
+  //   return students.where((s) => s.name.toLowerCase().contains(query)).toList();
+  //   // // return students.where((student){
+  //   // //   student.name.toLowerCase().contains(query)
+  //   // // }).toList();
+  // }
 
   @override
   Widget build(BuildContext context) {
     final filteredList = _filteredPosts;
+    final filterestList = _filteredStudents;
     // TODO: implement build
     return Scaffold(
       backgroundColor: Colors.white,
@@ -179,26 +246,69 @@ class SearchScreenState extends State<SearchScreen>{
             ),
             SizedBox(height:15),
             Expanded(
-              child: filteredList.isEmpty
-                ? Center(
-                  child: Text(
-                    'No results found',
-                    style: GoogleFonts.inter(
-                      fontSize: 16,
-                      color: Colors.grey.shade500,
-                    ),
-                  ),
+                child: _selectedIndex ==0
+                ?(_filteredPosts.isEmpty
+                    ? Center(
+                      child: Text(
+                        'No results found',
+                        style: GoogleFonts.inter(
+                          fontSize: 16,
+                          color: Colors.grey.shade500,
+                        ),
+                      ),
+                    )
+                    : ListView.builder(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        itemCount: _filteredPosts.length,
+                        itemBuilder: (context, index) {
+                          return SearchPostCard(
+                            data: _filteredPosts[index],
+                          );
+                        },
+                    )
                 )
-                : ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    itemCount: filteredList.length,
-                    itemBuilder: (context, index) {
-                      return SearchPostCard(
-                        data: filteredList[index],
-                      );
-                    },
+                : (_filteredStudents.isEmpty
+                    ? Center(
+                      child: Text(
+                        'No results found',
+                        style: GoogleFonts.inter(
+                          fontSize: 16,
+                          color: Colors.grey.shade500,
+                        ),
+                      ),
+                    )
+                    : ListView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      itemCount: _filteredStudents.length,
+                      itemBuilder: (context, index) {
+                        return SearchStudentCard(
+                          data: _filteredStudents[index],
+                        );
+                      },
+                    )
                 ),
             ),
+            // Expanded(
+            //   child: filteredList.isEmpty
+            //     ? Center(
+            //       child: Text(
+            //         'No results found',
+            //         style: GoogleFonts.inter(
+            //           fontSize: 16,
+            //           color: Colors.grey.shade500,
+            //         ),
+            //       ),
+            //     )
+            //     : ListView.builder(
+            //         padding: const EdgeInsets.symmetric(horizontal: 20),
+            //         itemCount: filteredList.length,
+            //         itemBuilder: (context, index) {
+            //           return SearchPostCard(
+            //             data: filteredList[index],
+            //           );
+            //         },
+            //     ),
+            // ),
             // Expanded(
             //   child: ListView.builder(
             //     padding: const EdgeInsets.symmetric(horizontal: 20),
