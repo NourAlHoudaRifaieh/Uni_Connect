@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthRepository {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -19,7 +20,7 @@ class AuthRepository {
         password: password,
       );
       final uid = credential.user!.uid;
-      final role = email.toLowerCase().endsWith('admin.ul.edu.lb') ? 'admin' : 'studemt';
+      final role = email.toLowerCase().endsWith('admin.ul.edu.lb') ? 'admin' : 'student';
 
 
       //to remove the academicYear and faculty fields if added admin
@@ -85,6 +86,24 @@ class AuthRepository {
         return 'Incorrect email or password.';
       default:
         return 'Authentication failed ($code).';
+    }
+  }
+
+
+  Future <void> logout() async{
+    await _auth.signOut();
+  }
+
+  Future<bool> shouldAutoLogin() async {
+    final prefs = await SharedPreferences.getInstance();
+    final rememberMe = prefs.getBool('remember_me') ?? false;
+    final currentUser = _auth.currentUser;
+
+    if (currentUser != null && rememberMe) {
+      return true;
+    } else {
+      await _auth.signOut();
+      return false;
     }
   }
 }

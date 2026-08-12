@@ -63,13 +63,37 @@ class SearchScreenState extends State<SearchScreen>{
   ];
 
   @override
+  void initState(){
+    super.initState();
+    _searchController.addListener((){
+      setState(() {
+
+      });
+    });
+  }
+
+  @override
   void dispose(){
     _searchController.dispose();
     super.dispose();
   }
 
+  List <SearchPostCardData> get _filteredPosts{
+    final query = _searchController.text.trim().toLowerCase();
+    return posts.where((post){
+      if(_selectedIndex ==0){
+        return post.title.toLowerCase().contains(query) ||
+              post.preview.toLowerCase().contains(query) ||
+              post.subjectCode.toLowerCase().contains(query);
+      }else{
+        return post.authorName.toLowerCase().contains(query);
+      }
+    }).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final filteredList = _filteredPosts;
     // TODO: implement build
     return Scaffold(
       backgroundColor: Colors.white,
@@ -87,7 +111,7 @@ class SearchScreenState extends State<SearchScreen>{
                   ),
                   SizedBox(height:10),
                   CustomFormField(
-                      hint: 'Search posts, students...',
+                      hint: _selectedIndex ==0 ? 'Search posts...' : 'Search students by name...',
                       controller: _searchController,
                       prefixIcon: Icon(Icons.search,
                           color: Color(0xFFB5B5C3)
@@ -155,16 +179,37 @@ class SearchScreenState extends State<SearchScreen>{
             ),
             SizedBox(height:15),
             Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                itemCount: posts.length,
-                itemBuilder: (context, index) {
-                  return SearchPostCard(
-                    data: posts[index],
-                  );
-                },
-              ),
+              child: filteredList.isEmpty
+                ? Center(
+                  child: Text(
+                    'No results found',
+                    style: GoogleFonts.inter(
+                      fontSize: 16,
+                      color: Colors.grey.shade500,
+                    ),
+                  ),
+                )
+                : ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    itemCount: filteredList.length,
+                    itemBuilder: (context, index) {
+                      return SearchPostCard(
+                        data: filteredList[index],
+                      );
+                    },
+                ),
             ),
+            // Expanded(
+            //   child: ListView.builder(
+            //     padding: const EdgeInsets.symmetric(horizontal: 20),
+            //     itemCount: posts.length,
+            //     itemBuilder: (context, index) {
+            //       return SearchPostCard(
+            //         data: posts[index],
+            //       );
+            //     },
+            //   ),
+            // ),
           ],
         ),
       ),

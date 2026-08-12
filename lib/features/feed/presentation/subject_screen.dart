@@ -44,6 +44,7 @@ class SubjectScreen extends StatelessWidget {
           color: Colors.blue,
           postCount: 5
       ),
+
     ];
 
     // TODO: implement build

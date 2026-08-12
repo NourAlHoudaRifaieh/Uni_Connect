@@ -1,6 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../data/auth_repository.dart';
 
 class SplashScreen extends StatefulWidget {
   SplashScreen({Key? key}) : super(key: key);
@@ -12,12 +16,27 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  final _authRepository = AuthRepository();
+
   @override
   void initState() {
     Future.delayed(Duration(milliseconds: 2300)).then((_){
-        context.go('/login');
+        // context.go('/login');
+      _decideWhereToGo();
     });
     super.initState();
+  }
+
+  void _decideWhereToGo() async {
+    final shouldGoHome = await _authRepository.shouldAutoLogin();
+
+    if (!mounted) return; // add this safety check
+
+    if (shouldGoHome) {
+      context.go('/home');
+    } else {
+      context.go('/login');
+    }
   }
 
   @override

@@ -187,6 +187,46 @@ class _HomeScreenState extends State <HomeScreen>{
                 },
               ),
             ),
+            // Expanded(
+            //   child: filteredPosts.isEmpty
+            //       ? Center(
+            //     child: Column(
+            //       mainAxisAlignment: MainAxisAlignment.center,
+            //       children: [
+            //         Container(
+            //           width:70,
+            //           height:70,
+            //           decoration: BoxDecoration(
+            //             color: Color(0xFFF3F4F6),
+            //             borderRadius: BorderRadius.circular(20),
+            //           ),
+            //           child:  Icon(Icons.article_outlined , size:36, color: Color(0xFF9CA3AF)),
+            //         ),
+            //         SizedBox(height:16),
+            //         Text(
+            //           'No posts in this category',
+            //           style: GoogleFonts.inter(
+            //             fontSize: 16,
+            //             fontWeight: FontWeight.bold,
+            //             color: Color(0xFF6B7280),
+            //           ),
+            //         ),
+            //       ],
+            //     ),
+            //   )
+            //       : ListView.builder(
+            //     padding: const EdgeInsets.symmetric(horizontal: 20),
+            //     itemCount: filteredPosts.length,
+            //     itemBuilder: (context, index) {
+            //       return PostCard(
+            //         data: filteredPosts[index],
+            //         onTap: () {
+            //           // will open post detail screen later
+            //         },
+            //       );
+            //     },
+            //   ),
+            // ),
           ],
         ),
       ),

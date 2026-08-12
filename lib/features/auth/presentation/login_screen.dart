@@ -1,3 +1,4 @@
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:uni_connect/core/widgets/custom_elevated_button.dart';
 import '../../../core/widgets/custom_form_field.dart';
@@ -28,6 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
+    _loadSaveEmail();
   }
 
   @override
@@ -37,6 +39,27 @@ class _LoginScreenState extends State<LoginScreen> {
     _passwordController.dispose();
   }
 
+  void _loadSaveEmail() async{
+    final prefs = await SharedPreferences.getInstance();
+    final rememberMe = prefs.getBool('remember_me') ?? false;
+
+    if(rememberMe){
+      final savedEmail = prefs .getString('saved_email');
+      if(savedEmail !=null){
+        setState(() {
+          _emailController.text = savedEmail;
+          isChecked= true;
+        });
+      }
+    }
+    // final saveEmail = prefs.getString('save_email');
+    // if(saveEmail !=null){
+    //   setState(() {
+    //     _emailController.text = saveEmail;
+    //     isChecked = true;
+    //   });
+    // }
+  }
   void _handleLogin() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -62,6 +85,13 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         );
       }else{
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('remember_me', isChecked);
+        if(isChecked){
+          await prefs.setString('saved_email', _emailController.text.trim());
+        }else{
+          await prefs.remove('saved_email');
+        }
         context.go('/home');// the placeholder route, I'll build the home next
       }
     // //firebase Auth logic goes here

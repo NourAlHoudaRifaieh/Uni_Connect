@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uni_connect/core/widgets/custom_bottom_nav_bar.dart';
+import 'package:uni_connect/features/auth/data/auth_repository.dart';
 import 'package:uni_connect/features/feed/presentation/home_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:uni_connect/features/feed/presentation/search_screen.dart';
@@ -34,13 +37,29 @@ class _MainLayoutScreenState extends State <MainLayoutScreen>{
     //     ),
     //   ),
     // ),
+
     Center(
-      child: Text('Profile Screen',
-        style: GoogleFonts.inter(
-          fontSize:20,
-        ),
+      child: ElevatedButton(
+          onPressed: () async{
+            await AuthRepository().logout();
+            final prefs = await SharedPreferences.getInstance();
+            await prefs.remove('remember_me');
+            await prefs.remove('saved_email');
+            if(context.mounted){
+              context.go('/login');
+            }
+          },
+          child: Text('Logout(test button)'),
       ),
     ),
+
+    // Center(
+    //   child: Text('Profile Screen',
+    //     style: GoogleFonts.inter(
+    //       fontSize:20,
+    //     ),
+    //   ),
+    // ),
   ];
   //action when pressing the add button
   void _handleCreatePost(){
