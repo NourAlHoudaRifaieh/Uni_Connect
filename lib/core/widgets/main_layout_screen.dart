@@ -8,6 +8,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:uni_connect/features/feed/presentation/search_screen.dart';
 import 'package:uni_connect/features/feed/presentation/subject_screen.dart';
 
+import '../../features/feed/presentation/create_post_screen.dart';
+
 class MainLayoutScreen extends StatefulWidget{
   const MainLayoutScreen({super.key});
 
@@ -62,23 +64,31 @@ class _MainLayoutScreenState extends State <MainLayoutScreen>{
     // ),
   ];
   //action when pressing the add button
+  // void _handleCreatePost(){
+  //   showModalBottomSheet(
+  //       context: context,
+  //       isScrollControlled: true,
+  //       shape: RoundedRectangleBorder(
+  //         borderRadius: BorderRadius.vertical(
+  //           top: Radius.circular(20),
+  //         ),
+  //       ),
+  //       builder: (context) =>
+  //         Container(
+  //           padding: EdgeInsets.all(20),
+  //           height: 250,
+  //           child: Center(
+  //             child: Text('Create Post Sheet'),
+  //           ),
+  //         ),
+  //   );
+  // }
+
   void _handleCreatePost(){
-    showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(
-            top: Radius.circular(20),
-          ),
-        ),
-        builder: (context) =>
-          Container(
-            padding: EdgeInsets.all(20),
-            height: 250,
-            child: Center(
-              child: Text('Create Post Sheet'),
-            ),
-          ),
+    // context.push('/create-post');
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => CreatePostScreen()),
     );
   }
 

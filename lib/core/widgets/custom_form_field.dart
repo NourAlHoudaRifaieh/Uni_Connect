@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -12,6 +14,7 @@ class CustomFormField extends StatelessWidget {
   final TextInputType keyboardType;
   final String? Function(String?)? validator;
   final Widget? prefixIcon;
+  final int? maxLines;
 
   const CustomFormField({
     super.key,
@@ -23,6 +26,8 @@ class CustomFormField extends StatelessWidget {
     this.keyboardType = TextInputType.text,
     this.validator,
     this.prefixIcon,
+    this.maxLines,
+
   });
 
   @override
@@ -46,6 +51,7 @@ class CustomFormField extends StatelessWidget {
           obscureText: obscureText,
           keyboardType: keyboardType,
           validator: validator,
+          maxLines: maxLines,
           style: GoogleFonts.inter(
             fontSize:16,
             color: Color(0xFF2F3A4A),
