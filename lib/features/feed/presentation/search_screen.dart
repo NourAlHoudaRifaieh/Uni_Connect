@@ -288,38 +288,6 @@ class SearchScreenState extends State<SearchScreen>{
                     )
                 ),
             ),
-            // Expanded(
-            //   child: filteredList.isEmpty
-            //     ? Center(
-            //       child: Text(
-            //         'No results found',
-            //         style: GoogleFonts.inter(
-            //           fontSize: 16,
-            //           color: Colors.grey.shade500,
-            //         ),
-            //       ),
-            //     )
-            //     : ListView.builder(
-            //         padding: const EdgeInsets.symmetric(horizontal: 20),
-            //         itemCount: filteredList.length,
-            //         itemBuilder: (context, index) {
-            //           return SearchPostCard(
-            //             data: filteredList[index],
-            //           );
-            //         },
-            //     ),
-            // ),
-            // Expanded(
-            //   child: ListView.builder(
-            //     padding: const EdgeInsets.symmetric(horizontal: 20),
-            //     itemCount: posts.length,
-            //     itemBuilder: (context, index) {
-            //       return SearchPostCard(
-            //         data: posts[index],
-            //       );
-            //     },
-            //   ),
-            // ),
           ],
         ),
       ),

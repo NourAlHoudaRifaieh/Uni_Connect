@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:uni_connect/features/feed/presentation/subject_screen.dart';
-import 'package:uni_connect/features/feed/presentation/widgets/post_card.dart';
+import '../../../core/models/subject_model.dart';
 
 class SubjectDetailsScreen extends StatelessWidget {
 
-  final SubjectData subject;
-  // final PostCardData postInfo;
+  final SubjectModel subject;
 
   SubjectDetailsScreen({
     super.key,
     required this.subject,
-    // required this.postInfo,
   });
 
 
@@ -39,7 +36,7 @@ class SubjectDetailsScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-                  SizedBox(height:10),
+                  SizedBox(height:15),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
@@ -57,13 +54,13 @@ class SubjectDetailsScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            subject.code,
+                            subject.subjectCode,
                             style: GoogleFonts.inter(
                                 fontSize: 12,
                                 color: Colors.grey.shade800
                             ),
                           ),
-                          Text( subject.title,
+                          Text( subject.subjectName,
                               style: GoogleFonts.inter(fontSize: 18, fontWeight:  FontWeight.bold)
                           ),
                         ],
@@ -94,148 +91,6 @@ class SubjectDetailsScreen extends StatelessWidget {
               ),
             ),
             SizedBox(height:15),
-            // Expanded(
-            //   child: displyadPosts.isEmpty
-            //       ? Center(
-            //     child: Column(
-            //       mainAxisAlignment: MainAxisAlignment.center,
-            //       children: [
-            //         Container(
-            //           width:70,
-            //           height:70,
-            //           decoration: BoxDecoration(
-            //             color: Color(0xFFF3F4F6),
-            //             borderRadius: BorderRadius.circular(20),
-            //           ),
-            //           child:  Icon(Icons.article_outlined , size:36, color: Color(0xFF9CA3AF)),
-            //         ),
-            //         SizedBox(height:16),
-            //         Text(
-            //           _searchController.text.trim().isEmpty ? 'No results found for ${_searchController.text.trim()}' : 'No posts in this category',
-            //           style: GoogleFonts.inter(
-            //             fontSize: 16,
-            //             fontWeight: FontWeight.bold,
-            //             color: Color(0xFF6B7280),
-            //           ),
-            //         ),
-            //       ],
-            //     ),
-            //   )
-            //       : ListView.builder(
-            //     padding: const EdgeInsets.symmetric(horizontal: 20),
-            //     itemCount: displyadPosts.length,
-            //     itemBuilder: (context, index) {
-            //       return PostCard(
-            //         data: displyadPosts[index],
-            //         onTap: () {
-            //           // will open post detail screen later
-            //         },
-            //       );
-            //     },
-            //   ),
-            // ),
-            // Expanded(
-            //   child: SingleChildScrollView(
-            //     padding: EdgeInsets.symmetric(horizontal:20, vertical:10),
-            //     child: Column(
-            //       crossAxisAlignment: CrossAxisAlignment.start,
-            //       children: [
-            //         Text('Select Subject', style: GoogleFonts.inter(fontWeight:FontWeight.w600, fontSize:15)),
-            //         SizedBox(height:8),
-            //         Wrap(
-            //           spacing: 10,
-            //           runSpacing: 10,
-            //           children: subjects.map((s){
-            //             bool isSelected = s == selectedSubject;
-            //             return GestureDetector(
-            //               onTap: (){
-            //                 setState(() {
-            //                   selectedSubject = s;
-            //                 });
-            //               },
-            //               child: Container(
-            //                 padding: EdgeInsets.symmetric(horizontal:14, vertical:14),
-            //                 decoration: BoxDecoration(
-            //                   color: isSelected ? Color(0xFFEFF6FF) : Colors.white,
-            //                   borderRadius: BorderRadius.circular(20),
-            //                   border: Border.all(
-            //                     color: isSelected ? Color(0xFF2563EB) : Colors.grey.shade300,
-            //                   ),
-            //                 ),
-            //                 child: Text(
-            //                   s,
-            //                   style: GoogleFonts.inter(
-            //                     fontSize: 13,
-            //                     fontWeight:FontWeight.w600,
-            //                     color: isSelected ? Color(0xFF2563EB) : Colors.black87,
-            //                   ),
-            //                 ),
-            //               ),
-            //             );
-            //           }).toList(),
-            //         ),
-            //         SizedBox(height:20),
-            //         CustomFormField(
-            //           label:'Title',
-            //           hint: 'What is your question or topic',
-            //           controller: _titleController,
-            //         ),
-            //         SizedBox(height:20),
-            //         CustomFormField(
-            //           label: 'Description',
-            //           maxLines: 5,
-            //           hint: 'Describe in detail - the more context you give, the better responses you will get',
-            //           controller: _descriptionController,
-            //         ),
-            //         SizedBox(height:20),
-            //         Container(
-            //           width: double.infinity,
-            //           padding: const EdgeInsets.all(14),
-            //           decoration: BoxDecoration(
-            //             color:  Color(0xFFEFF6FF),
-            //             borderRadius: BorderRadius.circular(20),
-            //             border: Border.all(
-            //               color: Color(0xFF2563EB),
-            //               width:1,
-            //             ),
-            //           ),
-            //           child: Column(
-            //             crossAxisAlignment: CrossAxisAlignment.start,
-            //             children: [
-            //               Row(
-            //                 children: [
-            //                   Icon(Icons.auto_awesome, color: Color(0xFF2563EB),size:20),
-            //                   SizedBox(width:10),
-            //                   Text(
-            //                     'Smart AI Categorization',
-            //                     style: GoogleFonts.inter(
-            //                       color: Color(0xFF2563EB),
-            //                       fontWeight: FontWeight.bold,
-            //                       fontSize: 14,
-            //                     ),
-            //                   ),
-            //                 ],
-            //               ),
-            //               Text(
-            //                 'When you publish, AI will analyze your title and description to assign the right category automatically',
-            //                 style: GoogleFonts.inter(
-            //                   color: Color(0xFF2563EB),
-            //                   fontSize: 13,
-            //                   fontWeight: FontWeight.w500,
-            //                 ),
-            //               ),
-            //             ],
-            //           ),
-            //         ),
-            //         SizedBox(height:30),
-            //         CustomElevatedButton(
-            //             text: 'Analyse & Publish',
-            //             onPressed: (){}
-            //         ),
-            //       ],
-            //     ),
-            //   ),
-            // ),
           ],
         ),
       ),

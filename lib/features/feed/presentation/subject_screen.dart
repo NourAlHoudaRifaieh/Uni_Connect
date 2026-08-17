@@ -2,46 +2,51 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:uni_connect/features/feed/presentation/subject_details_screen.dart';
 
-class SubjectData{
-  final String code;
-  final String title;
-  final int postCount;
-  final Color color;
-  final IconData icon;
+import '../../../core/models/subject_model.dart';
 
-  SubjectData({
-    required this.icon,
-    required this.title,
-    required this.code,
-    required this.color,
-    required this.postCount,
-  });
-}
+// class SubjectData{
+//   final String code;
+//   final String title;
+//   final int postCount;
+//   final Color color;
+//   final IconData icon;
+//
+//   SubjectData({
+//     required this.icon,
+//     required this.title,
+//     required this.code,
+//     required this.color,
+//     required this.postCount,
+//   });
+// }
+
+
+
 class SubjectScreen extends StatelessWidget {
   const SubjectScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
 
-    List <SubjectData> subjects =[
-      SubjectData(
+    List <SubjectModel> subjects =[
+      SubjectModel(
           icon: Icons.menu_book,
-          title: 'Theses Project',
-          code: 'THE601',
+          subjectName: 'Theses Project',
+          subjectCode: 'THE601',
           color: Colors.red,
           postCount: 5,
       ),
-      SubjectData(
+      SubjectModel(
           icon: Icons.menu_book,
-          title: 'Advanced Data Analysis',
-          code: 'ADA601',
+          subjectName: 'Advanced Data Analysis',
+          subjectCode: 'ADA601',
           color: Colors.green,
           postCount: 9,
       ),
-      SubjectData(
+      SubjectModel(
           icon: Icons.menu_book,
-          title: 'Leadership & Innovation',
-          code: 'LDR601',
+          subjectName: 'Leadership & Innovation',
+          subjectCode: 'LDR601',
           color: Colors.blue,
           postCount: 5
       ),
@@ -108,7 +113,7 @@ class SubjectScreen extends StatelessWidget {
                           childAspectRatio: 1.1
                       ),
                       itemBuilder: (context , index){
-                        SubjectData subject = subjects[index];
+                        SubjectModel subject = subjects[index];
                         return GestureDetector(
                           onTap: (){
                             Navigator.push(
@@ -137,7 +142,7 @@ class SubjectScreen extends StatelessWidget {
                                 ),
                                 SizedBox(height:10),
                                 Text(
-                                  subject.code,
+                                  subject.subjectCode,
                                   style: GoogleFonts.inter(
                                       fontSize: 11,
                                       color: Colors.grey.shade500
@@ -145,7 +150,7 @@ class SubjectScreen extends StatelessWidget {
                                 ),
                                 SizedBox(height:2),
                                 Text(
-                                  subject.title,
+                                  subject.subjectName,
                                   style: GoogleFonts.inter(
                                       fontSize: 14, fontWeight: FontWeight.bold
                                   ),
