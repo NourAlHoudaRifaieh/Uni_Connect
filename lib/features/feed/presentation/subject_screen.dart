@@ -1,26 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:uni_connect/features/feed/presentation/subject_details_screen.dart';
-
+import '../../../core/mock/mock_data.dart';
 import '../../../core/models/subject_model.dart';
-
-// class SubjectData{
-//   final String code;
-//   final String title;
-//   final int postCount;
-//   final Color color;
-//   final IconData icon;
-//
-//   SubjectData({
-//     required this.icon,
-//     required this.title,
-//     required this.code,
-//     required this.color,
-//     required this.postCount,
-//   });
-// }
-
-
 
 class SubjectScreen extends StatelessWidget {
   const SubjectScreen({super.key});
@@ -28,30 +10,32 @@ class SubjectScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    List <SubjectModel> subjects =[
-      SubjectModel(
-          icon: Icons.menu_book,
-          subjectName: 'Theses Project',
-          subjectCode: 'THE601',
-          color: Colors.red,
-          postCount: 5,
-      ),
-      SubjectModel(
-          icon: Icons.menu_book,
-          subjectName: 'Advanced Data Analysis',
-          subjectCode: 'ADA601',
-          color: Colors.green,
-          postCount: 9,
-      ),
-      SubjectModel(
-          icon: Icons.menu_book,
-          subjectName: 'Leadership & Innovation',
-          subjectCode: 'LDR601',
-          color: Colors.blue,
-          postCount: 5
-      ),
+    final List<SubjectModel> subjects = MockData.subjects;
 
-    ];
+    // List <SubjectModel> subjects =[
+    //   SubjectModel(
+    //       icon: Icons.menu_book,
+    //       subjectName: 'Theses Project',
+    //       subjectCode: 'THE601',
+    //       color: Colors.red,
+    //       postCount: 5,
+    //   ),
+    //   SubjectModel(
+    //       icon: Icons.menu_book,
+    //       subjectName: 'Advanced Data Analysis',
+    //       subjectCode: 'ADA601',
+    //       color: Colors.green,
+    //       postCount: 9,
+    //   ),
+    //   SubjectModel(
+    //       icon: Icons.menu_book,
+    //       subjectName: 'Leadership & Innovation',
+    //       subjectCode: 'LDR601',
+    //       color: Colors.blue,
+    //       postCount: 5
+    //   ),
+    //
+    // ];
 
     // TODO: implement build
     return Scaffold(
@@ -177,61 +161,6 @@ class SubjectScreen extends StatelessWidget {
                             ),
                           ),
                         );
-                        // return Container(
-                        //   padding: EdgeInsets.all(14),
-                        //   decoration: BoxDecoration(
-                        //     color: Colors.white,
-                        //     borderRadius: BorderRadius.circular(20),
-                        //     border: Border.all(color: Colors.grey.shade200),
-                        //   ),
-                        //   child:  Column(
-                        //     crossAxisAlignment: CrossAxisAlignment.start,
-                        //     children: [
-                        //       Container(
-                        //         width: 40,
-                        //         height: 40,
-                        //         decoration: BoxDecoration(
-                        //           color: subject.color.withOpacity(0.12),
-                        //           borderRadius: BorderRadius.circular(10),
-                        //         ),
-                        //         child: Icon(subject.icon, color: subject.color, size:20),
-                        //       ),
-                        //       SizedBox(height:10),
-                        //       Text(
-                        //         subject.code,
-                        //         style: GoogleFonts.inter(
-                        //             fontSize: 11,
-                        //             color: Colors.grey.shade500
-                        //         ),
-                        //       ),
-                        //       SizedBox(height:2),
-                        //       Text(
-                        //         subject.title,
-                        //         style: GoogleFonts.inter(
-                        //             fontSize: 14, fontWeight: FontWeight.bold
-                        //         ),
-                        //       ),
-                        //       Spacer(),
-                        //       Row(
-                        //         children: [
-                        //           Container(
-                        //             width:6,
-                        //             height:6,
-                        //             decoration: BoxDecoration(
-                        //               color: subject.color,
-                        //               shape: BoxShape.circle,
-                        //             ),
-                        //           ),
-                        //           SizedBox(width:6),
-                        //           Text(
-                        //               '${subject.postCount} posts',
-                        //               style: GoogleFonts.inter(fontSize: 11, color: Colors.grey.shade500)
-                        //           ),
-                        //         ],
-                        //       ),
-                        //     ],
-                        //   ),
-                        // );
                       },
                     ),
                     SizedBox(height:20),
