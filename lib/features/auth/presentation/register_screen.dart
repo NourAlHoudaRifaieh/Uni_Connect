@@ -28,6 +28,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   String? _selectedFaculty;
   String? _selectedYear;
+  String? _selectedMajor;
   bool _isLoading = false;
 
   @override
@@ -96,7 +97,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   void _handleCreateAccount() async {
-    if(_selectedFaculty == null || _selectedYear == null) return;
+    if(_selectedFaculty == null || _selectedYear == null || _selectedMajor == null) return;
       setState(() {
         _isLoading = true;
       });
@@ -106,6 +107,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         password: _passwordController.text,
         faculty: _selectedFaculty!,
         academicYear: _selectedYear!,
+        major: _selectedMajor!,
       );
 
       if(!mounted) return;
@@ -194,15 +196,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 AcademicInfoStep(
                   selectedFaculty: _selectedFaculty,
+                  selectedMajor: _selectedMajor,
                   selectedYear: _selectedYear,
                   isLoading: _isLoading,
                   onFacultyChanged: (value) =>
                       setState(() => _selectedFaculty = value),
+                  onMajorChanged: (value) =>
+                      setState(() => _selectedMajor = value),
                   onYearChanged: (value) =>
                       setState(() => _selectedYear = value),
                   onBack: _goBackToStep1,
                   onCreateAccount: _handleCreateAccount,
                 ),
+                // AcademicInfoStep(
+                //   selectedFaculty: _selectedFaculty,
+                //   selectedYear: _selectedYear,
+                //   isLoading: _isLoading,
+                //   onFacultyChanged: (value) =>
+                //       setState(() => _selectedFaculty = value),
+                //   onYearChanged: (value) =>
+                //       setState(() => _selectedYear = value),
+                //   onBack: _goBackToStep1,
+                //   onCreateAccount: _handleCreateAccount,
+                // ),
               ],
             ),
           ),

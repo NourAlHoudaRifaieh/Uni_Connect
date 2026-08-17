@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthRepository {
@@ -13,6 +14,7 @@ class AuthRepository {
     required String password,
     String? faculty,
     String? academicYear,
+    String? major,
   }) async{
     try{
       final credential = await _auth.createUserWithEmailAndPassword(
@@ -33,6 +35,7 @@ class AuthRepository {
 
       // Only include these fields when they actually have a value
       if (faculty != null) userData['faculty'] = faculty;
+      if (major != null) userData['major'] = major;
       if (academicYear != null) userData['academicYear'] = academicYear;
 
       await _firestore.collection('users').doc(uid).set(userData);
@@ -50,6 +53,7 @@ class AuthRepository {
     } on FirebaseAuthException catch(e){
       return _mapAuthError(e.code);
     }catch(e){
+      debugPrint('Firestore write error: $e');
       return 'Something went wrong. Please try again.';
     }
   }

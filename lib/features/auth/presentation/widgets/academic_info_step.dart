@@ -11,6 +11,15 @@ const List<String> kFaculties = [
   'Medicine',
 ];
 
+const List<String> kMajors = [
+  'Business Computer',
+  'Accounting and Auditing',
+  'Finance and Financial Establishments',
+  'Management',
+  'Marketing',
+  'Econometric',
+];
+
 const List<String> kAcademicYears = [
   'Year 1',
   'Year 2',
@@ -18,6 +27,7 @@ const List<String> kAcademicYears = [
   'Master 1',
   'Master 2',
 ];
+
 
 class AcademicInfoStep extends StatelessWidget {
   final String? selectedFaculty;
@@ -27,6 +37,8 @@ class AcademicInfoStep extends StatelessWidget {
   final ValueChanged<String> onYearChanged;
   final VoidCallback onBack;
   final VoidCallback onCreateAccount;
+  final String? selectedMajor;
+  final ValueChanged<String?> onMajorChanged;
 
   const AcademicInfoStep({
     super.key,
@@ -37,11 +49,13 @@ class AcademicInfoStep extends StatelessWidget {
     required this.onYearChanged,
     required this.selectedFaculty,
     required this.selectedYear,
+    required this.selectedMajor,
+    required this.onMajorChanged,
   });
 
   @override
   Widget build(BuildContext context) {
-    final bool hasGroup = selectedFaculty != null && selectedYear != null;
+    final bool hasGroup = selectedFaculty != null && selectedYear != null && selectedMajor !=null;
     // TODO: implement build
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
@@ -70,6 +84,22 @@ class AcademicInfoStep extends StatelessWidget {
               hint: 'Select your faculty',
               items: kFaculties,
               onChanged: onFacultyChanged,
+          ),
+          const SizedBox(height:20),
+          Text(
+            'Major',
+            style: GoogleFonts.inter(
+              fontSize:14,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF2F3A4A),
+            ),
+          ),
+          const SizedBox(height: 8),
+          CustomDropdown(
+            value: selectedMajor,
+            hint: 'Select your major',
+            items: kMajors,
+            onChanged: onMajorChanged,
           ),
           const SizedBox(height:20),
           Text(
@@ -139,7 +169,7 @@ class AcademicInfoStep extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '$selectedFaculty · $selectedYear',
+                    '$selectedFaculty · $selectedMajor · $selectedYear',
                     style: GoogleFonts.inter(
                       color: Color(0xFF2563EB),
                       fontSize: 13,
@@ -175,6 +205,7 @@ class AcademicInfoStep extends StatelessWidget {
               ),
             ],
           ),
+          SizedBox( height:30),
         ],
       ),
     );
