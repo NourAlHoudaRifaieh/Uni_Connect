@@ -121,7 +121,7 @@ class _HomeScreenState extends State <HomeScreen>{
     // final filteredPosts = selectedCategory == 'All'
     //     ? posts
     //     : posts.where((p) => p.category == selectedCategory).toList();
-    final displyadPosts = _filteredPosts;
+    final displaydPosts = _filteredPosts;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -206,7 +206,7 @@ class _HomeScreenState extends State <HomeScreen>{
             ),
             SizedBox(height:10),
             Expanded(
-              child: displyadPosts.isEmpty
+              child: displaydPosts.isEmpty
                 ? Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -234,10 +234,10 @@ class _HomeScreenState extends State <HomeScreen>{
                   )
                 : ListView.builder(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
-                  itemCount: displyadPosts.length,
+                  itemCount: displaydPosts.length,
                   itemBuilder: (context, index) {
                     return PostCard(
-                      data: displyadPosts[index],
+                      data: displaydPosts[index],
                       onTap: () {
                         // will open post detail screen later
                       },

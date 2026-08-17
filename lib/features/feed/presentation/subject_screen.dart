@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:uni_connect/features/feed/presentation/subject_details_screen.dart';
 
 class SubjectData{
   final String code;
@@ -108,61 +109,124 @@ class SubjectScreen extends StatelessWidget {
                       ),
                       itemBuilder: (context , index){
                         SubjectData subject = subjects[index];
-                        return Container(
-                          padding: EdgeInsets.all(14),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: Colors.grey.shade200),
-                          ),
-                          child:  Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                width: 40,
-                                height: 40,
-                                decoration: BoxDecoration(
-                                  color: subject.color.withOpacity(0.12),
-                                  borderRadius: BorderRadius.circular(10),
+                        return GestureDetector(
+                          onTap: (){
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context)=> SubjectDetailsScreen(subject:subject)),
+                            );
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(14),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(color: Colors.grey.shade200),
+                            ),
+                            child:  Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  width: 40,
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                    color: subject.color.withOpacity(0.12),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Icon(subject.icon, color: subject.color, size:20),
                                 ),
-                                child: Icon(subject.icon, color: subject.color, size:20),
-                              ),
-                              SizedBox(height:10),
-                              Text(
-                                subject.code,
-                                style: GoogleFonts.inter(
-                                    fontSize: 11,
-                                    color: Colors.grey.shade500
+                                SizedBox(height:10),
+                                Text(
+                                  subject.code,
+                                  style: GoogleFonts.inter(
+                                      fontSize: 11,
+                                      color: Colors.grey.shade500
+                                  ),
                                 ),
-                              ),
-                              SizedBox(height:2),
-                              Text(
-                                subject.title,
-                                style: GoogleFonts.inter(
-                                    fontSize: 14, fontWeight: FontWeight.bold
+                                SizedBox(height:2),
+                                Text(
+                                  subject.title,
+                                  style: GoogleFonts.inter(
+                                      fontSize: 14, fontWeight: FontWeight.bold
+                                  ),
                                 ),
-                              ),
-                              Spacer(),
-                              Row(
-                                children: [
-                                  Container(
-                                    width:6,
-                                    height:6,
-                                    decoration: BoxDecoration(
-                                      color: subject.color,
-                                      shape: BoxShape.circle,
+                                Spacer(),
+                                Row(
+                                  children: [
+                                    Container(
+                                      width:6,
+                                      height:6,
+                                      decoration: BoxDecoration(
+                                        color: subject.color,
+                                        shape: BoxShape.circle,
+                                      ),
                                     ),
-                                  ),
-                                  SizedBox(width:6),
-                                  Text(
-                                      '${subject.postCount} posts',
-                                      style: GoogleFonts.inter(fontSize: 11, color: Colors.grey.shade500)
-                                  ),
-                                ],
-                              ),
-                            ],
+                                    SizedBox(width:6),
+                                    Text(
+                                        '${subject.postCount} posts',
+                                        style: GoogleFonts.inter(fontSize: 11, color: Colors.grey.shade500)
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
                         );
+                        // return Container(
+                        //   padding: EdgeInsets.all(14),
+                        //   decoration: BoxDecoration(
+                        //     color: Colors.white,
+                        //     borderRadius: BorderRadius.circular(20),
+                        //     border: Border.all(color: Colors.grey.shade200),
+                        //   ),
+                        //   child:  Column(
+                        //     crossAxisAlignment: CrossAxisAlignment.start,
+                        //     children: [
+                        //       Container(
+                        //         width: 40,
+                        //         height: 40,
+                        //         decoration: BoxDecoration(
+                        //           color: subject.color.withOpacity(0.12),
+                        //           borderRadius: BorderRadius.circular(10),
+                        //         ),
+                        //         child: Icon(subject.icon, color: subject.color, size:20),
+                        //       ),
+                        //       SizedBox(height:10),
+                        //       Text(
+                        //         subject.code,
+                        //         style: GoogleFonts.inter(
+                        //             fontSize: 11,
+                        //             color: Colors.grey.shade500
+                        //         ),
+                        //       ),
+                        //       SizedBox(height:2),
+                        //       Text(
+                        //         subject.title,
+                        //         style: GoogleFonts.inter(
+                        //             fontSize: 14, fontWeight: FontWeight.bold
+                        //         ),
+                        //       ),
+                        //       Spacer(),
+                        //       Row(
+                        //         children: [
+                        //           Container(
+                        //             width:6,
+                        //             height:6,
+                        //             decoration: BoxDecoration(
+                        //               color: subject.color,
+                        //               shape: BoxShape.circle,
+                        //             ),
+                        //           ),
+                        //           SizedBox(width:6),
+                        //           Text(
+                        //               '${subject.postCount} posts',
+                        //               style: GoogleFonts.inter(fontSize: 11, color: Colors.grey.shade500)
+                        //           ),
+                        //         ],
+                        //       ),
+                        //     ],
+                        //   ),
+                        // );
                       },
                     ),
                     SizedBox(height:20),
