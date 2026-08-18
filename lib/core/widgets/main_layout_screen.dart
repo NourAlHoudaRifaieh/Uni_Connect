@@ -5,6 +5,7 @@ import 'package:uni_connect/core/widgets/custom_bottom_nav_bar.dart';
 import 'package:uni_connect/features/auth/data/auth_repository.dart';
 import 'package:uni_connect/features/feed/presentation/home_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:uni_connect/features/feed/presentation/profile_screen.dart';
 import 'package:uni_connect/features/feed/presentation/search_screen.dart';
 import 'package:uni_connect/features/feed/presentation/subject_screen.dart';
 
@@ -40,20 +41,22 @@ class _MainLayoutScreenState extends State <MainLayoutScreen>{
     //   ),
     // ),
 
-    Center(
-      child: ElevatedButton(
-          onPressed: () async{
-            await AuthRepository().logout();
-            final prefs = await SharedPreferences.getInstance();
-            await prefs.remove('remember_me');
-            await prefs.remove('saved_email');
-            if(context.mounted){
-              context.go('/login');
-            }
-          },
-          child: Text('Logout(test button)'),
-      ),
-    ),
+    ProfileScreen(),
+
+    // Center(
+    //   child: ElevatedButton(
+    //       onPressed: () async{
+    //         await AuthRepository().logout();
+    //         final prefs = await SharedPreferences.getInstance();
+    //         await prefs.remove('remember_me');
+    //         await prefs.remove('saved_email');
+    //         if(context.mounted){
+    //           context.go('/login');
+    //         }
+    //       },
+    //       child: Text('Logout(test button)'),
+    //   ),
+    // ),
 
     // Center(
     //   child: Text('Profile Screen',
