@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:uni_connect/core/mock/mock_data.dart';
+import 'package:uni_connect/core/models/post_model.dart';
 import 'package:uni_connect/core/widgets/custom_form_field.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/category_selector.dart';
 import 'widgets/post_card.dart';
@@ -17,88 +19,105 @@ class _HomeScreenState extends State <HomeScreen>{
   List <String> categories = ['All','Exams','General help', 'Programming', 'Assignments', 'Math','Physics'];
   String selectedCategory = 'All';
 
-  final List<PostCardData> posts =[
-    PostCardData(
-        title: 'Database Normalization - Final Exam Tips',
-        authorInitials: 'AK',
-        authorName: 'Ahmad Khoury',
-        avatarColor: Colors.deepPurple,
-        category: 'Exams',
-        categoryColor: Colors.purple,
-        comments: 2,
-        likes: 24,
-        preview: 'Hey everyone! The final exam is next week. Professor Hajj mentioned that 3NF will be heavily testes...',
-        subjectCode: 'DB201',
-        timeAgo: '3h ago'
-    ),
-    PostCardData(
-        title: 'Python  — Inheritance Pattern for AI Assignment',
-        authorInitials: 'RF',
-        authorName: 'Hani Farhat',
-        avatarColor: Colors.orange,
-        category: 'Programming',
-        categoryColor: Colors.green,
-        comments: 1,
-        likes: 14,
-        preview: 'For the AI assignment I structured my neural network using Python inheritance: Layer → DenseLayer...',
-        subjectCode: 'DB135',
-        timeAgo: '2d ago'
-    ),
-    PostCardData(
-        title: 'Assignment 3 - ER Diagram help Needed',
-        authorInitials: 'LH',
-        authorName: 'Lara Haddad',
-        avatarColor: Colors.pink,
-        category: 'Assignments',
-        categoryColor: Colors.blue,
-        comments: 1,
-        likes: 7,
-        preview: "I'm stuck on the ER Diagram Help Needed",
-        subjectCode: 'D109',
-        timeAgo: '2h ago'
-    ),
-    PostCardData(
-        title: 'Python OOP — Inheritance Pattern for AI Assignment',
-        authorInitials: 'RF',
-        authorName: 'Rami Farhat',
-        avatarColor: Colors.green,
-        category: 'Programming',
-        categoryColor: Colors.teal,
-        comments: 2,
-        likes: 24,
-        preview: 'For the AI assignment I structured my neural network using Python inheritance: Layer → DenseLayer...',
-        subjectCode: 'DB105',
-        timeAgo: '1d ago'
-    ),
-  ];
 
-  List <PostCardData> get _filteredPosts{
+  List <PostModel> get posts => MockData.posts;
+  List <PostModel> get _filteredPosts{
     final query = _searchController.text.trim().toLowerCase();
 
     return posts.where((post){
-      final matchesCategory = selectedCategory == 'All' || post.category == selectedCategory;
+      final matchesCategory = selectedCategory == 'All' || post.categoryName?.toLowerCase() == selectedCategory.toLowerCase();
       final matchesSearch = query.isEmpty ||
-            post.title.toLowerCase().contains(query) ||
-            post.preview.toLowerCase().contains(query) ||
-            post.subjectCode.toLowerCase().contains(query) ||
-            post.category.toLowerCase().contains(query) ||
-            post.authorName.toLowerCase().contains(query);
+          post.title.toLowerCase().contains(query) ||
+          post.description.toLowerCase().contains(query) ||
+          (post.subjectCode?.toLowerCase().contains(query) ?? false)||
+          (post.categoryName?.toLowerCase().contains(query) ?? false)||
+          post.authorName.toLowerCase().contains(query);
       return matchesCategory && matchesSearch;
     }).toList();
   }
 
-  void _onCreatePost(){
-    showModalBottomSheet(
-        context: context,
-        builder: (context) =>
-          SizedBox(
-            height:200,
-            child: Center(
-              child: Text('New Page'),
-            ),
-          ),
-        );
-  }
+  // final List<PostCardData> posts =[
+  //   PostCardData(
+  //       title: 'Database Normalization - Final Exam Tips',
+  //       authorInitials: 'AK',
+  //       authorName: 'Ahmad Khoury',
+  //       avatarColor: Colors.deepPurple,
+  //       category: 'Exams',
+  //       categoryColor: Colors.purple,
+  //       comments: 2,
+  //       likes: 24,
+  //       preview: 'Hey everyone! The final exam is next week. Professor Hajj mentioned that 3NF will be heavily testes...',
+  //       subjectCode: 'DB201',
+  //       timeAgo: '3h ago'
+  //   ),
+  //   PostCardData(
+  //       title: 'Python  — Inheritance Pattern for AI Assignment',
+  //       authorInitials: 'RF',
+  //       authorName: 'Hani Farhat',
+  //       avatarColor: Colors.orange,
+  //       category: 'Programming',
+  //       categoryColor: Colors.green,
+  //       comments: 1,
+  //       likes: 14,
+  //       preview: 'For the AI assignment I structured my neural network using Python inheritance: Layer → DenseLayer...',
+  //       subjectCode: 'DB135',
+  //       timeAgo: '2d ago'
+  //   ),
+  //   PostCardData(
+  //       title: 'Assignment 3 - ER Diagram help Needed',
+  //       authorInitials: 'LH',
+  //       authorName: 'Lara Haddad',
+  //       avatarColor: Colors.pink,
+  //       category: 'Assignments',
+  //       categoryColor: Colors.blue,
+  //       comments: 1,
+  //       likes: 7,
+  //       preview: "I'm stuck on the ER Diagram Help Needed",
+  //       subjectCode: 'D109',
+  //       timeAgo: '2h ago'
+  //   ),
+  //   PostCardData(
+  //       title: 'Python OOP — Inheritance Pattern for AI Assignment',
+  //       authorInitials: 'RF',
+  //       authorName: 'Rami Farhat',
+  //       avatarColor: Colors.green,
+  //       category: 'Programming',
+  //       categoryColor: Colors.teal,
+  //       comments: 2,
+  //       likes: 24,
+  //       preview: 'For the AI assignment I structured my neural network using Python inheritance: Layer → DenseLayer...',
+  //       subjectCode: 'DB105',
+  //       timeAgo: '1d ago'
+  //   ),
+  // ];
+
+  // List <PostCardData> get _filteredPosts{
+  //   final query = _searchController.text.trim().toLowerCase();
+  //
+  //   return posts.where((post){
+  //     final matchesCategory = selectedCategory == 'All' || post.category == selectedCategory;
+  //     final matchesSearch = query.isEmpty ||
+  //           post.title.toLowerCase().contains(query) ||
+  //           post.preview.toLowerCase().contains(query) ||
+  //           post.subjectCode.toLowerCase().contains(query) ||
+  //           post.category.toLowerCase().contains(query) ||
+  //           post.authorName.toLowerCase().contains(query);
+  //     return matchesCategory && matchesSearch;
+  //   }).toList();
+  // }
+
+  // void _onCreatePost(){
+  //   showModalBottomSheet(
+  //       context: context,
+  //       builder: (context) =>
+  //         SizedBox(
+  //           height:200,
+  //           child: Center(
+  //             child: Text('New Page'),
+  //           ),
+  //         ),
+  //       );
+  // }
 
   @override
   void initState(){
@@ -121,7 +140,7 @@ class _HomeScreenState extends State <HomeScreen>{
     // final filteredPosts = selectedCategory == 'All'
     //     ? posts
     //     : posts.where((p) => p.category == selectedCategory).toList();
-    final displaydPosts = _filteredPosts;
+    final displayedPosts = _filteredPosts;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -139,7 +158,7 @@ class _HomeScreenState extends State <HomeScreen>{
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Good day, nour! ', style: GoogleFonts.inter(fontSize:25, fontWeight: FontWeight.bold)),
+                            Text('UniConnect', style: GoogleFonts.inter(fontSize:25, fontWeight: FontWeight.bold)),
                             Text('Business Administration, Master 2', style: GoogleFonts.inter(fontSize:15, color: Colors.grey)),
                           ],
                         ),
@@ -177,7 +196,7 @@ class _HomeScreenState extends State <HomeScreen>{
                       CircleAvatar(
                         radius:20,
                         backgroundColor:Colors.deepPurple,
-                        child: Text('N', style: GoogleFonts.inter(color: Colors.white, fontWeight: FontWeight.bold))
+                        child: Text('NR', style: GoogleFonts.inter(color: Colors.white, fontWeight: FontWeight.bold))
                       ),
                     ],
                   ),
@@ -206,7 +225,7 @@ class _HomeScreenState extends State <HomeScreen>{
             ),
             SizedBox(height:10),
             Expanded(
-              child: displaydPosts.isEmpty
+              child: displayedPosts.isEmpty
                 ? Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -234,13 +253,16 @@ class _HomeScreenState extends State <HomeScreen>{
                   )
                 : ListView.builder(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
-                  itemCount: displaydPosts.length,
+                  itemCount: displayedPosts.length,
                   itemBuilder: (context, index) {
+                    final post = displayedPosts[index];
                     return PostCard(
-                      data: displaydPosts[index],
+                      post: post,
                       onTap: () {
                         // will open post detail screen later
                       },
+                      onLikeTap: (){},
+                      onCommentTap: (){},
                     );
                   },
                 ),

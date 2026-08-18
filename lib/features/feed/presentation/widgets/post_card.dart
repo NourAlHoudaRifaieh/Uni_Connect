@@ -1,41 +1,48 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class PostCardData{
-  final String authorName;
-  final String authorInitials;
-  final Color avatarColor;
-  final String subjectCode;
-  final String timeAgo;
-  final String category;
-  final Color categoryColor;
-  final String title;
-  final String preview;
-  final int likes;
-  final int comments;
+import '../../../../core/models/post_model.dart';
 
-  PostCardData({
-    required this.title,
-    required this.authorInitials,
-    required this.authorName,
-    required this.avatarColor,
-    required this.category,
-    required this.categoryColor,
-    required this.comments,
-    required this.likes,
-    required this.preview,
-    required this.subjectCode,
-    required this.timeAgo,
-  });
-}
+// class PostCardData{
+//   final String authorName;
+//   final String authorInitials;
+//   final Color avatarColor;
+//   final String subjectCode;
+//   final String timeAgo;
+//   final String category;
+//   final Color categoryColor;
+//   final String title;
+//   final String preview;
+//   final int likes;
+//   final int comments;
+//
+//   PostCardData({
+//     required this.title,
+//     required this.authorInitials,
+//     required this.authorName,
+//     required this.avatarColor,
+//     required this.category,
+//     required this.categoryColor,
+//     required this.comments,
+//     required this.likes,
+//     required this.preview,
+//     required this.subjectCode,
+//     required this.timeAgo,
+//   });
+// }
 
 class PostCard extends StatelessWidget{
-  final PostCardData data;
+  final PostModel post;
   final VoidCallback? onTap;
+  final VoidCallback? onLikeTap;
+  final VoidCallback? onCommentTap;
 
   const PostCard({
     super.key,
-    this.onTap, required this.data
+    this.onTap,
+    required this.post,
+    this.onLikeTap,
+    this.onCommentTap,
   });
 
   @override
@@ -64,9 +71,10 @@ class PostCard extends StatelessWidget{
               children: [
                 CircleAvatar(
                   radius: 18,
-                  backgroundColor:  data.avatarColor,
+                  // backgroundColor:  data.avatarColor,
+                  backgroundColor: Color(0xFF1D61FF),
                   child: Text(
-                    data.authorInitials,
+                    post.authorInitials,
                     style: GoogleFonts.inter(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -80,32 +88,62 @@ class PostCard extends StatelessWidget{
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        data.authorName,
+                        post.authorName,
                         style: GoogleFonts.inter(
                             fontWeight: FontWeight.bold,
                             fontSize:14
                         ),
                       ),
-                      Text(
-                        '${data.timeAgo} . ${data.subjectCode}',
-                        style: GoogleFonts.inter(
-                            fontSize: 12,
-                            color: Colors.grey.shade600
-                        ),
+                      Row(
+                        children: [
+                          Text(
+                           post.timeAgo,
+                            style: GoogleFonts.inter(
+                                fontSize: 12,
+                                color: Colors.grey.shade600
+                            ),
+                          ),
+                          if(post.subjectCode !=null && post.subjectCode!.isNotEmpty) ...[
+                            Text(
+                              ' . ',
+                              style: GoogleFonts.inter(
+                                  fontSize: 12,
+                                  color: Colors.grey.shade600
+                              ),
+                            ),
+                            Text(
+                              post.subjectCode!,
+                              style: GoogleFonts.inter(
+                                  fontSize: 12,
+                                  color: Colors.grey.shade600
+                              ),
+                            ),
+                          ],
+                        ],
                       ),
+                      // Text(
+                      //   '${data.timeAgo} . ${data.subjectCode}',
+                      //   style: GoogleFonts.inter(
+                      //       fontSize: 12,
+                      //       color: Colors.grey.shade600
+                      //   ),
+                      // ),
                     ],
                   ),
                 ),
+                if (post.categoryName != null)
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal:10, vertical:4),
                   decoration: BoxDecoration(
-                    color: data.categoryColor.withOpacity(0.15),
+                    // color: data.categoryColor.withOpacity(0.15),
+                    color: Color(0xFF1D61FF).withOpacity(0.15),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    data.category,
+                    post.categoryName!,
                     style: GoogleFonts.inter(
-                      color: data.categoryColor,
+                      // color: data.categoryColor,
+                      color: Color(0xFF1D61FF),
                       fontWeight: FontWeight.bold,
                       fontSize:13,
                     ),
@@ -115,7 +153,7 @@ class PostCard extends StatelessWidget{
             ),
             const SizedBox(height:10),
             Text(
-              data.title,
+              post.title,
               style: GoogleFonts.inter(
                 fontWeight: FontWeight.bold,
                 fontSize:15,
@@ -123,7 +161,7 @@ class PostCard extends StatelessWidget{
             ),
             const SizedBox(height:4),
             Text(
-              data.preview,
+              post.description,
               maxLines:3,
               overflow: TextOverflow.ellipsis,
               style: GoogleFonts.inter(
@@ -137,11 +175,11 @@ class PostCard extends StatelessWidget{
               children: [
                 Icon(Icons.favorite_border, size: 16, color: Colors.grey.shade600),
                 SizedBox(width:4),
-                Text('${data.likes}', style: TextStyle(fontSize:12, color: Colors.grey.shade600)),
+                Text('${post.likes}', style: TextStyle(fontSize:12, color: Colors.grey.shade600)),
                 SizedBox(width:16),
                 Icon(Icons.mode_comment_outlined, size:16, color: Colors.grey.shade600),
                 SizedBox(width:4),
-                Text('${data.comments}', style: TextStyle(fontSize:12, color: Colors.grey.shade600)),
+                Text('${post.comments}', style: TextStyle(fontSize:12, color: Colors.grey.shade600)),
 
                 // const Spacer(),
                 // Icon(Icons.bookmark_border, size:18, color: Colors.grey.shade600),

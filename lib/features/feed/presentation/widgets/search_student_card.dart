@@ -69,7 +69,7 @@ class SearchStudentCard extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 18,
-                backgroundColor:  data.avatarColor,
+                backgroundColor:Color(0xFF1D61FF),
                 child: Text(
                   data.authorName,
                   style: GoogleFonts.inter(

@@ -20,6 +20,7 @@ class SearchScreenState extends State<SearchScreen>{
   final TextEditingController _searchController = TextEditingController();
   int _selectedIndex = 0;
 
+
   final List<SearchPostCardData> posts =[
     SearchPostCardData(
         title: 'Database Normalization - Final Exam Tips',

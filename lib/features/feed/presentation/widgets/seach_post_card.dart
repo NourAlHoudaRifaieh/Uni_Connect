@@ -57,13 +57,13 @@ class SearchPostCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal:10, vertical:4),
                 decoration: BoxDecoration(
-                  color: data.categoryColor.withOpacity(0.15),
+                  color: Color(0xFF1D61FF).withOpacity(0.15),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
                   data.category,
                   style: GoogleFonts.inter(
-                    color: data.categoryColor,
+                    color: Color(0xFF1D61FF),
                     fontWeight: FontWeight.bold,
                     fontSize:13,
                   ),
