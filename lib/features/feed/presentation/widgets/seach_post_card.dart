@@ -88,8 +88,6 @@ class SearchPostCard extends StatelessWidget {
           ),
           SizedBox(height:5),
           Text(data.preview,
-            // maxLines:3,
-            // overflow: TextOverflow.ellipsis,
             style: GoogleFonts.inter(
               fontSize:13,
               color: Colors.grey.shade700,
@@ -101,12 +99,14 @@ class SearchPostCard extends StatelessWidget {
               Text(
                 data.authorName,
                 style: GoogleFonts.inter(
-                    fontSize:14
+                    fontSize:14,
+                    fontWeight: FontWeight.bold
                 ),
               ),
-              SizedBox(width:10),
+              Spacer(),
+              // SizedBox(width:15),
               Text('${data.likes} likes', style: TextStyle(fontSize:12, color: Colors.grey.shade600)),
-              SizedBox(width:10),
+              SizedBox(width:15),
               Text('${data.comments} comments', style: TextStyle(fontSize:12, color: Colors.grey.shade600)),
             ],
           ),

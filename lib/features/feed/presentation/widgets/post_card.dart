@@ -1,35 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 import '../../../../core/models/post_model.dart';
-
-// class PostCardData{
-//   final String authorName;
-//   final String authorInitials;
-//   final Color avatarColor;
-//   final String subjectCode;
-//   final String timeAgo;
-//   final String category;
-//   final Color categoryColor;
-//   final String title;
-//   final String preview;
-//   final int likes;
-//   final int comments;
-//
-//   PostCardData({
-//     required this.title,
-//     required this.authorInitials,
-//     required this.authorName,
-//     required this.avatarColor,
-//     required this.category,
-//     required this.categoryColor,
-//     required this.comments,
-//     required this.likes,
-//     required this.preview,
-//     required this.subjectCode,
-//     required this.timeAgo,
-//   });
-// }
 
 class PostCard extends StatelessWidget{
   final PostModel post;
@@ -71,7 +42,6 @@ class PostCard extends StatelessWidget{
               children: [
                 CircleAvatar(
                   radius: 18,
-                  // backgroundColor:  data.avatarColor,
                   backgroundColor: Color(0xFF1D61FF),
                   child: Text(
                     post.authorInitials,
@@ -93,6 +63,7 @@ class PostCard extends StatelessWidget{
                             fontWeight: FontWeight.bold,
                             fontSize:14
                         ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                       Row(
                         children: [
@@ -121,36 +92,12 @@ class PostCard extends StatelessWidget{
                           ],
                         ],
                       ),
-                      // Text(
-                      //   '${data.timeAgo} . ${data.subjectCode}',
-                      //   style: GoogleFonts.inter(
-                      //       fontSize: 12,
-                      //       color: Colors.grey.shade600
-                      //   ),
-                      // ),
                     ],
-                  ),
-                ),
-                if (post.categoryName != null)
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal:10, vertical:4),
-                  decoration: BoxDecoration(
-                    // color: data.categoryColor.withOpacity(0.15),
-                    color: Color(0xFF1D61FF).withOpacity(0.15),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    post.categoryName!,
-                    style: GoogleFonts.inter(
-                      // color: data.categoryColor,
-                      color: Color(0xFF1D61FF),
-                      fontWeight: FontWeight.bold,
-                      fontSize:13,
-                    ),
                   ),
                 ),
               ],
             ),
+
             const SizedBox(height:10),
             Text(
               post.title,
@@ -169,10 +116,29 @@ class PostCard extends StatelessWidget{
                 color: Colors.grey.shade700,
               ),
             ),
-            const SizedBox(height:10),
+            const SizedBox(height:20),
 
             Row(
               children: [
+                if (post.categoryName != null)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal:10, vertical:4),
+                    decoration: BoxDecoration(
+                      color: Color(0xFF1D61FF).withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      post.categoryName!,
+                      style: GoogleFonts.inter(
+                        color: Color(0xFF1D61FF),
+                        fontWeight: FontWeight.bold,
+                        fontSize:13,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                Spacer(),
                 Icon(Icons.favorite_border, size: 16, color: Colors.grey.shade600),
                 SizedBox(width:4),
                 Text('${post.likes}', style: TextStyle(fontSize:12, color: Colors.grey.shade600)),
@@ -180,10 +146,6 @@ class PostCard extends StatelessWidget{
                 Icon(Icons.mode_comment_outlined, size:16, color: Colors.grey.shade600),
                 SizedBox(width:4),
                 Text('${post.comments}', style: TextStyle(fontSize:12, color: Colors.grey.shade600)),
-
-                // const Spacer(),
-                // Icon(Icons.bookmark_border, size:18, color: Colors.grey.shade600),
-
               ],
             ),
           ],

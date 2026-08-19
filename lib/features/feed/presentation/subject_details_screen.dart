@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:uni_connect/features/feed/presentation/widgets/category_selector.dart';
+import 'package:uni_connect/features/feed/presentation/widgets/post_card.dart';
+import '../../../core/mock/mock_data.dart';
+import '../../../core/models/post_model.dart';
 import '../../../core/models/subject_model.dart';
 
-class SubjectDetailsScreen extends StatelessWidget {
+class SubjectDetailsScreen extends StatefulWidget {
 
   final SubjectModel subject;
 
@@ -11,10 +15,40 @@ class SubjectDetailsScreen extends StatelessWidget {
     required this.subject,
   });
 
+  @override
+  State<SubjectDetailsScreen> createState() => _SubjectDetailsScreenState();
+}
+
+class _SubjectDetailsScreenState extends State<SubjectDetailsScreen> {
+  // List <String> categories = ['All','Exams','General help', 'Programming', 'Assignments', 'Math','Physics'];
+  String selectedCategory = 'All';
+
+  List<String> get categories {
+    final categorySet = <String>{'All'};
+    for(var post in posts){
+      final matchesSubject = true;
+      // final matchesSubject = post.subjectCode?.trim().toLowerCase() == widget.subject.subjectCode.trim().toLowerCase();
+      if(matchesSubject && post.categoryName !=null && post.categoryName!.trim().isNotEmpty){
+        categorySet.add(post.categoryName!.trim());
+      }
+    }
+    return categorySet.toList();
+  }
+
+  List <PostModel> get posts => MockData.posts;
+  List <PostModel> get _filteredPosts{
+    return posts.where((post){
+      final matchesSubject = true;
+      // final matchesSubject = post.subjectCode?.trim().toLowerCase() == widget.subject.subjectCode.trim().toLowerCase();
+      final matchesCategory = selectedCategory == 'All' || post.categoryName?.trim().toLowerCase() == selectedCategory.trim().toLowerCase();
+      return matchesSubject && matchesCategory ;
+    }).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
+    final displayedPosts = _filteredPosts;
     return Scaffold(
       backgroundColor: Colors.white,
       body:SafeArea(
@@ -44,23 +78,23 @@ class SubjectDetailsScreen extends StatelessWidget {
                         width: 40,
                         height: 40,
                         decoration: BoxDecoration(
-                          color: subject.color.withOpacity(0.12),
+                          color: widget.subject.color.withOpacity(0.12),
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: Icon(subject.icon, color: subject.color, size:20),
+                        child: Icon(widget.subject.icon, color: widget.subject.color, size:20),
                       ),
                       SizedBox(width:10),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            subject.subjectCode,
+                            widget.subject.subjectCode,
                             style: GoogleFonts.inter(
                                 fontSize: 12,
                                 color: Colors.grey.shade800
                             ),
                           ),
-                          Text( subject.subjectName,
+                          Text( widget.subject.subjectName,
                               style: GoogleFonts.inter(fontSize: 18, fontWeight:  FontWeight.bold)
                           ),
                         ],
@@ -70,27 +104,79 @@ class SubjectDetailsScreen extends StatelessWidget {
                 ],
               ),
             ),
-            Container(
-              height: 1,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: Color(0xFFF1F5F9),
-                    width:1.5,
-                  ),
+            // Container(
+            //   height: 1,
+            //   width: double.infinity,
+            //   decoration: BoxDecoration(
+            //     border: Border(
+            //       bottom: BorderSide(
+            //         color: Color(0xFFF1F5F9),
+            //         width:1.5,
+            //       ),
+            //     ),
+            //     color: Colors.white,
+            //     boxShadow: [
+            //       BoxShadow(
+            //         color: Colors.black.withOpacity(0.03),
+            //         blurRadius: 10,
+            //         offset:Offset(0,8),
+            //       ),
+            //     ],
+            //   ),
+            // ),
+            CategorySelector(
+                categories: categories,
+                onCategorySelected: (category){
+                  setState(() {
+                    selectedCategory = category;
+                  });
+                },
+                selectedCategory: selectedCategory
+            ),
+            SizedBox(height:10),
+            Expanded(
+              child: displayedPosts.isEmpty
+                  ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width:70,
+                      height:70,
+                      decoration: BoxDecoration(
+                        color: Color(0xFFF3F4F6),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child:  Icon(Icons.article_outlined , size:36, color: Color(0xFF9CA3AF)),
+                    ),
+                    SizedBox(height:16),
+                    Text(
+                      selectedCategory =='All' ? "No posts for this subject yet" : " No posts in $selectedCategory",
+                      style: GoogleFonts.inter(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF6B7280),
+                      ),
+                    ),
+                  ],
                 ),
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.03),
-                    blurRadius: 10,
-                    offset:Offset(0,8),
-                  ),
-                ],
+              )
+                  : ListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                itemCount: displayedPosts.length,
+                itemBuilder: (context, index) {
+                  final post = displayedPosts[index];
+                  return PostCard(
+                    post: post,
+                    onTap: () {
+                      // will open post detail screen later
+                    },
+                    onLikeTap: (){},
+                    onCommentTap: (){},
+                  );
+                },
               ),
             ),
-            SizedBox(height:15),
           ],
         ),
       ),
