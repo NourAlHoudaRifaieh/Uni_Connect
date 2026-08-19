@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:uni_connect/core/mock/mock_data.dart';
+import 'package:uni_connect/core/models/post_model.dart';
 import 'package:uni_connect/core/widgets/custom_elevated_button.dart';
 import 'package:uni_connect/core/widgets/custom_form_field.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/seach_post_card.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/search_student_card.dart';
+
+import '../../../core/models/user_model.dart';
 
 class SearchScreen extends StatefulWidget{
   SearchScreen({super.key,});
@@ -20,86 +24,88 @@ class SearchScreenState extends State<SearchScreen>{
   final TextEditingController _searchController = TextEditingController();
   int _selectedIndex = 0;
 
+  List<PostModel> get posts => MockData.posts;
+  List<UserModel> get students => MockData.students;
 
-  final List<SearchPostCardData> posts =[
-    SearchPostCardData(
-        title: 'Database Normalization - Final Exam Tips',
-        authorName: 'Ahmad Khoury',
-        category: 'Exams',
-        categoryColor: Colors.purple,
-        comments: 2,
-        likes: 24,
-        preview: 'Hey everyone! The final exam is next week. Professor Hajj mentioned that 3NF will be heavily testes...',
-        subjectCode: 'DB201',
-    ),
-    SearchPostCardData(
-        title: 'Python  — Inheritance Pattern for AI Assignment',
-        authorName: 'Hani Farhat',
-        category: 'Programming',
-        categoryColor: Colors.green,
-        comments: 1,
-        likes: 14,
-        preview: 'For the AI assignment I structured my neural network using Python inheritance: Layer → DenseLayer...',
-        subjectCode: 'DB135',
-    ),
-    SearchPostCardData(
-        title: 'Assignment 3 - ER Diagram help Needed',
-        authorName: 'Lara Haddad',
-        category: 'Assignments',
-        categoryColor: Colors.blue,
-        comments: 1,
-        likes: 7,
-        preview: "I'm stuck on the ER Diagram Help Needed",
-        subjectCode: 'D109',
-    ),
-    SearchPostCardData(
-        title: 'Python OOP — Inheritance Pattern for AI Assignment',
-        authorName: 'Rami Farhat',
-        category: 'Programming',
-        categoryColor: Colors.teal,
-        comments: 2,
-        likes: 24,
-        preview: 'For the AI assignment I structured my neural network using Python inheritance: Layer → DenseLayer...',
-        subjectCode: 'DB105',
-    ),
-  ];
-
-  final List<SearchStudentCardData> students =[
-    SearchStudentCardData(
-        authorInitials: 'Lara Haddad',
-        avatarColor: Colors.pink,
-        authorName: 'LH',
-        email: 'lara.haddad@st.ul.edu.lb',
-        faculty: 'Business Administration',
-        year: 'Year 2',
-        postCount: 5
-    ),
-    SearchStudentCardData(
-        authorInitials: 'Ahmad Khoury',
-        avatarColor: Colors.deepPurple,
-        authorName: 'AK',
-        email: 'ahmad.khoury@st.ul.edu.lb',
-        faculty: 'Business Administration',
-        year: 'Year 2',
-        postCount: 15
-    ),   SearchStudentCardData(
-        authorInitials: 'Maya Nassar',
-        avatarColor: Colors.teal,
-        authorName: 'MN',
-        email: 'maya.nassar@st.ul.edu.lb',
-        faculty: 'Business Administration',
-        year: 'Year 1',
-        postCount: 2
-    ),   SearchStudentCardData(
-        authorInitials: 'Rami Farhat',
-        avatarColor: Colors.green,
-        authorName: 'RF',
-        email: 'rami.farhat@st.ul.edu.lb',
-        faculty: 'Business Administration',
-        year: 'Year 3',
-        postCount: 22
-    ),
-  ];
+  // final List<SearchPostCardData> posts =[
+  //   SearchPostCardData(
+  //       title: 'Database Normalization - Final Exam Tips',
+  //       authorName: 'Ahmad Khoury',
+  //       category: 'Exams',
+  //       categoryColor: Colors.purple,
+  //       comments: 2,
+  //       likes: 24,
+  //       preview: 'Hey everyone! The final exam is next week. Professor Hajj mentioned that 3NF will be heavily testes...',
+  //       subjectCode: 'DB201',
+  //   ),
+  //   SearchPostCardData(
+  //       title: 'Python  — Inheritance Pattern for AI Assignment',
+  //       authorName: 'Hani Farhat',
+  //       category: 'Programming',
+  //       categoryColor: Colors.green,
+  //       comments: 1,
+  //       likes: 14,
+  //       preview: 'For the AI assignment I structured my neural network using Python inheritance: Layer → DenseLayer...',
+  //       subjectCode: 'DB135',
+  //   ),
+  //   SearchPostCardData(
+  //       title: 'Assignment 3 - ER Diagram help Needed',
+  //       authorName: 'Lara Haddad',
+  //       category: 'Assignments',
+  //       categoryColor: Colors.blue,
+  //       comments: 1,
+  //       likes: 7,
+  //       preview: "I'm stuck on the ER Diagram Help Needed",
+  //       subjectCode: 'D109',
+  //   ),
+  //   SearchPostCardData(
+  //       title: 'Python OOP — Inheritance Pattern for AI Assignment',
+  //       authorName: 'Rami Farhat',
+  //       category: 'Programming',
+  //       categoryColor: Colors.teal,
+  //       comments: 2,
+  //       likes: 24,
+  //       preview: 'For the AI assignment I structured my neural network using Python inheritance: Layer → DenseLayer...',
+  //       subjectCode: 'DB105',
+  //   ),
+  // ];
+  //
+  // final List<SearchStudentCardData> students =[
+  //   SearchStudentCardData(
+  //       authorInitials: 'Lara Haddad',
+  //       avatarColor: Colors.pink,
+  //       authorName: 'LH',
+  //       email: 'lara.haddad@st.ul.edu.lb',
+  //       faculty: 'Business Administration',
+  //       year: 'Year 2',
+  //       postCount: 5
+  //   ),
+  //   SearchStudentCardData(
+  //       authorInitials: 'Ahmad Khoury',
+  //       avatarColor: Colors.deepPurple,
+  //       authorName: 'AK',
+  //       email: 'ahmad.khoury@st.ul.edu.lb',
+  //       faculty: 'Business Administration',
+  //       year: 'Year 2',
+  //       postCount: 15
+  //   ),   SearchStudentCardData(
+  //       authorInitials: 'Maya Nassar',
+  //       avatarColor: Colors.teal,
+  //       authorName: 'MN',
+  //       email: 'maya.nassar@st.ul.edu.lb',
+  //       faculty: 'Business Administration',
+  //       year: 'Year 1',
+  //       postCount: 2
+  //   ),   SearchStudentCardData(
+  //       authorInitials: 'Rami Farhat',
+  //       avatarColor: Colors.green,
+  //       authorName: 'RF',
+  //       email: 'rami.farhat@st.ul.edu.lb',
+  //       faculty: 'Business Administration',
+  //       year: 'Year 3',
+  //       postCount: 22
+  //   ),
+  // ];
 
   @override
   void initState(){
@@ -117,51 +123,39 @@ class SearchScreenState extends State<SearchScreen>{
     super.dispose();
   }
 
-  List <SearchPostCardData> get _filteredPosts{
+  List<PostModel> get _filteredPosts{
     final query = _searchController.text.trim().toLowerCase();
     if (query.isEmpty) return posts;
     
     return posts.where((post){
-      // if(_selectedIndex ==0){
-        return post.title.toLowerCase().contains(query) ||
-              post.preview.toLowerCase().contains(query) ||
-              post.subjectCode.toLowerCase().contains(query) ||
-              post.category.toLowerCase().contains(query)
-        ;
-      // }else{
-      //   return post.authorName.toLowerCase().contains(query);
-      // }
+      final matchesTitle = post.title.toLowerCase().contains(query);
+      final matchesDescription = post.description.toLowerCase().contains(query);
+      final matchesSubject = post.subjectCode?.toLowerCase().contains(query) ?? false;
+      final matchesCategory = post.categoryName?.toLowerCase().contains(query) ?? false;
+      final matchesAuthor = post.authorName.toLowerCase().contains(query);
+
+      return matchesTitle || matchesDescription || matchesSubject || matchesCategory || matchesAuthor;
     }).toList();
   }
 
-  List <SearchStudentCardData> get _filteredStudents{
+  List <UserModel> get _filteredStudents{
     final query = _searchController.text.trim().toLowerCase();
     if (query.isEmpty) return students;
     return students.where((student){
-      // if(_selectedIndex ==0){
-        return student.authorName.toLowerCase().contains(query) ||
-              student.email.toLowerCase().contains(query) ||
-              student.faculty.toLowerCase().contains(query)
-        ;
-      // }else{
-      //   return student.authorName.toLowerCase().contains(query) ;
-      
-      // }
+      final matchesName = student.fullName.toLowerCase().contains(query);
+      final matchesEmail = student.email.toLowerCase().contains(query);
+      final matchesFaculty = student.faculty?.toLowerCase().contains(query);
+      final matchesMajor = student.major?.toLowerCase().contains(query);
+
+      return matchesName || matchesEmail || matchesFaculty! || matchesMajor!;
     }).toList();
   }
 
-  // List <SearchStudentCardData> get _filteredStudents{
-  //   final query = _searchController.text.trim().toLowerCase();
-  //   return students.where((s) => s.name.toLowerCase().contains(query)).toList();
-  //   // // return students.where((student){
-  //   // //   student.name.toLowerCase().contains(query)
-  //   // // }).toList();
-  // }
 
   @override
   Widget build(BuildContext context) {
-    final filteredList = _filteredPosts;
-    final filterestList = _filteredStudents;
+    // final filteredList = _filteredPosts;
+    // final filterestList = _filteredStudents;
     // TODO: implement build
     return Scaffold(
       backgroundColor: Colors.white,
@@ -263,7 +257,7 @@ class SearchScreenState extends State<SearchScreen>{
                         itemCount: _filteredPosts.length,
                         itemBuilder: (context, index) {
                           return SearchPostCard(
-                            data: _filteredPosts[index],
+                            post: _filteredPosts[index],
                           );
                         },
                     )
@@ -283,7 +277,7 @@ class SearchScreenState extends State<SearchScreen>{
                       itemCount: _filteredStudents.length,
                       itemBuilder: (context, index) {
                         return SearchStudentCard(
-                          data: _filteredStudents[index],
+                          user: _filteredStudents[index],
                         );
                       },
                     )

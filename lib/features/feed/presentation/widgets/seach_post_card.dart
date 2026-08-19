@@ -1,34 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class SearchPostCardData{
-  final String category;
-  final Color categoryColor;
-  final String subjectCode;
-  final String title;
-  final String preview;
-  final String authorName;
-  final int likes;
-  final int comments;
+import '../../../../core/models/post_model.dart';
 
-  const SearchPostCardData({
-    required this.category,
-    required this.categoryColor,
-    required this.subjectCode,
-    required this.title,
-    required this.preview,
-    required this.likes,
-    required this.comments,
-    required this.authorName,
-  });
-}
 
 class SearchPostCard extends StatelessWidget {
-  final SearchPostCardData data;
+  final PostModel post;
 
   SearchPostCard({
     super.key,
-    required this.data,
+    required this.post,
   });
 
   @override
@@ -61,7 +42,7 @@ class SearchPostCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
-                  data.category,
+                  post.categoryName!,
                   style: GoogleFonts.inter(
                     color: Color(0xFF1D61FF),
                     fontWeight: FontWeight.bold,
@@ -71,7 +52,7 @@ class SearchPostCard extends StatelessWidget {
               ),
               SizedBox(width:10),
               Text(
-                '${data.subjectCode}',
+                '${post.subjectCode}',
                 style: GoogleFonts.inter(
                     fontSize: 12,
                     color: Colors.grey.shade600
@@ -80,14 +61,14 @@ class SearchPostCard extends StatelessWidget {
             ],
           ),
           SizedBox(height:10),
-          Text(data.title,
+          Text(post.title,
             style: GoogleFonts.inter(
               fontWeight: FontWeight.bold,
               fontSize: 15
             ),
           ),
           SizedBox(height:5),
-          Text(data.preview,
+          Text(post.description,
             style: GoogleFonts.inter(
               fontSize:13,
               color: Colors.grey.shade700,
@@ -97,7 +78,7 @@ class SearchPostCard extends StatelessWidget {
           Row(
             children: [
               Text(
-                data.authorName,
+                post.authorName,
                 style: GoogleFonts.inter(
                     fontSize:14,
                     fontWeight: FontWeight.bold
@@ -105,9 +86,9 @@ class SearchPostCard extends StatelessWidget {
               ),
               Spacer(),
               // SizedBox(width:15),
-              Text('${data.likes} likes', style: TextStyle(fontSize:12, color: Colors.grey.shade600)),
+              Text('${post.likes} likes', style: TextStyle(fontSize:12, color: Colors.grey.shade600)),
               SizedBox(width:15),
-              Text('${data.comments} comments', style: TextStyle(fontSize:12, color: Colors.grey.shade600)),
+              Text('${post.comments} comments', style: TextStyle(fontSize:12, color: Colors.grey.shade600)),
             ],
           ),
         ],

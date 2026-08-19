@@ -2,50 +2,60 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/seach_post_card.dart';
 
-class SearchStudentCardData{
-  // final String category;
-  final String authorInitials;
-  final Color avatarColor;
-  // final Color categoryColor;
-  // final String subjectCode;
-  // final String title;
-  // final String preview;
-  final String authorName;
-  // final int likes;
-  // final int comments;
-  final String email;
-  final String faculty;
-  final String year;
-  final int postCount;
+import '../../../../core/models/user_model.dart';
 
-  const SearchStudentCardData({
-    // required this.category,
-    // required this.categoryColor,
-    // required this.subjectCode,
-    required this.authorInitials,
-    required this.avatarColor,
-    // required this.title,
-    // required this.preview,
-    // required this.likes,
-    // required this.comments,
-    required this.authorName,
-    required this.email,
-    required this.faculty,
-    required this.year,
-    required this.postCount,
-  });
-}
+// class SearchStudentCardData{
+//   // final String category;
+//   final String authorInitials;
+//   final Color avatarColor;
+//   // final Color categoryColor;
+//   // final String subjectCode;
+//   // final String title;
+//   // final String preview;
+//   final String authorName;
+//   // final int likes;
+//   // final int comments;
+//   final String email;
+//   final String faculty;
+//   final String year;
+//   final int postCount;
+//
+//   const SearchStudentCardData({
+//     // required this.category,
+//     // required this.categoryColor,
+//     // required this.subjectCode,
+//     required this.authorInitials,
+//     required this.avatarColor,
+//     // required this.title,
+//     // required this.preview,
+//     // required this.likes,
+//     // required this.comments,
+//     required this.authorName,
+//     required this.email,
+//     required this.faculty,
+//     required this.year,
+//     required this.postCount,
+//   });
+// }
 
 class SearchStudentCard extends StatelessWidget {
 
-  final SearchStudentCardData data;
+  final UserModel user;
 
   SearchStudentCard({
     super.key,
-    required this.data,
+    required this.user,
   });
 
   Widget build(BuildContext context) {
+    final facultyText = user.faculty ?? '';
+    final yearText = user.academicYear ?? '';
+    final metadataLine =[
+      if(facultyText.isNotEmpty) facultyText,
+      if(yearText.isNotEmpty) yearText,
+    ].join('-');
+
+
     // TODO: implement build
     return Container(
       margin: const EdgeInsets.only(bottom:14),
@@ -71,12 +81,14 @@ class SearchStudentCard extends StatelessWidget {
                 radius: 18,
                 backgroundColor:Color(0xFF1D61FF),
                 child: Text(
-                  data.authorName,
+                  user.authorInitials,
                   style: GoogleFonts.inter(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                     fontSize:13,
                   ),
+                  maxLines: 1,
+                  overflow:  TextOverflow.ellipsis,
                 ),
               ),
               const SizedBox(width:10),
@@ -85,21 +97,23 @@ class SearchStudentCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      data.authorInitials,
+                      user.fullName,
                       style: GoogleFonts.inter(
                           fontWeight: FontWeight.bold,
                           fontSize:14
                       ),
                     ),
                     Text(
-                      data.email,
+                      user.email,
                       style: GoogleFonts.inter(
                           fontSize: 12,
                           color: Colors.grey.shade600
                       ),
+                      maxLines: 1,
+                      overflow:  TextOverflow.ellipsis,
                     ),
                     Text(
-                      '${data.faculty} - ${data.year}',
+                      '${user.faculty} - ${user.academicYear}',
                       style: GoogleFonts.inter(
                           fontSize: 12,
                           color: Colors.grey.shade600
@@ -112,7 +126,7 @@ class SearchStudentCard extends StatelessWidget {
                 crossAxisAlignment:  CrossAxisAlignment.end,
                 children: [
                   Text(
-                    '${data.postCount}',
+                    '${user.postCount}',
                     style: GoogleFonts.inter(
                         fontWeight: FontWeight.bold,
                         fontSize:14

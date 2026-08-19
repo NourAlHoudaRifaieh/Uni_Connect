@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:uni_connect/core/models/subject_model.dart';
+import 'package:uni_connect/core/models/user_model.dart';
 
 import '../models/post_model.dart';
 
@@ -89,4 +90,50 @@ class MockData {
     return postsJson.map((json)=> PostModel.fromJson(json)).toList();
   }
 
+  //raw JSON list for users (students,admin)
+  static final List<Map<String, dynamic>> usersJson = [
+    {
+      'userId': 'user_1',
+      'fullName': 'Lara Haddad',
+      'email': "lara.haddad@st.ul.edu.lb",
+      'role': 'student',
+      'faculty': 'Business Administration',
+      'academicYear': 'Year 2',
+      'major': 'Business Computer',
+      'postCount': 5,
+    },
+    {
+      'userId': 'user_2',
+      'fullName': 'Rami Farhat',
+      'email': "rami.farhat@st.ul.edu.lb",
+      'role': 'student',
+      'faculty': 'Business Administration',
+      'academicYear': 'Year 3',
+      'major': 'Management',
+      'postCount': 22,
+    },
+    {
+      'userId': 'user_3',
+      'fullName': 'Ahmad Khoury',
+      'email': "ahmad.khouryt@st.ul.edu.lb",
+      'role': 'student',
+      'faculty': 'Marketing',
+      'academicYear': 'Master 1',
+      'major': 'Accounting and Auditing',
+      'postCount': 15,
+    },
+  ];
+
+  //Parsed Users List
+  static List<UserModel> get users {
+    return usersJson.map((json) => UserModel.fromJson(json)).toList();
+  }
+
+  static List<UserModel> get students{
+    return users.where((user) => user.isStudent).toList();
+  }
+
+  static List<UserModel> get admins{
+    return users.where((user) => user.isAdmin).toList();
+  }
 }

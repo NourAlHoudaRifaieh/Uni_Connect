@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:uni_connect/core/mock/mock_data.dart';
 import 'package:uni_connect/core/models/post_model.dart';
 import 'package:uni_connect/core/widgets/custom_form_field.dart';
+import 'package:uni_connect/features/feed/presentation/profile_screen.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/category_selector.dart';
 import 'widgets/post_card.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -113,10 +114,20 @@ class _HomeScreenState extends State <HomeScreen>{
                       ),
                       SizedBox(width:10),
                       //User Avatar
-                      CircleAvatar(
-                        radius:20,
-                        backgroundColor:Color(0xFF1D61FF),
-                        child: Text('NR', style: GoogleFonts.inter(color: Colors.white, fontWeight: FontWeight.bold))
+                      GestureDetector(
+                        onTap: (){
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context)=> ProfileScreen(),
+                              ),
+                          );
+                        },
+                        child: CircleAvatar(
+                            radius:20,
+                            backgroundColor:Color(0xFF1D61FF),
+                            child: Text('NR', style: GoogleFonts.inter(color: Colors.white, fontWeight: FontWeight.bold))
+                        ),
                       ),
                     ],
                   ),
