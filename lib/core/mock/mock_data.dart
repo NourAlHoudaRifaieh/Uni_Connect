@@ -9,28 +9,25 @@ class MockData {
   // raw JSON list matching local storage format
   static final List<Map<String, dynamic>> subjectsJson = [
     {
+      'subjectId': 'sub_1',
       'subjectName': 'Theses Project',
       'subjectCode': 'THE601',
       'academicYear': 'Master 2',
       'postCount': 5,
-      'colorHex': Colors.red.value.toString(),
-      'iconCode': Icons.menu_book.codePoint,
     },
     {
+      'subjectId': 'sub_2',
       'subjectName': 'Advanced Data Analysis',
       'subjectCode': 'ADA601',
       'academicYear': 'Master 1',
       'postCount': 9,
-      'colorHex': Colors.green.value.toString(),
-      'iconCode': Icons.menu_book.codePoint,
     },
     {
+      'subjectId': 'sub_3',
       'subjectName': 'Leadership & Innovation',
       'subjectCode': 'LDR601',
       'academicYear': 'Year 3',
       'postCount': 5,
-      'colorHex': Colors.blue.value.toString(),
-      'iconCode': Icons.menu_book.codePoint,
     },
   ];
 
@@ -63,7 +60,7 @@ class MockData {
       'authorName': 'Rami Farhat',
       'categoryId': 'cat_2',
       'categoryName': 'Programming',
-      'subjectId': 'sub_1',
+      'subjectId': 'sub_2',
       'subjectCode': 'DB105',
       'createdAt': DateTime.now().subtract(Duration(hours: 1)).toIso8601String(),
       'likes': 2,
@@ -77,7 +74,7 @@ class MockData {
       'authorName': 'Ahmad Khoury',
       'categoryId': 'cat_1',
       'categoryName': 'Exams',
-      'subjectId': 'sub_1',
+      'subjectId': 'sub_3',
       'subjectCode': 'DB201',
       'createdAt': DateTime.now().subtract(Duration(hours: 2)).toIso8601String(),
       'likes': 7,

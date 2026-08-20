@@ -119,10 +119,10 @@ class SubjectScreen extends StatelessWidget {
                                   width: 40,
                                   height: 40,
                                   decoration: BoxDecoration(
-                                    color: subject.color.withOpacity(0.12),
+                                    color: Color(0xFF1D61FF).withOpacity(0.12),
                                     borderRadius: BorderRadius.circular(10),
                                   ),
-                                  child: Icon(subject.icon, color: subject.color, size:20),
+                                  child: Icon(Icons.menu_book, color: Color(0xFF1D61FF), size:20),
                                 ),
                                 SizedBox(height:10),
                                 Text(
@@ -146,7 +146,7 @@ class SubjectScreen extends StatelessWidget {
                                       width:6,
                                       height:6,
                                       decoration: BoxDecoration(
-                                        color: subject.color,
+                                        color: Color(0xFF1D61FF),
                                         shape: BoxShape.circle,
                                       ),
                                     ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:uni_connect/features/feed/presentation/post_details_screen.dart';
 import '../../../../core/models/post_model.dart';
 
 class PostCard extends StatelessWidget{
@@ -19,7 +20,12 @@ class PostCard extends StatelessWidget{
   @override
   Widget build(BuildContext context){
     return GestureDetector(
-      onTap: onTap,
+      onTap: (){
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context)=> PostDetailsScreen(post:post)),
+        );
+      },
       child: Container(
         margin: const EdgeInsets.only(bottom:14),
         padding: const EdgeInsets.all(14),

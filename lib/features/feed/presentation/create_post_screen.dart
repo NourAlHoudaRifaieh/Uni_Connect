@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:uni_connect/core/mock/mock_data.dart';
+import 'package:uni_connect/core/models/subject_model.dart';
 import 'package:uni_connect/core/widgets/custom_elevated_button.dart';
 import 'package:uni_connect/core/widgets/custom_form_field.dart';
 
@@ -17,20 +19,30 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   TextEditingController _titleController = TextEditingController();
   TextEditingController _descriptionController = TextEditingController();
 
-  List <String> subjects = ['Thesis Project','Advanced Data Analytics', 'Leadership'];
-  String? selectedSubject;
-
-  List<String> categories = ['Exams', 'Assignments', 'Programming', 'Math', 'General Help'];
-  String selectedCategory = 'General Help';
+  List<SubjectModel> subjects = [];
+  SubjectModel? selectedSubject;
 
   @override
   void initState() {
     super.initState();
+    _loadSubjects();
   }
+
+  void _loadSubjects(){
+    setState(() {
+      subjects = MockData.subjects;
+      if(subjects.isNotEmpty){
+        selectedSubject = subjects.first;
+      }
+    });
+  }
+
 
   @override
   void dispose() {
     super.dispose();
+    _titleController.dispose();
+    _descriptionController.dispose();
   }
 
   @override
@@ -122,25 +134,27 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                         Wrap(
                           spacing: 10,
                           runSpacing: 10,
-                          children: subjects.map((s){
-                            bool isSelected = s == selectedSubject;
+                          children: subjects.map((subject){
+                            final bool isSelected = selectedSubject?.subjectCode == subject.subjectCode;
                             return GestureDetector(
                               onTap: (){
                                 setState(() {
-                                  selectedSubject = s;
+                                  selectedSubject = subject;
                                 });
                               },
-                              child: Container(
+                              child: AnimatedContainer(
+                                duration: Duration(milliseconds: 150),
                                 padding: EdgeInsets.symmetric(horizontal:14, vertical:14),
                                 decoration: BoxDecoration(
                                   color: isSelected ? Color(0xFFEFF6FF) : Colors.white,
                                   borderRadius: BorderRadius.circular(20),
                                   border: Border.all(
                                     color: isSelected ? Color(0xFF2563EB) : Colors.grey.shade300,
+                                    width: isSelected ? 1.5 :1.0,
                                   ),
                                 ),
                                 child: Text(
-                                  s,
+                                  subject.subjectName,
                                   style: GoogleFonts.inter(
                                     fontSize: 13,
                                     fontWeight:FontWeight.w600,
@@ -207,8 +221,13 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                         SizedBox(height:30),
                         CustomElevatedButton(
                             text: 'Analyse & Publish',
-                            onPressed: (){}
+                            onPressed: (){
+                              if(selectedSubject !=null){
+
+                              }
+                            }
                         ),
+                        SizedBox(height:20),
                       ],
                     ),
                   ),

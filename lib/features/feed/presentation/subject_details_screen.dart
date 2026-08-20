@@ -78,10 +78,10 @@ class _SubjectDetailsScreenState extends State<SubjectDetailsScreen> {
                         width: 40,
                         height: 40,
                         decoration: BoxDecoration(
-                          color: widget.subject.color.withOpacity(0.12),
+                          color: Color(0xFF1D61FF).withOpacity(0.12),
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: Icon(widget.subject.icon, color: widget.subject.color, size:20),
+                        child: Icon(Icons.menu_book, color: Color(0xFF1D61FF), size:20),
                       ),
                       SizedBox(width:10),
                       Column(
