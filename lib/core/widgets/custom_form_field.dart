@@ -14,6 +14,7 @@ class CustomFormField extends StatelessWidget {
   final TextInputType keyboardType;
   final String? Function(String?)? validator;
   final Widget? prefixIcon;
+  final Widget? suffixIcon;
   final int? maxLines;
 
   const CustomFormField({
@@ -26,6 +27,7 @@ class CustomFormField extends StatelessWidget {
     this.keyboardType = TextInputType.text,
     this.validator,
     this.prefixIcon,
+    this.suffixIcon,
     this.maxLines,
 
   });
@@ -67,6 +69,7 @@ class CustomFormField extends StatelessWidget {
             filled: true,
             fillColor: Colors.white,
             prefixIcon: prefixIcon,
+            suffixIcon: suffixIcon,
             contentPadding: EdgeInsets.symmetric(
               horizontal: 16,
               vertical:8,

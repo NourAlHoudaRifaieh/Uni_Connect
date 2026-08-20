@@ -22,6 +22,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
   bool _isLoading = false;
   bool isChecked = false;
+  bool _obscureText = true;
 
   final _authRepository = AuthRepository();
 
@@ -147,7 +148,17 @@ class _LoginScreenState extends State<LoginScreen> {
                         label: 'Password',
                         hint: 'Enter your password',
                         controller: _passwordController,
-                        obscureText: true,
+                        obscureText: _obscureText,
+                        suffixIcon: IconButton(
+                            onPressed: (){
+                              setState(() {
+                                _obscureText = !_obscureText;
+                              });
+                            },
+                            icon: Icon(
+                              _obscureText ? Icons.visibility_off : Icons.visibility,
+                            ),
+                        ),
                         validator: (value) {
                           if (value == null || value.isEmpty){
                             return 'Password is required';
