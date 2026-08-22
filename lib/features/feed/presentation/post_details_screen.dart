@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:uni_connect/features/feed/presentation/widgets/category_selector.dart';
-import 'package:uni_connect/features/feed/presentation/widgets/post_card.dart';
+import 'package:uni_connect/features/feed/presentation/widgets/comment_card.dart';
 import '../../../core/mock/mock_data.dart';
 import '../../../core/models/post_model.dart';
+import '../../../core/models/reply_model.dart';
 import '../../../core/models/subject_model.dart';
+import '../widgets/comment_card.dart';
 
 class PostDetailsScreen extends StatefulWidget {
-
   final PostModel post;
 
-  PostDetailsScreen({
+  const PostDetailsScreen({
     super.key,
     required this.post,
   });
@@ -20,8 +20,20 @@ class PostDetailsScreen extends StatefulWidget {
 }
 
 class _PostDetailsScreenState extends State<PostDetailsScreen> {
+  final TextEditingController _commentController = TextEditingController();
+  late List<ReplyModel> _replies;
 
-  SubjectModel? _getSubject(String subjectId) {
+  @override
+  void initState() {
+    super.initState();
+    // Load initial replies filtered by current postId
+    _replies = MockData.replies
+        .where((reply) => reply.postId == widget.post.postId)
+        .toList();
+  }
+
+  SubjectModel? _getSubject(String? subjectId) {
+    if (subjectId == null || subjectId.isEmpty) return null;
     try {
       return MockData.subjects.firstWhere(
             (subject) => subject.subjectId == subjectId,
@@ -31,236 +43,374 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
     }
   }
 
+  void _addComment() {
+    final text = _commentController.text.trim();
+    if (text.isEmpty) return;
+
+    final newReply = ReplyModel(
+      replyId: 'reply_${DateTime.now().millisecondsSinceEpoch}',
+      postId: widget.post.postId ?? '',
+      authorName: 'Nour Al Houda',
+      content: text,
+      createdAt: DateTime.now(),
+      userId: '',
+    );
+
+    setState(() {
+      _replies.add(newReply);
+      _commentController.clear();
+    });
+  }
+
+  @override
+  void dispose() {
+    _commentController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     final post = widget.post;
-    final subject = _getSubject(post.subjectId ?? '');
+    final subject = _getSubject(post.subjectId);
 
     return Scaffold(
-      backgroundColor: Colors.white,
-      body:SafeArea(
+      backgroundColor: const Color(0xFFF8FAFC),
+      body: SafeArea(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  GestureDetector(
-                    onTap: (){
-                      Navigator.pop(context);
-                    },
-                    child: Row(
-                      children: [
-                        Icon(Icons.chevron_left, color: Color(0xFF2563EB), size:20),
-                        Text('Back', style: GoogleFonts.inter(color: Color(0xFF2563EB), fontWeight: FontWeight.w600)),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height:15),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      if (post.categoryName != null)
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal:10, vertical:4),
-                          decoration: BoxDecoration(
-                            color: Color(0xFF1D61FF).withOpacity(0.15),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Text(
-                            post.categoryName!,
-                            style: GoogleFonts.inter(
-                              color: Color(0xFF1D61FF),
-                              fontWeight: FontWeight.bold,
-                              fontSize:13,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      SizedBox(width:8),
-                      Row(
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Header Container
+                    Container(
+                      color: Colors.white,
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Container(
-                            width:6,
-                            height:6,
-                            decoration: BoxDecoration(
-                              color: Color(0xFF1D61FF),
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                          SizedBox(width:6),
-                          if (subject!= null)
-                            Text(
-                              subject.subjectName,
-                              style: GoogleFonts.inter(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                                fontSize:13,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  SizedBox(height:15),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text( post.title,
-                          style: GoogleFonts.inter(fontSize: 18, fontWeight:  FontWeight.bold)
-                      ),
-                    ],
-                  ),
-                  SizedBox(height:15),
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 18,
-                        backgroundColor: Color(0xFF1D61FF),
-                        child: Text(
-                          post.authorInitials,
-                          style: GoogleFonts.inter(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize:13,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width:10),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              post.authorName,
-                              style: GoogleFonts.inter(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize:14
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            Row(
+                          GestureDetector(
+                            onTap: () => Navigator.pop(context),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
                               children: [
+                                const Icon(
+                                  Icons.chevron_left,
+                                  color: Color(0xFF2563EB),
+                                  size: 20,
+                                ),
                                 Text(
-                                  post.timeAgo,
+                                  'Back',
                                   style: GoogleFonts.inter(
-                                      fontSize: 12,
-                                      color: Colors.grey.shade600
+                                    color: const Color(0xFF2563EB),
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
-                                if(post.subjectCode !=null && post.subjectCode!.isNotEmpty) ...[
-                                  Text(
-                                    ' . ',
-                                    style: GoogleFonts.inter(
-                                        fontSize: 12,
-                                        color: Colors.grey.shade600
-                                    ),
-                                  ),
-                                  Text(
-                                    post.subjectCode!,
-                                    style: GoogleFonts.inter(
-                                        fontSize: 12,
-                                        color: Colors.grey.shade600
-                                    ),
-                                  ),
-                                ],
                               ],
                             ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              height: 1,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: Color(0xFFF1F5F9),
-                    width:1.5,
-                  ),
-                ),
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.03),
-                    blurRadius: 10,
-                    offset:Offset(0,8),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height:10),
-            Container(
-              margin: const EdgeInsets.only(left: 20, right: 20, bottom: 20, top:10),
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.grey.shade200),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.03),
-                    blurRadius: 10,
-                    offset:Offset(0,8),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    post.description,
-                    maxLines:3,
-                    overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.inter(
-                      fontSize:13,
-                      color: Colors.grey.shade700,
-                    ),
-                  ),
+                          ),
+                          const SizedBox(height: 15),
 
-                  const SizedBox(height:20),
-                  Container(
-                    height: 1,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(
-                          color: Color(0xFFF1F5F9),
-                          width:1,
+                          // Badges Row
+                          Row(
+                            children: [
+                              if (post.categoryName != null) ...[
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF1D61FF).withOpacity(0.15),
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Text(
+                                    post.categoryName!,
+                                    style: GoogleFonts.inter(
+                                      color: const Color(0xFF1D61FF),
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 13,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                              ],
+                              if (subject != null) ...[
+                                Container(
+                                  width: 6,
+                                  height: 6,
+                                  decoration: const BoxDecoration(
+                                    color: Color(0xFF1D61FF),
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                                const SizedBox(width: 6),
+                                Flexible(
+                                  child: Text(
+                                    subject.subjectName,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: GoogleFonts.inter(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                          const SizedBox(height: 15),
+
+                          // Post Title
+                          Text(
+                            post.title,
+                            style: GoogleFonts.inter(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: const Color(0xFF0F172A),
+                            ),
+                          ),
+                          const SizedBox(height: 15),
+
+                          // Author Info Row
+                          Row(
+                            children: [
+                              CircleAvatar(
+                                radius: 18,
+                                backgroundColor: const Color(0xFF1D61FF),
+                                child: Text(
+                                  post.authorInitials,
+                                  style: GoogleFonts.inter(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      post.authorName,
+                                      style: GoogleFonts.inter(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    Row(
+                                      children: [
+                                        Text(
+                                          post.timeAgo,
+                                          style: GoogleFonts.inter(
+                                            fontSize: 12,
+                                            color: Colors.grey.shade600,
+                                          ),
+                                        ),
+                                        if (post.subjectCode != null &&
+                                            post.subjectCode!.isNotEmpty) ...[
+                                          Text(
+                                            ' • ',
+                                            style: GoogleFonts.inter(
+                                              fontSize: 12,
+                                              color: Colors.grey.shade600,
+                                            ),
+                                          ),
+                                          Text(
+                                            post.subjectCode!,
+                                            style: GoogleFonts.inter(
+                                              fontSize: 12,
+                                              color: Colors.grey.shade600,
+                                            ),
+                                          ),
+                                        ],
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    Container(
+                      height: 1.5,
+                      width: double.infinity,
+                      color: const Color(0xFFF1F5F9),
+                    ),
+                    SizedBox(height: 10),
+
+                    // Main Post Card (Full description)
+                    Container(
+                      margin: EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 10,
+                      ),
+                      padding: EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: Colors.grey.shade200),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            post.description,
+                            style: GoogleFonts.inter(
+                              fontSize: 14,
+                              height: 1.5,
+                              color: Color(0xFF334155),
+                            ),
+                          ),
+                          SizedBox(height: 16),
+                          Container(
+                            height: 1,
+                            width: double.infinity,
+                            color:  Color(0xFFF1F5F9),
+                          ),
+                          SizedBox(height: 12),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.favorite_border,
+                                size: 16,
+                                color: Colors.grey.shade600,
+                              ),
+                              SizedBox(width: 4),
+                              Text(
+                                '${post.likes} Likes',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey.shade600,
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Icon(
+                                Icons.mode_comment_outlined,
+                                size: 16,
+                                color: Colors.grey.shade600,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                '${_replies.length} Comments',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey.shade600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // Comments Title Header
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 8,
+                      ),
+                      child: Text(
+                        'Comments (${_replies.length})',
+                        style: GoogleFonts.inter(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xFF475569),
                         ),
                       ),
-                      color: Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.03),
-                          blurRadius: 10,
-                          offset:Offset(0,8),
-                        ),
-                      ],
+                    ),
+
+                    // Comments List
+                    ListView.separated(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: _replies.length,
+                      separatorBuilder: (_, __) => const SizedBox(height: 10),
+                      itemBuilder: (context, index) {
+                        return CommentCard(reply: _replies[index]);
+                      },
+                    ),
+                    SizedBox(height: 20),
+                  ],
+                ),
+              ),
+            ),
+
+            // Fixed Comment Input Bar
+            Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 10,
+              ),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                border: Border(
+                  top: BorderSide(color: Color(0xFFE2E8F0)),
+                ),
+              ),
+              child: Row(
+                children: [
+                  const CircleAvatar(
+                    radius: 16,
+                    backgroundColor: Color(0xFFEF4444),
+                    child: Text(
+                      'NR',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
                     ),
                   ),
-                  const SizedBox(height:10),
-                  Row(
-                    children: [
-                      Icon(Icons.favorite_border, size: 16, color: Colors.grey.shade600),
-                      SizedBox(width:4),
-                      Text('${post.likes} Likes', style: TextStyle(fontSize:12, color: Colors.grey.shade600)),
-                      SizedBox(width:16),
-                      Icon(Icons.mode_comment_outlined, size:16, color: Colors.grey.shade600),
-                      SizedBox(width:4),
-                      Text('${post.comments} Comments', style: TextStyle(fontSize:12, color: Colors.grey.shade600)),
-                    ],
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 14),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF1F5F9),
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: _commentController,
+                              textInputAction: TextInputAction.send,
+                              onSubmitted: (_) => _addComment(),
+                              decoration: InputDecoration(
+                                hintText: 'Add a comment...',
+                                hintStyle: GoogleFonts.inter(
+                                  fontSize: 13,
+                                  color: Colors.grey.shade500,
+                                ),
+                                border: InputBorder.none,
+                                isDense: true,
+                                contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 10,
+                                ),
+                              ),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: _addComment,
+                            child: const Icon(
+                              Icons.send_rounded,
+                              size: 18,
+                              color: Color(0xFF2563EB),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ],
               ),

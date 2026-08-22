@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:uni_connect/core/models/reply_model.dart';
 import 'package:uni_connect/core/models/subject_model.dart';
 import 'package:uni_connect/core/models/user_model.dart';
 
@@ -30,11 +33,11 @@ class MockData {
       'postCount': 5,
     },
   ];
-
   //Parsed Subject List using SubjectModel.fromJson
   static List<SubjectModel> get subjects {
     return subjectsJson.map((json)=> SubjectModel.fromJson(json)).toList();
   }
+
 
   //raw JSON list for post
   static final List<Map<String, dynamic>> postsJson = [
@@ -81,11 +84,11 @@ class MockData {
       'comments': 1,
     },
   ];
-
   //Parsed Subject List using SubjectModel.fromJson
   static List<PostModel> get posts {
     return postsJson.map((json)=> PostModel.fromJson(json)).toList();
   }
+
 
   //raw JSON list for users (students,admin)
   static final List<Map<String, dynamic>> usersJson = [
@@ -120,17 +123,38 @@ class MockData {
       'postCount': 15,
     },
   ];
-
   //Parsed Users List
   static List<UserModel> get users {
     return usersJson.map((json) => UserModel.fromJson(json)).toList();
   }
-
   static List<UserModel> get students{
     return users.where((user) => user.isStudent).toList();
   }
-
   static List<UserModel> get admins{
     return users.where((user) => user.isAdmin).toList();
   }
+
+
+  static final List<Map<String,dynamic>> repliesJson =[
+    {
+      'replyId':'reply_1',
+      'postId': 'post_1',
+      'userId': 'user_1',
+      'authorName': 'Lara Haddad',
+      'content': 'This is so helpful! Do you have practice questions too?',
+      'createdAt': DateTime.now().subtract(const Duration(hours: 2)).toIso8601String(),
+    },
+    {
+      'replyId':'reply_2',
+      'postId': 'post_1',
+      'userId': 'user_2',
+      'authorName': 'Rami Farhat',
+      'content': 'What about BCNF - is that include in the exam?',
+      'createdAt': DateTime.now().subtract(const Duration(hours: 1)).toIso8601String(),
+    },
+  ];
+  //parsed replies List using ReplyModel.fromJson
+  static List<ReplyModel> get replies{
+    return repliesJson.map((json) => ReplyModel.fromJson(json)).toList();  }
+
 }
