@@ -248,8 +248,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ],
             ),
             SizedBox(height: 50),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
+            Container(
+              // padding: EdgeInsets.symmetric(horizontal: 20),
+              margin: EdgeInsets.symmetric(horizontal: 20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+              ),
               child: SizedBox(
                 width: double.infinity,
                 child: OutlinedButton.icon(
@@ -269,9 +274,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   style: OutlinedButton.styleFrom(
                     padding: EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
                     side: BorderSide(color: Colors.grey.shade300),
                   ),
                 ),
