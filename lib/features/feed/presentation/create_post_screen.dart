@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:uni_connect/core/mock/mock_data.dart';
+import 'package:uni_connect/core/models/post_model.dart';
 import 'package:uni_connect/core/models/subject_model.dart';
 import 'package:uni_connect/core/widgets/custom_elevated_button.dart';
 import 'package:uni_connect/core/widgets/custom_form_field.dart';
@@ -16,6 +17,7 @@ class CreatePostScreen extends StatefulWidget {
 
 class _CreatePostScreenState extends State<CreatePostScreen> {
 
+  final _formKey = GlobalKey<FormState>();
   TextEditingController _titleController = TextEditingController();
   TextEditingController _descriptionController = TextEditingController();
 
@@ -37,6 +39,32 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     });
   }
 
+  void _publishPost(){
+    if(_formKey.currentState !=null && _formKey.currentState!.validate()){
+      if(selectedSubject == null){
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Please select a subject')),
+        );
+        return;
+      }
+      final newPost = PostModel(
+        postId: 'post_${DateTime.now().millisecondsSinceEpoch}',
+        title: _titleController.text.trim(),
+        description: _descriptionController.text.trim(),
+        authorName: 'Nour Al Houda',
+        subjectCode: selectedSubject?.subjectCode,
+        subjectId: selectedSubject?.subjectId,
+        categoryName: 'General',
+        createdAt: DateTime.now(),
+        likes: 0,
+        comments: 0,
+        isLiked: false,
+      );
+
+      MockData.addPost(newPost);
+      Navigator.pop(context,true);
+    }
+  }
 
   @override
   void dispose() {
@@ -51,6 +79,8 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body:SafeArea(
+        child: Form(
+          key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -124,116 +154,115 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
               ),
               SizedBox(height:15),
               Expanded(
-                  child: SingleChildScrollView(
-                    padding: EdgeInsets.symmetric(horizontal:20, vertical:10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Select Subject', style: GoogleFonts.inter(fontWeight:FontWeight.w600, fontSize:15)),
-                        SizedBox(height:8),
-                        Wrap(
-                          spacing: 10,
-                          runSpacing: 10,
-                          children: subjects.map((subject){
-                            final bool isSelected = selectedSubject?.subjectCode == subject.subjectCode;
-                            return GestureDetector(
-                              onTap: (){
-                                setState(() {
-                                  selectedSubject = subject;
-                                });
-                              },
-                              child: AnimatedContainer(
-                                duration: Duration(milliseconds: 150),
-                                padding: EdgeInsets.symmetric(horizontal:14, vertical:14),
-                                decoration: BoxDecoration(
-                                  color: isSelected ? Color(0xFFEFF6FF) : Colors.white,
-                                  borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(
-                                    color: isSelected ? Color(0xFF2563EB) : Colors.grey.shade300,
-                                    width: isSelected ? 1.5 :1.0,
-                                  ),
-                                ),
-                                child: Text(
-                                  subject.subjectName,
-                                  style: GoogleFonts.inter(
-                                    fontSize: 13,
-                                    fontWeight:FontWeight.w600,
-                                    color: isSelected ? Color(0xFF2563EB) : Colors.black87,
-                                  ),
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.symmetric(horizontal:20, vertical:10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Select Subject', style: GoogleFonts.inter(fontWeight:FontWeight.w600, fontSize:15)),
+                      SizedBox(height:8),
+                      Wrap(
+                        spacing: 10,
+                        runSpacing: 10,
+                        children: subjects.map((subject){
+                          final bool isSelected = selectedSubject?.subjectCode == subject.subjectCode;
+                          return GestureDetector(
+                            onTap: (){
+                              setState(() {
+                                selectedSubject = subject;
+                              });
+                            },
+                            child: AnimatedContainer(
+                              duration: Duration(milliseconds: 150),
+                              padding: EdgeInsets.symmetric(horizontal:14, vertical:14),
+                              decoration: BoxDecoration(
+                                color: isSelected ? Color(0xFFEFF6FF) : Colors.white,
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: isSelected ? Color(0xFF2563EB) : Colors.grey.shade300,
+                                  width: isSelected ? 1.5 :1.0,
                                 ),
                               ),
-                            );
-                          }).toList(),
-                        ),
-                        SizedBox(height:20),
-                        CustomFormField(
-                            label:'Title',
-                            hint: 'What is your question or topic',
-                            controller: _titleController,
-                        ),
-                        SizedBox(height:20),
-                        CustomFormField(
-                            label: 'Description',
-                            maxLines: 5,
-                            hint: 'Describe in detail - the more context you give, the better responses you will get',
-                            controller: _descriptionController,
-                        ),
-                        SizedBox(height:20),
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(14),
-                          decoration: BoxDecoration(
-                            color:  Color(0xFFEFF6FF),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: Color(0xFF2563EB),
-                              width:1,
-                            ),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Icon(Icons.auto_awesome, color: Color(0xFF2563EB),size:20),
-                                  SizedBox(width:10),
-                                  Text(
-                                    'Smart AI Categorization',
-                                    style: GoogleFonts.inter(
-                                      color: Color(0xFF2563EB),
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Text(
-                                'When you publish, AI will analyze your title and description to assign the right category automatically',
+                              child: Text(
+                                subject.subjectName,
                                 style: GoogleFonts.inter(
-                                  color: Color(0xFF2563EB),
                                   fontSize: 13,
-                                  fontWeight: FontWeight.w500,
+                                  fontWeight:FontWeight.w600,
+                                  color: isSelected ? Color(0xFF2563EB) : Colors.black87,
                                 ),
                               ),
-                            ],
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                      SizedBox(height:20),
+                      CustomFormField(
+                        label:'Title',
+                        hint: 'What is your question or topic',
+                        controller: _titleController,
+                        validator: (value) => (value == null || value.trim().isEmpty) ? 'Please enter a title' : null,
+                      ),
+                      SizedBox(height:20),
+                      CustomFormField(
+                        label: 'Description',
+                        maxLines: 5,
+                        hint: 'Describe in detail - the more context you give, the better responses you will get',
+                        controller: _descriptionController,
+                        validator: (value) => (value == null || value.trim().isEmpty) ? 'Please enter a description' : null,
+                      ),
+                      SizedBox(height:20),
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color:  Color(0xFFEFF6FF),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: Color(0xFF2563EB),
+                            width:1,
                           ),
                         ),
-                        SizedBox(height:30),
-                        CustomElevatedButton(
-                            text: 'Analyse & Publish',
-                            onPressed: (){
-                              if(selectedSubject !=null){
-
-                              }
-                            }
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(Icons.auto_awesome, color: Color(0xFF2563EB),size:20),
+                                SizedBox(width:10),
+                                Text(
+                                  'Smart AI Categorization',
+                                  style: GoogleFonts.inter(
+                                    color: Color(0xFF2563EB),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Text(
+                              'When you publish, AI will analyze your title and description to assign the right category automatically',
+                              style: GoogleFonts.inter(
+                                color: Color(0xFF2563EB),
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
                         ),
-                        SizedBox(height:20),
-                      ],
-                    ),
+                      ),
+                      SizedBox(height:30),
+                      CustomElevatedButton(
+                          text: 'Analyse & Publish',
+                          onPressed: _publishPost,
+                      ),
+                      SizedBox(height:20),
+                    ],
                   ),
+                ),
               ),
             ],
           ),
+        ),
       ),
     );
   }

@@ -22,6 +22,8 @@ class PostDetailsScreen extends StatefulWidget {
 class _PostDetailsScreenState extends State<PostDetailsScreen> {
   final TextEditingController _commentController = TextEditingController();
   late List<ReplyModel> _replies;
+  late bool _isLiked;
+  late int _likeCount;
 
   @override
   void initState() {
@@ -30,6 +32,25 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
     _replies = MockData.replies
         .where((reply) => reply.postId == widget.post.postId)
         .toList();
+    //Inilize like state from post widgt
+    _isLiked = widget.post.isLiked;
+    _likeCount = widget.post.likes;
+  }
+
+  void _toggleLike(){
+    if(widget.post.postId == null) return;
+
+    //Update central state first
+    MockData.toggleLike(widget.post.postId!);
+
+    setState(() {
+      _isLiked = !_isLiked;
+      if(_isLiked){
+        _likeCount++ ;
+      }else{
+        _likeCount--;
+      }
+    });
   }
 
   SubjectModel? _getSubject(String? subjectId) {
@@ -280,35 +301,49 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                           SizedBox(height: 12),
                           Row(
                             children: [
-                              Icon(
-                                Icons.favorite_border,
-                                size: 16,
-                                color: Colors.grey.shade600,
-                              ),
-                              SizedBox(width: 4),
-                              Text(
-                                '${post.likes} Likes',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey.shade600,
+                              GestureDetector(
+                                onTap: _toggleLike,
+                                behavior: HitTestBehavior.opaque,
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      _isLiked ?Icons.favorite : Icons.favorite_border,
+                                      size: 16,
+                                     color: _isLiked ? Colors.red : Colors.grey.shade600,
+                                    ),
+                                    SizedBox(width: 4),
+                                    Text(
+                                      '$_likeCount Likes',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: _isLiked ? FontWeight.w600 : FontWeight.normal,
+                                        color: _isLiked ? Colors.red : Colors.grey.shade600,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                              const SizedBox(width: 16),
-                              Icon(
-                                Icons.mode_comment_outlined,
-                                size: 16,
-                                color: Colors.grey.shade600,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                '${_replies.length} Comments',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey.shade600,
-                                ),
+                              SizedBox(width: 16),
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.mode_comment_outlined,
+                                    size: 16,
+                                    color: Colors.grey.shade600,
+                                  ),
+                                  SizedBox(width: 4),
+                                  Text(
+                                    '${_replies.length} Comments',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey.shade600,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
+
                         ],
                       ),
                     ),

@@ -54,6 +54,7 @@ class MockData {
       'createdAt': DateTime.now().subtract(Duration(hours: 5)).toIso8601String(),
       'likes': 7,
       'comments': 2,
+      'isLiked': false,
     },
     {
       'postId': 'post_2',
@@ -68,11 +69,12 @@ class MockData {
       'createdAt': DateTime.now().subtract(Duration(hours: 1)).toIso8601String(),
       'likes': 2,
       'comments': 2,
+      'isLiked':false,
     },
     {
-      'postId': 'post_id',
+      'postId': 'post_3',
       'title': 'Database Normalization - Final Exam Tips',
-      'description': "Hey everyone! The final exam is next week. Professor Hajj mentioned that 3NF will be heavily testes...",
+      'description': "Hey everyone! The final exam is next week. Professor Hajj mentioned that 3NF will be heavily tested on the test. Make sure to review functional dependencies, canonical covers, and candidate key decompositions carefully. Let's set up a study group in the campus library this Thursday around 4 PM if anyone wants to practice past exam questions together!",
       'userId': 'user_3',
       'authorName': 'Ahmad Khoury',
       'categoryId': 'cat_1',
@@ -82,11 +84,53 @@ class MockData {
       'createdAt': DateTime.now().subtract(Duration(hours: 2)).toIso8601String(),
       'likes': 7,
       'comments': 1,
+      'isLiked': false,
     },
   ];
   //Parsed Subject List using SubjectModel.fromJson
-  static List<PostModel> get posts {
-    return postsJson.map((json)=> PostModel.fromJson(json)).toList();
+  // static List<PostModel> get posts {
+  //   return postsJson.map((json)=> PostModel.fromJson(json)).toList();
+  // }
+  //in memory persistent list for posts
+  static final List<PostModel> _postList = postsJson.map((json) => PostModel.fromJson(json)).toList();
+  static List<PostModel> get posts => _postList;
+  //adds new post to the top of the in-memory list
+   static void addPost(PostModel newPost){
+      posts.insert(0, newPost);
+   }
+  // static void toggleLike(String postId) {
+  //   final index = postsJson.indexWhere((json) => json['postId'] == postId);
+  //   if (index != -1) {
+  //     // Toggles between adding and removing a like dynamically
+  //     final isLiked = postsJson[index]['isLiked'] ?? false;
+  //     final currentLikes = postsJson[index]['likes'] as int? ?? 0;
+  //
+  //     postsJson[index]['isLiked'] = !isLiked;
+  //     postsJson[index]['likes'] = isLiked ? currentLikes - 1 : currentLikes + 1;
+  //   }
+  static void toggleLike(String postId) {
+    final index = _postList.indexWhere((post) => post.postId == postId);
+    if (index != -1) {
+      final post = _postList[index];
+      final newIsLiked = !post.isLiked;
+      final newLikes = newIsLiked ? post.likes + 1 : post.likes - 1;
+
+      _postList[index] = PostModel(
+        postId: post.postId,
+        title: post.title,
+        description: post.description,
+        userId: post.userId,
+        authorName: post.authorName,
+        categoryId: post.categoryId,
+        categoryName: post.categoryName,
+        subjectId: post.subjectId,
+        subjectCode: post.subjectCode,
+        createdAt: post.createdAt,
+        likes: newLikes,
+        comments: post.comments,
+        isLiked: newIsLiked,
+      );
+    }
   }
 
 

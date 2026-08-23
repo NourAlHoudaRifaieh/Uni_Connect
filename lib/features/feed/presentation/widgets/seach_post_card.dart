@@ -69,6 +69,8 @@ class SearchPostCard extends StatelessWidget {
           ),
           SizedBox(height:5),
           Text(post.description,
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
             style: GoogleFonts.inter(
               fontSize:13,
               color: Colors.grey.shade700,

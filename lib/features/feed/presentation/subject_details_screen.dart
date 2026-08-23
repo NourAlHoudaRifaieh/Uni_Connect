@@ -26,7 +26,8 @@ class _SubjectDetailsScreenState extends State<SubjectDetailsScreen> {
   List<String> get categories {
     final categorySet = <String>{'All'};
     for(var post in posts){
-      final matchesSubject = true;
+      final matchesSubject = post.subjectCode?.trim().toLowerCase() == widget.subject.subjectCode.trim().toLowerCase()
+            || post.subjectId?.trim().toLowerCase() == widget.subject.subjectId!.trim().toLowerCase(); ;
       // final matchesSubject = post.subjectCode?.trim().toLowerCase() == widget.subject.subjectCode.trim().toLowerCase();
       if(matchesSubject && post.categoryName !=null && post.categoryName!.trim().isNotEmpty){
         categorySet.add(post.categoryName!.trim());
@@ -38,7 +39,9 @@ class _SubjectDetailsScreenState extends State<SubjectDetailsScreen> {
   List <PostModel> get posts => MockData.posts;
   List <PostModel> get _filteredPosts{
     return posts.where((post){
-      final matchesSubject = true;
+      final matchesSubject = post.subjectCode?.trim().toLowerCase() ==
+          widget.subject.subjectCode.trim().toLowerCase() ||
+          post.subjectId?.trim().toLowerCase() == widget.subject.subjectId!.trim().toLowerCase();
       // final matchesSubject = post.subjectCode?.trim().toLowerCase() == widget.subject.subjectCode.trim().toLowerCase();
       final matchesCategory = selectedCategory == 'All' || post.categoryName?.trim().toLowerCase() == selectedCategory.trim().toLowerCase();
       return matchesSubject && matchesCategory ;
@@ -104,26 +107,6 @@ class _SubjectDetailsScreenState extends State<SubjectDetailsScreen> {
                 ],
               ),
             ),
-            // Container(
-            //   height: 1,
-            //   width: double.infinity,
-            //   decoration: BoxDecoration(
-            //     border: Border(
-            //       bottom: BorderSide(
-            //         color: Color(0xFFF1F5F9),
-            //         width:1.5,
-            //       ),
-            //     ),
-            //     color: Colors.white,
-            //     boxShadow: [
-            //       BoxShadow(
-            //         color: Colors.black.withOpacity(0.03),
-            //         blurRadius: 10,
-            //         offset:Offset(0,8),
-            //       ),
-            //     ],
-            //   ),
-            // ),
             CategorySelector(
                 categories: categories,
                 onCategorySelected: (category){

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:uni_connect/core/mock/mock_data.dart';
 import 'package:uni_connect/features/feed/presentation/post_details_screen.dart';
 import '../../../../core/models/post_model.dart';
 
@@ -20,11 +21,17 @@ class PostCard extends StatelessWidget{
   @override
   Widget build(BuildContext context){
     return GestureDetector(
-      onTap: (){
-        Navigator.push(
+      onTap: () async{
+        //Get the updated post object from MockData
+        final currentPost = MockData.posts.firstWhere(
+            (p) => p.postId == post.postId,
+          orElse: () => post,
+        );
+        await Navigator.push(
           context,
           MaterialPageRoute(builder: (context)=> PostDetailsScreen(post:post)),
         );
+        if(onTap != null) onTap!();
       },
       child: Container(
         margin: const EdgeInsets.only(bottom:14),
@@ -145,9 +152,36 @@ class PostCard extends StatelessWidget{
                     ),
                   ),
                 Spacer(),
-                Icon(Icons.favorite_border, size: 16, color: Colors.grey.shade600),
-                SizedBox(width:4),
-                Text('${post.likes}', style: TextStyle(fontSize:12, color: Colors.grey.shade600)),
+                GestureDetector(
+                  onTap: (){
+                    if(post.postId != null){
+                      MockData.toggleLike(post.postId!);
+                      if(onLikeTap !=null) onLikeTap!();
+                    }
+                  },
+                  behavior: HitTestBehavior.opaque,
+                  child: Row(
+                    children: [
+                      Icon(
+                        post.isLiked ? Icons.favorite : Icons.favorite_border,
+                        size: 16,
+                        color: post.isLiked ? Colors.red : Colors.grey.shade600,
+                      ),
+                      SizedBox(width:4),
+                      Text(
+                        '${post.likes}',
+                        style: GoogleFonts.inter(
+                          fontSize: 12,
+                          fontWeight: post.isLiked ? FontWeight.bold : FontWeight.normal,
+                          color:post.isLiked ? Colors.red: Colors.grey.shade600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // Icon(Icons.favorite_border, size: 16, color: Colors.grey.shade600),
+                // SizedBox(width:4),
+                // Text('${post.likes}', style: TextStyle(fontSize:12, color: Colors.grey.shade600)),
                 SizedBox(width:16),
                 Icon(Icons.mode_comment_outlined, size:16, color: Colors.grey.shade600),
                 SizedBox(width:4),

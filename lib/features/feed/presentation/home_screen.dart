@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:uni_connect/core/mock/mock_data.dart';
 import 'package:uni_connect/core/models/post_model.dart';
 import 'package:uni_connect/core/widgets/custom_form_field.dart';
+import 'package:uni_connect/features/feed/presentation/create_post_screen.dart';
 import 'package:uni_connect/features/feed/presentation/profile_screen.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/category_selector.dart';
 import 'widgets/post_card.dart';
@@ -70,7 +71,8 @@ class _HomeScreenState extends State <HomeScreen>{
           children: [
             // for top header
             Padding(
-              padding: EdgeInsets.fromLTRB(20,40,20,10),
+              // padding: EdgeInsets.fromLTRB(20,40,20,10),
+              padding: EdgeInsets.all(20),
               child: Column(
                 children: [
                   Row(
@@ -192,9 +194,15 @@ class _HomeScreenState extends State <HomeScreen>{
                     return PostCard(
                       post: post,
                       onTap: () {
+                        setState(() {
+                        });
                         // will open post detail screen later
                       },
-                      onLikeTap: (){},
+                      onLikeTap: (){
+                        setState(() {
+
+                        });
+                      },
                       onCommentTap: (){},
                     );
                   },
@@ -203,7 +211,6 @@ class _HomeScreenState extends State <HomeScreen>{
           ],
         ),
       ),
-
     );
   }
 }

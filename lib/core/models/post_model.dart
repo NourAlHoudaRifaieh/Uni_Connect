@@ -13,6 +13,7 @@ class PostModel{
   final DateTime createdAt;
   final int likes;
   final int comments;
+  final bool isLiked;
 
   PostModel({
     this.postId,
@@ -27,6 +28,7 @@ class PostModel{
     required this.createdAt,
     this.likes =0,
     this.comments =0,
+    this.isLiked = false,
   });
 
   String get authorInitials {
@@ -62,6 +64,7 @@ class PostModel{
       subjectCode: json['subjectCode'] as String?,
       likes: json['likes'] ?? 0,
       comments: json['comments'] ?? 0,
+      isLiked: json['isLiked'] ??  false,
       createdAt: json['createdAt'] is DateTime
         ? json['createdAt']
         : (json['createdAt'] != null
@@ -87,6 +90,7 @@ class PostModel{
       if(subjectCode != null) 'subjectCode': subjectCode,
       'likes': likes,
       'comments': comments,
+      'isLiked': isLiked,
       'createdAt': createdAt.toIso8601String(),
     };
   }

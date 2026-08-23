@@ -12,32 +12,6 @@ class SubjectScreen extends StatelessWidget {
 
     final List<SubjectModel> subjects = MockData.subjects;
 
-    // List <SubjectModel> subjects =[
-    //   SubjectModel(
-    //       icon: Icons.menu_book,
-    //       subjectName: 'Theses Project',
-    //       subjectCode: 'THE601',
-    //       color: Colors.red,
-    //       postCount: 5,
-    //   ),
-    //   SubjectModel(
-    //       icon: Icons.menu_book,
-    //       subjectName: 'Advanced Data Analysis',
-    //       subjectCode: 'ADA601',
-    //       color: Colors.green,
-    //       postCount: 9,
-    //   ),
-    //   SubjectModel(
-    //       icon: Icons.menu_book,
-    //       subjectName: 'Leadership & Innovation',
-    //       subjectCode: 'LDR601',
-    //       color: Colors.blue,
-    //       postCount: 5
-    //   ),
-    //
-    // ];
-
-    // TODO: implement build
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
