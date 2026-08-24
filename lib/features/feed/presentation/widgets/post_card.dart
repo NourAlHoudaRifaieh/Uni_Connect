@@ -52,6 +52,7 @@ class PostCard extends StatelessWidget{
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 CircleAvatar(
                   radius: 18,
@@ -108,9 +109,13 @@ class PostCard extends StatelessWidget{
                     ],
                   ),
                 ),
+                GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: (){},
+                  child: Icon(Icons.more_vert, size: 20),
+                ),
               ],
             ),
-
             const SizedBox(height:10),
             Text(
               post.title,
@@ -130,12 +135,11 @@ class PostCard extends StatelessWidget{
               ),
             ),
             const SizedBox(height:20),
-
             Row(
               children: [
                 if (post.categoryName != null)
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal:10, vertical:4),
+                    padding: const EdgeInsets.symmetric(horizontal:20, vertical:4),
                     decoration: BoxDecoration(
                       color: Color(0xFF1D61FF).withOpacity(0.15),
                       borderRadius: BorderRadius.circular(20),
@@ -182,7 +186,7 @@ class PostCard extends StatelessWidget{
                 // Icon(Icons.favorite_border, size: 16, color: Colors.grey.shade600),
                 // SizedBox(width:4),
                 // Text('${post.likes}', style: TextStyle(fontSize:12, color: Colors.grey.shade600)),
-                SizedBox(width:16),
+                SizedBox(width:10),
                 Icon(Icons.mode_comment_outlined, size:16, color: Colors.grey.shade600),
                 SizedBox(width:4),
                 Text('${post.comments}', style: TextStyle(fontSize:12, color: Colors.grey.shade600)),

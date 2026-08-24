@@ -23,36 +23,26 @@ class NotificationTile extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Static Avatar or Static Announcement Icon
-            if (notification.initials != null)
+            // if (notification.initials != null)
               CircleAvatar(
                 radius: 20,
                 backgroundColor: const Color(0xFFDCEBFF),
                 child: Text(
-                  notification.initials!,
+                  notification.initials ?? '',
                   style: GoogleFonts.inter(
                     fontWeight: FontWeight.bold,
                     fontSize: 13,
                     color: const Color(0xFF4361EE),
                   ),
                 ),
-              )
-            else
-              const CircleAvatar(
-                radius: 20,
-                backgroundColor: Color(0xFFFFF7D6),
-                child: Icon(
-                  Icons.campaign_rounded,
-                  color: Color(0xFFE54A6F),
-                  size: 20,
-                ),
               ),
-            const SizedBox(width: 14),
+            SizedBox(width: 14),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    notification.title,
+                    notification.content,
                     style: GoogleFonts.inter(
                       fontSize: 14,
                       fontWeight: notification.isRead ? FontWeight.w500 : FontWeight.w600,
