@@ -5,6 +5,7 @@ import 'package:uni_connect/core/models/reply_model.dart';
 import 'package:uni_connect/core/models/subject_model.dart';
 import 'package:uni_connect/core/models/user_model.dart';
 
+import '../models/notification_model.dart';
 import '../models/post_model.dart';
 
 class MockData {
@@ -200,5 +201,68 @@ class MockData {
   //parsed replies List using ReplyModel.fromJson
   static List<ReplyModel> get replies{
     return repliesJson.map((json) => ReplyModel.fromJson(json)).toList();  }
+
+
+
+  // Raw notifications JSON inside MockData
+  static final List<Map<String, dynamic>> notificationsJson = [
+    {
+      'notificationId': 'notif_1',
+      'title': 'Ahmad Khoury commented on your post "Assignment 3 — ER Diagram Help"',
+      'timeAgo': '30 min ago',
+      'isRead': false,
+      'initials': 'AK',
+    },
+    {
+      'notificationId': 'notif_2',
+      'title': 'Sara Mourad and 3 others liked your post about ER diagrams',
+      'timeAgo': '1 hour ago',
+      'isRead': false,
+      'initials': 'SM',
+    },
+    {
+      'notificationId': 'notif_3',
+      'title': 'Group Admin: Database Systems exam moved to June 28th — room change to B204',
+      'timeAgo': '3 hours ago',
+      'isRead': false,
+    },
+    {
+      'notificationId': 'notif_4',
+      'title': 'Rami Farhat replied to your comment on the Python OOP post',
+      'timeAgo': '5 hours ago',
+      'isRead': true,
+      'initials': 'RF',
+    },
+    {
+      'notificationId': 'notif_5',
+      'title': 'MIS project submission deadline extended to July 5th',
+      'timeAgo': '1 day ago',
+      'isRead': true,
+    },
+    {
+      'notificationId': 'notif_6',
+      'title': 'Khalil Abi-Saab commented on the Statistics Midterm summary',
+      'timeAgo': '2 days ago',
+      'isRead': true,
+      'initials': 'KA',
+    },
+  ];
+  static final List<NotificationModel> _notificationList = notificationsJson
+      .map((json) => NotificationModel.fromJson(json))
+      .toList();
+
+  static List<NotificationModel> get notifications => _notificationList;
+  static void markNotificationAsRead(String notificationId) {
+    final index = _notificationList.indexWhere((n) => n.notificationId == notificationId);
+    if (index != -1) {
+      _notificationList[index] = _notificationList[index].copyWith(isRead: true);
+    }
+  }
+  static void markAllNotificationsAsRead() {
+    for (int i = 0; i < _notificationList.length; i++) {
+      _notificationList[i] = _notificationList[i].copyWith(isRead: true);
+    }
+  }
+
 
 }

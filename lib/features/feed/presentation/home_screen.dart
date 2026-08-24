@@ -3,6 +3,7 @@ import 'package:uni_connect/core/mock/mock_data.dart';
 import 'package:uni_connect/core/models/post_model.dart';
 import 'package:uni_connect/core/widgets/custom_form_field.dart';
 import 'package:uni_connect/features/feed/presentation/create_post_screen.dart';
+import 'package:uni_connect/features/feed/presentation/notification_screen.dart';
 import 'package:uni_connect/features/feed/presentation/profile_screen.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/category_selector.dart';
 import 'widgets/post_card.dart';
@@ -87,33 +88,68 @@ class _HomeScreenState extends State <HomeScreen>{
                         ),
                       ),
                       //Notification Bell
-                      Stack(
-                        clipBehavior: Clip.none,
-                        children: [
-                          Container(
-                            width:40,
-                            height:40,
-                            decoration:BoxDecoration(
-                              color: Color(0xFFF3F4F6),
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all( color: Color(0xFFF3F4F6)),
-                            ),
-                            child: Icon(Icons.notifications_none, color: Colors.black54, size:25),
-                          ),
-                          Positioned(
-                            top:-8,
-                            right: -4,
-                            child: Container(
-                              padding: const EdgeInsets.all(4),
-                              decoration: BoxDecoration(
-                                color: Colors.red,
-                                shape: BoxShape.circle
+                      GestureDetector(
+                        onTap: (){
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context)=> NotificationScreen()),
+                          );
+                        },
+                        child: Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            Container(
+                              width:40,
+                              height:40,
+                              decoration:BoxDecoration(
+                                color: Color(0xFFF3F4F6),
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all( color: Color(0xFFF3F4F6)),
                               ),
-                              child: Text('3', style:GoogleFonts.inter(color:Colors.white, fontSize:15))
+                              child: Icon(Icons.notifications_none, color: Colors.black54, size:25),
                             ),
-                          ),
-                        ],
+                            Positioned(
+                              top:-8,
+                              right: -4,
+                              child: Container(
+                                  padding: const EdgeInsets.all(4),
+                                  decoration: BoxDecoration(
+                                      color: Colors.red,
+                                      shape: BoxShape.circle
+                                  ),
+                                  child: Text('3', style:GoogleFonts.inter(color:Colors.white, fontSize:15))
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
+                      // Stack(
+                      //   clipBehavior: Clip.none,
+                      //   children: [
+                      //     Container(
+                      //       width:40,
+                      //       height:40,
+                      //       decoration:BoxDecoration(
+                      //         color: Color(0xFFF3F4F6),
+                      //         borderRadius: BorderRadius.circular(20),
+                      //         border: Border.all( color: Color(0xFFF3F4F6)),
+                      //       ),
+                      //       child: Icon(Icons.notifications_none, color: Colors.black54, size:25),
+                      //     ),
+                      //     Positioned(
+                      //       top:-8,
+                      //       right: -4,
+                      //       child: Container(
+                      //         padding: const EdgeInsets.all(4),
+                      //         decoration: BoxDecoration(
+                      //           color: Colors.red,
+                      //           shape: BoxShape.circle
+                      //         ),
+                      //         child: Text('3', style:GoogleFonts.inter(color:Colors.white, fontSize:15))
+                      //       ),
+                      //     ),
+                      //   ],
+                      // ),
                       SizedBox(width:10),
                       //User Avatar
                       GestureDetector(
