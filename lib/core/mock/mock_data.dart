@@ -167,6 +167,26 @@ class MockData {
       'major': 'Accounting and Auditing',
       'postCount': 15,
     },
+    {
+      'userId': 'user_4',
+      'fullName': 'Sara Mourad',
+      'email': "sara.mourad@st.ul.edu.lb",
+      'role': 'student',
+      'faculty': 'Business Administration',
+      'academicYear': 'Year 2',
+      'major': 'Management',
+      'postCount': 3,
+    },
+    {
+      'userId': 'user_5',
+      'fullName': 'Khalil Abi-Saab',
+      'email': "khalil.abisaab@st.ul.edu.lb",
+      'role': 'student',
+      'faculty': 'Business Administration',
+      'academicYear': 'Year 3',
+      'major': 'Marketing',
+      'postCount': 8,
+    },
   ];
   //Parsed Users List
   static List<UserModel> get users {
@@ -211,28 +231,32 @@ class MockData {
       'content': 'Ahmad Khoury commented on your post "Assignment 3 — ER Diagram Help"',
       'createdAt': DateTime.now().subtract(const Duration(hours: 2)).toIso8601String(),
       'isRead': false,
-      'initials': 'AK',
+      // 'initials': 'AK',
+      'userId': 'user_3',
     },
     {
       'notificationId': 'notif_2',
       'content': 'Sara Mourad and 3 others liked your post about ER diagrams',
       'createdAt': DateTime.now().subtract(const Duration(hours: 1)).toIso8601String(),
       'isRead': false,
-      'initials': 'SM',
+      // 'initials': 'SM',
+      'userId': 'user_4',
     },
     {
       'notificationId': 'notif_4',
       'content': 'Rami Farhat replied to your comment on the Python OOP post',
       'createdAt': DateTime.now().subtract(const Duration(hours: 2)).toIso8601String(),
       'isRead': true,
-      'initials': 'RF',
+      // 'initials': 'RF',
+      'userId':'user_2',
     },
     {
       'notificationId': 'notif_6',
       'content': 'Khalil Abi-Saab commented on the Statistics Midterm summary',
       'createdAt': DateTime.now().subtract(const Duration(days: 3)).toIso8601String(),
       'isRead': true,
-      'initials': 'KA',
+      // 'initials': 'KA',
+      'userId': 'user_5',
     },
   ];
   static final List<NotificationModel> _notificationList = notificationsJson

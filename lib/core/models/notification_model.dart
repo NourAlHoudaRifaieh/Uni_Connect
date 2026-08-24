@@ -1,17 +1,40 @@
+
+
+import '../mock/mock_data.dart';
+
 class NotificationModel {
   final String notificationId;
   final String content;
   final DateTime createdAt;
   final bool isRead;
-  final String? initials; 
+  final String userId;
+  // final String? initials;
 
   NotificationModel({
     required this.notificationId,
     required this.content,
     required this.createdAt,
     this.isRead = false,
-    this.initials,
+    // this.initials,
+    required this.userId,
   });
+
+  String get initials {
+    final user = MockData.users.firstWhere(
+          (u) => u.userId == userId,
+      orElse: () => null as dynamic,
+    );
+
+    if (user != null && user.fullName.isNotEmpty) {
+      final names = user.fullName.trim().split(' ');
+      if (names.length >= 2) {
+        return '${names[0][0]}${names[1][0]}'.toUpperCase();
+      } else if (names.isNotEmpty && names[0].isNotEmpty) {
+        return names[0][0].toUpperCase();
+      }
+    }
+    return '';
+  }
 
   String get timeAgo {
     final difference = DateTime.now().difference(createdAt);
@@ -30,7 +53,8 @@ class NotificationModel {
       notificationId: json['notificationId'] ?? '',
       content: json['content'] ?? '',
       isRead: json['isRead'] ?? false,
-      initials: json['initials'],
+      // initials: json['initials'],
+      userId: json['userId'] ?? '',
       createdAt: json['createdAt'] is DateTime
           ? json['createdAt']
           : (json['createdAt'] != null
@@ -46,7 +70,8 @@ class NotificationModel {
       'content': content,
       'createdAt': createdAt.toIso8601String(),
       'isRead': isRead,
-      'initials': initials,
+      // 'initials': initials,
+      'userId': userId,
     };
   }
 
@@ -55,14 +80,16 @@ class NotificationModel {
     String? content,
     DateTime? createdAt,
     bool? isRead,
-    String? initials,
+    // String? initials,
+    String? userId,
   }) {
     return NotificationModel(
       notificationId: notificationId ?? this.notificationId,
       content: content ?? this.content,
       createdAt: createdAt ?? this.createdAt,
       isRead: isRead ?? this.isRead,
-      initials: initials ?? this.initials,
+      // initials: initials ?? this.initials,
+      userId:  userId ?? this.userId,
     );
   }
 }

@@ -28,7 +28,7 @@ class NotificationTile extends StatelessWidget {
                 radius: 20,
                 backgroundColor: const Color(0xFFDCEBFF),
                 child: Text(
-                  notification.initials ?? '',
+                  notification.initials,
                   style: GoogleFonts.inter(
                     fontWeight: FontWeight.bold,
                     fontSize: 13,
