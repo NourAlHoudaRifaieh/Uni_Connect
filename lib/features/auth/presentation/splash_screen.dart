@@ -33,7 +33,20 @@ class _SplashScreenState extends State<SplashScreen> {
     if (!mounted) return; // add this safety check
 
     if (shouldGoHome) {
-      context.go('/home');
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if(currentUser != null){
+        //Fetch user role from firestore before routing
+        final role = await _authRepository.getUserRole(currentUser.uid);
+        if(!mounted) return;
+        if(role == 'admin'){
+          context.go('/admin-dashboard');
+        }else{
+          context.go('/home');
+        }
+      }else{
+        context.go('/login');
+      }
+      // context.go('/home');
     } else {
       context.go('/login');
     }

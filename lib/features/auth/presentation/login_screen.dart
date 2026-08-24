@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:uni_connect/core/widgets/custom_elevated_button.dart';
@@ -63,21 +64,17 @@ class _LoginScreenState extends State<LoginScreen> {
   }
   void _handleLogin() async {
     if (!_formKey.currentState!.validate()) return;
-
       setState(() {
         _isLoading= true;
       });
-
       final error = await _authRepository.login(
         email: _emailController.text.trim(),
         password: _passwordController.text,
       );
-
       if(!mounted) return;
       setState(() {
         _isLoading= false;
       });
-
       if(error != null){
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -93,12 +90,25 @@ class _LoginScreenState extends State<LoginScreen> {
         }else{
           await prefs.remove('saved_email');
         }
-        context.go('/home');// the placeholder route, I'll build the home next
+
+        // context.go('/home');// the placeholder route, I'll build the home next
+
+        final currentUser = FirebaseAuth.instance.currentUser;
+        if(currentUser !=null ){
+          final role = await _authRepository.getUserRole(currentUser.uid);
+          if(!mounted) return;
+          if(role == 'admin'){
+            context.go('/admin-dashboard');
+          }else{
+            context.go('/home');
+          }
+        }
       }
     // //firebase Auth logic goes here
     // print('Email: ${_emailController.text}');
     // print('Password: ${_passwordController.text}');
   }
+
 
   @override
   Widget build(BuildContext context) {

@@ -25,68 +25,9 @@ class _MainLayoutScreenState extends State <MainLayoutScreen>{
   late final List<Widget> _screens= [
     HomeScreen(),
     SubjectScreen(),
-    // Center(
-    //   child: Text('Subjects Screen',
-    //     style: GoogleFonts.inter(
-    //       fontSize:20,
-    //     ),
-    //   ),
-    // ),
     SearchScreen(),
-    // Center(
-    //   child: Text('Search Screen',
-    //     style: GoogleFonts.inter(
-    //       fontSize:20,
-    //     ),
-    //   ),
-    // ),
-
     ProfileScreen(),
-
-    // Center(
-    //   child: ElevatedButton(
-    //       onPressed: () async{
-    //         await AuthRepository().logout();
-    //         final prefs = await SharedPreferences.getInstance();
-    //         await prefs.remove('remember_me');
-    //         await prefs.remove('saved_email');
-    //         if(context.mounted){
-    //           context.go('/login');
-    //         }
-    //       },
-    //       child: Text('Logout(test button)'),
-    //   ),
-    // ),
-
-    // Center(
-    //   child: Text('Profile Screen',
-    //     style: GoogleFonts.inter(
-    //       fontSize:20,
-    //     ),
-    //   ),
-    // ),
   ];
-  //action when pressing the add button
-  // void _handleCreatePost(){
-  //   showModalBottomSheet(
-  //       context: context,
-  //       isScrollControlled: true,
-  //       shape: RoundedRectangleBorder(
-  //         borderRadius: BorderRadius.vertical(
-  //           top: Radius.circular(20),
-  //         ),
-  //       ),
-  //       builder: (context) =>
-  //         Container(
-  //           padding: EdgeInsets.all(20),
-  //           height: 250,
-  //           child: Center(
-  //             child: Text('Create Post Sheet'),
-  //           ),
-  //         ),
-  //   );
-  // }
-
   void _handleCreatePost(){
     // context.push('/create-post');
     Navigator.push(

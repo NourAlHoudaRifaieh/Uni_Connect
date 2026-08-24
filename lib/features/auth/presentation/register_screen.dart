@@ -82,7 +82,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
         SnackBar(content: Text(error), backgroundColor: Colors.red),
       );
     } else {
-      context.go('/home'); // later this becomes '/admin-dashboard'
+      context.go('/login'); // later this becomes '/admin-dashboard'
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text('Admin account created successfully! Please sign in.'),
+            backgroundColor: Colors.green,
+        ),
+      );
     }
   }
 
@@ -109,12 +115,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
         academicYear: _selectedYear!,
         major: _selectedMajor!,
       );
-
       if(!mounted) return;
       setState(() {
         _isLoading = false;
       });
-
       if(error != null){
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -123,15 +127,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
         );
       }else{
-        // direct navigation to home
-        context.go('/home');
+        // direct navigation to login
+        context.go('/login');
         //welcome notification snackbar
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Account created successfully! Welcome!'),
+            content: Text('Account created successfully! Please sign in.'),
+            backgroundColor:  Colors.green,
           ),
         );
       }
+
     //Firebase Auth + Firestore logic goes here next
     // print('Name: ${_fullNameController.text}');
     // print('Email: ${_emailController.text}');

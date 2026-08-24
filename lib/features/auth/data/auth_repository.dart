@@ -22,7 +22,7 @@ class AuthRepository {
         password: password,
       );
       final uid = credential.user!.uid;
-      final role = email.toLowerCase().endsWith('admin.ul.edu.lb') ? 'admin' : 'student';
+      final role = email.toLowerCase().endsWith('@admin.ul.edu.lb') ? 'admin' : 'student';
 
 
       //to remove the academicYear and faculty fields if added admin
@@ -40,16 +40,10 @@ class AuthRepository {
 
       await _firestore.collection('users').doc(uid).set(userData);
 
+      //force sign out : prevents firebase from keeping the user logged in automatically after registration
+      await _auth.signOut();
+
       return null;
-      // await _firestore.collection('users').doc(uid).set({
-      //   'fullName': fullName,
-      //   'email': email,
-      //   // 'faculty': faculty,
-      //   // 'academicYear': academicYear,
-      //   'role': role,
-      //   'createdAt': FieldValue.serverTimestamp(),
-      // });
-      // return null; // null like success
     } on FirebaseAuthException catch(e){
       return _mapAuthError(e.code);
     }catch(e){
@@ -110,4 +104,18 @@ class AuthRepository {
       return false;
     }
   }
+
+  //Fetch the user's role from Firestore 'admin' or 'student'
+  Future<String?> getUserRole(String uid) async{
+    try{
+      final doc = await _firestore.collection('users').doc(uid).get();
+      if(doc.exists && doc.data() != null){
+        return doc.data()!['role'] as String?;
+      }
+    }catch(e){
+      debugPrint('Enter fetching user role: $e');
+    }
+    return 'student';
+  }
+
 }
