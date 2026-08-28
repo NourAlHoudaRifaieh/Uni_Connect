@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/category_selector.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/post_card.dart';
-import '../../../core/mock/mock_data.dart';
-import '../../../core/models/post_model.dart';
-import '../../../core/models/subject_model.dart';
+import '../../../../core/mock/mock_data.dart';
+import '../../../../core/models/post_model.dart';
+import '../../../../core/models/subject_model.dart';
 
 class SubjectDetailsScreen extends StatefulWidget {
 

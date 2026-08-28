@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:uni_connect/features/feed/presentation/subject_details_screen.dart';
-import '../../../core/mock/mock_data.dart';
-import '../../../core/models/subject_model.dart';
+import 'package:uni_connect/features/feed/presentation/student/subject_details_screen.dart';
+import '../../../../core/mock/mock_data.dart';
+import '../../../../core/models/subject_model.dart';
 
 class SubjectScreen extends StatelessWidget {
   const SubjectScreen({super.key});

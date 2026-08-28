@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/comment_card.dart';
-import '../../../core/mock/mock_data.dart';
-import '../../../core/models/post_model.dart';
-import '../../../core/models/reply_model.dart';
-import '../../../core/models/subject_model.dart';
-import '../widgets/comment_card.dart';
+import '../../../../core/mock/mock_data.dart';
+import '../../../../core/models/post_model.dart';
+import '../../../../core/models/reply_model.dart';
+import '../../../../core/models/subject_model.dart';
+import '../../widgets/comment_card.dart';
 
 class PostDetailsScreen extends StatefulWidget {
   final PostModel post;

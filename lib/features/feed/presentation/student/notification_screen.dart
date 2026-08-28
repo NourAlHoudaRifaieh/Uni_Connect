@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:uni_connect/core/models/notification_model.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/notification_title.dart';
 
-import '../../../core/mock/mock_data.dart';
+import '../../../../core/mock/mock_data.dart';
 
 class NotificationScreen extends StatefulWidget {
   NotificationScreen({Key? key}) : super(key: key);

@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:uni_connect/core/mock/mock_data.dart';
 import 'package:uni_connect/core/models/post_model.dart';
 import 'package:uni_connect/core/widgets/custom_form_field.dart';
-import 'package:uni_connect/features/feed/presentation/create_post_screen.dart';
-import 'package:uni_connect/features/feed/presentation/notification_screen.dart';
-import 'package:uni_connect/features/feed/presentation/profile_screen.dart';
+import 'package:uni_connect/features/feed/presentation/student/create_post_screen.dart';
+import 'package:uni_connect/features/feed/presentation/student/notification_screen.dart';
+import 'package:uni_connect/features/feed/presentation/student/profile_screen.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/category_selector.dart';
-import 'widgets/post_card.dart';
+import '../widgets/post_card.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class HomeScreen extends StatefulWidget{

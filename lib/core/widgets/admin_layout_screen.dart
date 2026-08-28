@@ -3,11 +3,11 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uni_connect/core/widgets/custom_top_nav_bar.dart';
-import 'package:uni_connect/features/feed/presentation/admin_dashboard_screen.dart';
-import 'package:uni_connect/features/feed/presentation/admin_groups_screen.dart';
-import 'package:uni_connect/features/feed/presentation/admin_posts_screen.dart';
-import 'package:uni_connect/features/feed/presentation/admin_subjects_screen.dart';
-import 'package:uni_connect/features/feed/presentation/admin_users_screen.dart';
+import 'package:uni_connect/features/feed/presentation/admin/admin_dashboard_screen.dart';
+import 'package:uni_connect/features/feed/presentation/admin/admin_groups_screen.dart';
+import 'package:uni_connect/features/feed/presentation/admin/admin_posts_screen.dart';
+import 'package:uni_connect/features/feed/presentation/admin/admin_subjects_screen.dart';
+import 'package:uni_connect/features/feed/presentation/admin/admin_users_screen.dart';
 
 import '../../features/auth/data/auth_repository.dart';
 

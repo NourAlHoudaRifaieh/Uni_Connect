@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:uni_connect/core/mock/mock_data.dart';
-import 'package:uni_connect/features/feed/presentation/post_details_screen.dart';
+import 'package:uni_connect/features/feed/presentation/student/post_details_screen.dart';
 import '../../../../core/models/post_model.dart';
 
 class PostCard extends StatelessWidget{

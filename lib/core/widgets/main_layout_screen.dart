@@ -3,13 +3,13 @@ import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uni_connect/core/widgets/custom_bottom_nav_bar.dart';
 import 'package:uni_connect/features/auth/data/auth_repository.dart';
-import 'package:uni_connect/features/feed/presentation/home_screen.dart';
+import 'package:uni_connect/features/feed/presentation/student/home_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:uni_connect/features/feed/presentation/profile_screen.dart';
-import 'package:uni_connect/features/feed/presentation/search_screen.dart';
-import 'package:uni_connect/features/feed/presentation/subject_screen.dart';
+import 'package:uni_connect/features/feed/presentation/student/profile_screen.dart';
+import 'package:uni_connect/features/feed/presentation/student/search_screen.dart';
+import 'package:uni_connect/features/feed/presentation/student/subject_screen.dart';
 
-import '../../features/feed/presentation/create_post_screen.dart';
+import '../../features/feed/presentation/student/create_post_screen.dart';
 
 class MainLayoutScreen extends StatefulWidget{
   const MainLayoutScreen({super.key});

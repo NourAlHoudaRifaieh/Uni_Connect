@@ -2,7 +2,7 @@ import 'package:go_router/go_router.dart';
 import 'package:uni_connect/core/widgets/admin_layout_screen.dart';
 import 'package:uni_connect/core/widgets/main_layout_screen.dart';
 import 'package:uni_connect/features/auth/presentation/splash_screen.dart';
-import 'package:uni_connect/features/feed/presentation/admin_dashboard_screen.dart';
+import 'package:uni_connect/features/feed/presentation/admin/admin_dashboard_screen.dart';
 // import 'package:uni_connect/features/feed/presentation/home_screen.dart';
 import '../features/auth/presentation/login_screen.dart';
 import '../features/auth/presentation//register_screen.dart';
