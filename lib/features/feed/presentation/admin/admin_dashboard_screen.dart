@@ -150,6 +150,146 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                   color: Colors.black,
                 ),
               ),
+              SizedBox(height:15),
+              Container(
+                padding: const EdgeInsets.all(15),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Colors.grey.shade200),
+                  boxShadow: [
+                    BoxShadow(
+                      color:Colors.black.withOpacity(0.03),
+                      blurRadius: 10,
+                      offset:Offset(0,8),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.only(top: 6),
+                          width: 8,
+                          height: 8,
+                          decoration: const BoxDecoration(
+                            color: Color(0xFF1D61FF),
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        SizedBox(width:7),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'New student registered Ziad Gemayed (Year 1)',
+                              style: GoogleFonts.inter(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: const Color(0xFF333333),
+                                height: 1.3,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              '2 min ago',
+                              style: GoogleFonts.inter(
+                                fontSize: 12,
+                                color: const Color(0xFF94A3B8),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    Divider(),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.only(top: 6),
+                          width: 8,
+                          height: 8,
+                          decoration: const BoxDecoration(
+                            color: Color(0xFF1D61FF),
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        SizedBox(width:7),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Subject added: Digital Marketing (Year 3)',
+                              style: GoogleFonts.inter(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: const Color(0xFF333333),
+                                height: 1.3,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              '3 min ago',
+                              style: GoogleFonts.inter(
+                                fontSize: 12,
+                                color: const Color(0xFF94A3B8),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    Divider(),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.only(top: 6),
+                          width: 8,
+                          height: 8,
+                          decoration: const BoxDecoration(
+                            color: Color(0xFF1D61FF),
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        SizedBox(width:7),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Group "BA-Year2" reached 200 members',
+                              style: GoogleFonts.inter(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: const Color(0xFF333333),
+                                height: 1.3,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              '15 min ago',
+                              style: GoogleFonts.inter(
+                                fontSize: 12,
+                                color: const Color(0xFF94A3B8),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),

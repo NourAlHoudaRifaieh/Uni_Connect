@@ -33,7 +33,8 @@ class DashboardManageStatCard extends StatelessWidget {
           border: isPrimary ? null : Border.all(color: Colors.grey.shade200),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.03),
+              // color: Colors.black.withOpacity(0.03),
+              color: isPrimary ? Color(0xFF2563EB).withOpacity(0.3) : Colors.black.withOpacity(0.03),
               blurRadius: 10,
               offset:Offset(0,8),
             ),
