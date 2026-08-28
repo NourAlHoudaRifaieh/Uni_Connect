@@ -55,6 +55,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     icon: Icons.people_alt_outlined,
                     title: '1,284',
                     subTitle: 'Total Students',
+                    // isPrimary:  true,
                   ),
                   DashboardStatCard(
                     icon: Icons.menu_book_outlined,
@@ -80,64 +81,74 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                 physics: NeverScrollableScrollPhysics(),
                 crossAxisSpacing: 15,
                 mainAxisSpacing: 15,
-                childAspectRatio: 1.30,
+                childAspectRatio: 1.60,
                 children: [
+                  // DashboardManageStatCard(
+                  //   icon: Icons.person_2_outlined,
+                  //   title: 'Manage Users',
+                  //   subTitle: '1,284 students',
+                  //   // onTap: (){
+                  //   //   Navigator.push(
+                  //   //       context,
+                  //   //       MaterialPageRoute(builder: (context)=> AdminUsersScreen()),
+                  //   //   );
+                  //   // },
+                  // ),
                   DashboardManageStatCard(
-                    icon: Icons.person_2_outlined,
-                    title: 'Manage Users',
-                    subTitle: '1,284 students',
-                    onTap: (){
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context)=> AdminUsersScreen()),
-                      );
-                    },
+                    icon: Icons.people_alt_outlined,
+                    title: 'Manage Groups',
+                    subTitle: '15 academic groups',
+                    isPrimary: true,
+                    // onTap: (){
+                    //   Navigator.push(
+                    //     context,
+                    //     MaterialPageRoute(builder: (context)=> AdminGroupsScreen()),
+                    //   );
+                    // },
                   ),
                   DashboardManageStatCard(
                     icon: Icons.menu_book_outlined,
                     title: 'Manage Subjects',
                     subTitle: '35 subjects',
-                    onTap: (){
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context)=> AdminSubjectsScreen()),
-                      );
-                    },
+                    // onTap: (){
+                    //   Navigator.push(
+                    //     context,
+                    //     MaterialPageRoute(builder: (context)=> AdminSubjectsScreen()),
+                    //   );
+                    // },
                   ),
-                  // DashboardManageStatCard(
-                  //   icon: Icons.add_outlined,
-                  //   title: 'Create Post',
-                  //   subTitle: 'AI categorization',
-                  //   onTap: (){
-                  //     Navigator.push(
-                  //       context,
-                  //       MaterialPageRoute(builder: (context)=> AdminUsersScreen()),
-                  //     );
-                  //   },
-                  // ),
                   DashboardManageStatCard(
                     icon: Icons.article_outlined,
                     title: 'Manage Posts',
                     subTitle: '3,421 posts',
-                    onTap: (){
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context)=> AdminPostsScreen()),
-                      );
-                    },
+                    // onTap: (){
+                    //   Navigator.push(
+                    //     context,
+                    //     MaterialPageRoute(builder: (context)=> AdminPostsScreen()),
+                    //   );
+                    // },
                   ),
                   DashboardManageStatCard(
-                    icon: Icons.people_alt_outlined,
-                    title: 'Manage Groups',
-                    subTitle: '15 academic groups',
-                    onTap: (){
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context)=> AdminGroupsScreen()),
-                      );
-                    },
+                    icon: Icons.add_outlined,
+                    title: 'Create Post',
+                    subTitle: 'AI categorization',
+                    // onTap: (){
+                    //   Navigator.push(
+                    //     context,
+                    //     MaterialPageRoute(builder: (context)=> AdminUsersScreen()),
+                    //   );
+                    // },
                   ),
                 ],
+              ),
+              SizedBox(height:15),
+              Text(
+                'Recent Activity',
+                style: GoogleFonts.inter(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
               ),
             ],
           ),
