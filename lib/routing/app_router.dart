@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:uni_connect/core/widgets/admin_layout_screen.dart';
 import 'package:uni_connect/core/widgets/main_layout_screen.dart';
 import 'package:uni_connect/features/auth/presentation/splash_screen.dart';
 import 'package:uni_connect/features/feed/presentation/admin_dashboard_screen.dart';
@@ -27,7 +28,7 @@ final GoRouter appRouter = GoRouter(
       ),
       GoRoute(
         path: '/admin-dashboard',
-        builder: (context, state) => AdminDashboardScreen(),
+        builder: (context, state) => AdminLayoutScreen(),
       ),
     ],
 );
