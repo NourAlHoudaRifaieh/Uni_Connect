@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:uni_connect/core/models/group_model.dart';
 import 'package:uni_connect/core/models/reply_model.dart';
 import 'package:uni_connect/core/models/subject_model.dart';
 import 'package:uni_connect/core/models/user_model.dart';
@@ -16,14 +17,14 @@ class MockData {
       'subjectId': 'sub_1',
       'subjectName': 'Theses Project',
       'subjectCode': 'THE601',
-      'academicYear': 'Master 2',
+      'academicYear': 'Year 5',
       'postCount': 5,
     },
     {
       'subjectId': 'sub_2',
       'subjectName': 'Advanced Data Analysis',
       'subjectCode': 'ADA601',
-      'academicYear': 'Master 1',
+      'academicYear': 'Year 4',
       'postCount': 9,
     },
     {
@@ -163,7 +164,7 @@ class MockData {
       'email': "ahmad.khouryt@st.ul.edu.lb",
       'role': 'student',
       'faculty': 'Marketing',
-      'academicYear': 'Master 1',
+      'academicYear': 'Year 4',
       'major': 'Accounting and Auditing',
       'postCount': 15,
     },
@@ -275,6 +276,40 @@ class MockData {
       _notificationList[i] = _notificationList[i].copyWith(isRead: true);
     }
   }
+
+
+
+  // raw JSON list matching local storage format
+  static final List<Map<String, dynamic>> groupsJson = [
+    {
+      'groupId': 'group_1',
+      'groupName': 'Business Computer',
+      'subjectId': 'sub_1',
+      'membersCount': 187,
+    },
+    {
+      'subjectId': 'group_2',
+      'groupName': 'Management',
+      'subjectId': 'sub_2',
+      'membersCount': 203,
+    },
+    {
+      'subjectId': 'group_3',
+      'groupName': 'Marketing',
+      'subjectId': 'sub_3',
+      'membersCount': 142,
+    },
+  ];
+ // in memory persistent list for groups
+  static final List<GroupModel> _groupList =
+      groupsJson.map((json) => GroupModel.fromJson(json)).toList();
+
+  static List<GroupModel> get groups => _groupList;
+  //add new group
+  static void addGroup(GroupModel newGroup){
+    _groupList.insert(0, newGroup);
+  }
+
 
 
 }

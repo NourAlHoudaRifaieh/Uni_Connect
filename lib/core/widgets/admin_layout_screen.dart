@@ -8,6 +8,7 @@ import 'package:uni_connect/features/feed/presentation/admin/admin_groups_screen
 import 'package:uni_connect/features/feed/presentation/admin/admin_posts_screen.dart';
 import 'package:uni_connect/features/feed/presentation/admin/admin_subjects_screen.dart';
 import 'package:uni_connect/features/feed/presentation/admin/admin_users_screen.dart';
+import 'package:uni_connect/features/feed/presentation/student/create_post_screen.dart';
 
 import '../../features/auth/data/auth_repository.dart';
 
@@ -28,8 +29,32 @@ class _AdminLayoutScreenState extends State <AdminLayoutScreen>{
     AdminUsersScreen(),
   ];
 
+  final List<Map<String, dynamic>> _headerData = const[
+    {
+      'title': 'Dashboard',
+      'subtitle': 'Lebanese University - Admin ',
+    },
+    {
+      'title': 'Manage Groups',
+      'subtitle': 'Lebanese University - Admin ',
+    },
+    {
+      'title': 'Manage Subjects',
+      'subtitle': 'Lebanese University - Admin ',
+    },
+    {
+      'title': 'Manage Posts',
+      'subtitle': 'Lebanese University - Admin ',
+    },
+    {
+      'title': 'User Management',
+      'subtitle': 'Lebanese University - Admin ',
+    },
+  ];
+
   @override
   Widget build(BuildContext context){
+    final currentHeader = _headerData[_currentIndex];
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -55,7 +80,8 @@ class _AdminLayoutScreenState extends State <AdminLayoutScreen>{
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Dashboard',
+                              // 'Dashboard',
+                              currentHeader['title']!,
                               style: GoogleFonts.inter(
                                 color: Colors.white,
                                 fontSize:25,
@@ -64,7 +90,8 @@ class _AdminLayoutScreenState extends State <AdminLayoutScreen>{
                             ),
                             const SizedBox(height:5),
                             Text(
-                              'Lebanese University - Admin',
+                              // 'Lebanese University - Admin',
+                              currentHeader['subtitle']!,
                               style: GoogleFonts.inter(
                                 color: Colors.white.withOpacity(0.7),
                                 fontSize:15,
@@ -73,7 +100,8 @@ class _AdminLayoutScreenState extends State <AdminLayoutScreen>{
                             ),
                           ],
                         ),
-                        GestureDetector(
+                        if(_currentIndex == 0) ...[
+                          GestureDetector(
                           onTap: ()async{
                             await AuthRepository().logout();
                             final prefs = await SharedPreferences.getInstance();
@@ -112,6 +140,45 @@ class _AdminLayoutScreenState extends State <AdminLayoutScreen>{
                             ),
                           ),
                         ),
+                        ]else if (_currentIndex == 3) ...[
+                          GestureDetector(
+                            // onTap: (){},
+                            onTap:(){
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context)=> CreatePostScreen()),
+                              );
+                            },
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 14,
+                                  vertical: 6
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.add_outlined,
+                                    color: Colors.white,
+                                    size:16,
+                                  ),
+                                  SizedBox(width:6),
+                                  Text(
+                                    'Add Post',
+                                    style: GoogleFonts.inter(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ]
                       ],
                     ),
                   ],

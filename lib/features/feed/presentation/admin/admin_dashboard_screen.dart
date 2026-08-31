@@ -6,6 +6,7 @@ import 'package:uni_connect/features/feed/presentation/admin/admin_groups_screen
 import 'package:uni_connect/features/feed/presentation/admin/admin_posts_screen.dart';
 import 'package:uni_connect/features/feed/presentation/admin/admin_subjects_screen.dart';
 import 'package:uni_connect/features/feed/presentation/admin/admin_users_screen.dart';
+import 'package:uni_connect/features/feed/presentation/student/create_post_screen.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/dashboard_manage_stat_card.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/dashboard_stat_card.dart';
 
@@ -132,12 +133,12 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     icon: Icons.add_outlined,
                     title: 'Create Post',
                     subTitle: 'AI categorization',
-                    // onTap: (){
-                    //   Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(builder: (context)=> AdminUsersScreen()),
-                    //   );
-                    // },
+                    onTap: (){
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context)=> CreatePostScreen()),
+                      );
+                    },
                   ),
                 ],
               ),
