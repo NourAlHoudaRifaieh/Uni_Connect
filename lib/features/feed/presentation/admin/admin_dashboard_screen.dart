@@ -100,6 +100,12 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     title: 'Manage Groups',
                     subTitle: '15 academic groups',
                     isPrimary: true,
+                    onTap: (){
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => AdminGroupsScreen(isStandalone: true)),
+                      );
+                    },
                     // onTap: (){
                     //   Navigator.push(
                     //     context,
