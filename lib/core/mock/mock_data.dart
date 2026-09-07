@@ -36,10 +36,20 @@ class MockData {
     },
   ];
   //Parsed Subject List using SubjectModel.fromJson
-  static List<SubjectModel> get subjects {
-    return subjectsJson.map((json)=> SubjectModel.fromJson(json)).toList();
-  }
+  // static List<SubjectModel> get subjects {
+  //   return subjectsJson.map((json)=> SubjectModel.fromJson(json)).toList();
+  // }
+  static final List<SubjectModel> _subjectList =
+    subjectsJson.map((json) => SubjectModel .fromJson(json)).toList();
 
+  static List <SubjectModel> get subjects => _subjectList;
+  //Add a new subject
+  static void addSubject(SubjectModel newSubject){
+    _subjectList.insert(0, newSubject);
+  }
+  static void deleteSubject(String subjectId){
+    _subjectList.removeWhere((s) => s.subjectId == subjectId);
+  }
 
   //raw JSON list for post
   static final List<Map<String, dynamic>> postsJson = [

@@ -36,9 +36,10 @@ class _AdminGroupsScreenState extends State<AdminGroupsScreen> {
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
+
       backgroundColor: widget.isStandalone
           ? Colors.white
-          : Colors.white.withOpacity(0.02),
+          : Color(0xFF1D61FF).withOpacity(0.02),
       // appBar: widget.isStandalone
       //     ? AppBar(
       //   backgroundColor: Colors.white,

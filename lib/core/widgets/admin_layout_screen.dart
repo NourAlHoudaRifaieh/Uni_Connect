@@ -24,8 +24,8 @@ class _AdminLayoutScreenState extends State <AdminLayoutScreen>{
   late final List<Widget> _screens= [
     AdminDashboardScreen(),
     AdminGroupsScreen(),
-    AdminPostsScreen(),
     AdminSubjectsScreen(),
+    AdminPostsScreen(),
     AdminUsersScreen(),
   ];
 
