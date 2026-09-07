@@ -286,18 +286,21 @@ class MockData {
       'groupName': 'Business Computer',
       'subjectId': 'sub_1',
       'membersCount': 187,
+      'academicYear': 'Year 2',
     },
     {
-      'subjectId': 'group_2',
+      'groupId': 'group_2',
       'groupName': 'Management',
       'subjectId': 'sub_2',
       'membersCount': 203,
+      'academicYear': 'Year 3',
     },
     {
-      'subjectId': 'group_3',
+      'groupId': 'group_3',
       'groupName': 'Marketing',
       'subjectId': 'sub_3',
       'membersCount': 142,
+      'academicYear': 'Year 4',
     },
   ];
  // in memory persistent list for groups

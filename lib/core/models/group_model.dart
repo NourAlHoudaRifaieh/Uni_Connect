@@ -5,7 +5,7 @@ class GroupModel{
   final String groupName;
   final String? userId;// foreign key
   final String? subjectId; //foreign key
-  // final String academicYear; --> need to use it from the user model
+  final String? academicYear; //-> need to use it from the user model
   final int membersCount;
   // final int postCount; --> need to use it from post moel
 
@@ -15,6 +15,7 @@ class GroupModel{
     required this.groupName,
     this.userId,
     this.subjectId,
+    this.academicYear,
     required this.membersCount,
   });
 
@@ -24,6 +25,7 @@ class GroupModel{
         groupId: json['groupId'] ?? '',
         userId: json['userId'] ?? '',
         subjectId: json['subjectId'] ?? '',
+        academicYear: json['academicYear'] ?? '',
         membersCount: json['membersCount'] ?? 0,
     );
   }

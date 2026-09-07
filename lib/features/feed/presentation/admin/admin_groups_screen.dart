@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:uni_connect/core/widgets/custom_elevated_button.dart';
 import '../../../../core/mock/mock_data.dart';
 import '../../../../core/models/subject_model.dart';
-import '../../../../core/models/user_model.dart';
 import '../widgets/group_card.dart';
+import 'create_goup_screen.dart';
 
 class AdminGroupsScreen extends StatefulWidget {
   AdminGroupsScreen({Key? key}) : super(key: key);
@@ -39,16 +39,26 @@ class _AdminGroupsScreenState extends State<AdminGroupsScreen> {
             children: [
               CustomElevatedButton(
                   text: 'Create New Group',
-                  onPressed: (){}
+                  onPressed: () async{
+                    //await the result from createGroupScree
+                    final result = await
+                    Navigator.push(
+                        context,
+                      MaterialPageRoute(builder: (context) => CreateGroupScreen()),
+                    );
+                    //rebuild screen if a group was created
+                    if(result == true && mounted){
+                      setState(() {
+
+                      });
+                    }
+                  }
               ),
               SizedBox(height:20),
               for (var group in MockData.groups) ...[
                 GroupCard(
                   group: group,
-                  // creator: MockData.users.cast<UserModel?>().firstWhere(
-                  //       (u) => u?.userId == group.userId,
-                  //   orElse: () => null,
-                  // ),
+                  academicYear: group.academicYear,
                   subject: MockData.subjects.cast<SubjectModel?>().firstWhere(
                         (s) => s?.subjectId == group.subjectId,
                     orElse: () => null,
@@ -58,7 +68,7 @@ class _AdminGroupsScreenState extends State<AdminGroupsScreen> {
                 ),
                 SizedBox(height: 16),
               ],
-              SizedBox(height: 20),
+              // SizedBox(height: 20),
             ],
           ),
         ),

@@ -4,37 +4,30 @@ import 'package:uni_connect/core/models/subject_model.dart';
 import '../../../../core/models/group_model.dart';
 import '../../../../core/models/user_model.dart';
 
-
 class GroupCard extends StatelessWidget {
 
   final GroupModel group;
-  // final UserModel? creator;
   final SubjectModel? subject;
-  // final VoidCallback? onMorePressed;
+  final UserModel? user;
+  final String? academicYear;
   final VoidCallback? onEditPressed;
   final VoidCallback? onDeletePressed;
-
 
   const GroupCard({
     super.key,
     required this.group,
-    // this.creator,
     this.subject,
-    // this.onMorePressed,
+    this.user,
+    this.academicYear,
     this.onEditPressed,
     this.onDeletePressed,
   });
 
-//   @override
-//   State<GroupCard> createState() => _GroupCardState();
-// }
-//
-// class _GroupCardState extends State<GroupCard> {
-//  bool _showActions = false;
-
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
+    //resolve academic year from direct string , user model or
+    final displayYear = academicYear ?? user?.academicYear ?? 'N/A';
     return Container(
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -56,20 +49,25 @@ class GroupCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                '${group.groupName} - ${subject?.academicYear ?? "N/A"}',
+                // '${group.groupName} - ${subject?.academicYear ?? "N/A"}',
+                '${group.groupName} - $displayYear',
                 style: GoogleFonts.inter(
                   fontWeight: FontWeight.bold,
                   fontSize: 15,
                 ),
               ),
               PopupMenuButton<String>(
-                icon: const Icon(Icons.more_vert, size: 20, color: Colors.grey),
+                style: IconButton.styleFrom(
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  padding: EdgeInsets.zero,
+                  minimumSize: Size.zero,
+                ),
                 color: Colors.white,
-                elevation: 6,
+                elevation: 5,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15),
                 ),
-                offset: const Offset(0, 30),
+                offset: const Offset(-5, 30),
                 onSelected: (value) {
                   if (value == 'edit' && onEditPressed != null) {
                     onEditPressed!();
@@ -82,13 +80,13 @@ class GroupCard extends StatelessWidget {
                     value: 'edit',
                     child: Row(
                       children: [
-                        const Icon(Icons.edit_outlined, color: Color(0xFF2563EB), size: 18),
+                        const Icon(Icons.edit_outlined, color: Color(0xFF2563EB), size: 15),
                         const SizedBox(width: 8),
                         Text(
                           'Edit',
                           style: GoogleFonts.inter(
                             color: const Color(0xFF2563EB),
-                            fontSize: 14,
+                            fontSize: 15,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -99,13 +97,13 @@ class GroupCard extends StatelessWidget {
                     value: 'delete',
                     child: Row(
                       children: [
-                        const Icon(Icons.delete_outline, color: Colors.redAccent, size: 18),
+                        const Icon(Icons.delete_outline, color: Colors.redAccent, size: 15),
                         const SizedBox(width: 8),
                         Text(
                           'Delete',
                           style: GoogleFonts.inter(
                             color: Colors.redAccent,
-                            fontSize: 14,
+                            fontSize: 15,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -113,10 +111,11 @@ class GroupCard extends StatelessWidget {
                     ),
                   ),
                 ],
+                child: const Icon(Icons.more_vert, size: 20, color: Colors.grey),
               ),
             ],
           ),
-          SizedBox(height:20),
+          SizedBox(height:15),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -193,7 +192,8 @@ class GroupCard extends StatelessWidget {
                   children: [
                     Text(
                       // 'Y1',
-                      subject?.academicYear ?? 'N/A',
+                      // subject?.academicYear ?? 'N/A',
+                      displayYear,
                       style: GoogleFonts.inter(
                         color: Colors.black87,
                         fontWeight: FontWeight.w600,
@@ -213,6 +213,7 @@ class GroupCard extends StatelessWidget {
               ),
             ],
           ),
+          SizedBox(height: 5),
         ],
       ),
     );

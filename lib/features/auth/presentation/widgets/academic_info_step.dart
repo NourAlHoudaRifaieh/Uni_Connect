@@ -24,8 +24,8 @@ const List<String> kAcademicYears = [
   'Year 1',
   'Year 2',
   'Year 3',
-  'Master 1',
-  'Master 2',
+  'Year 4',
+  'Year 5',
 ];
 
 
