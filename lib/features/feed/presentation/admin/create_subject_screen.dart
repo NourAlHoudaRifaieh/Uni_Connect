@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:uni_connect/core/models/group_model.dart';
+import 'package:uni_connect/core/models/subject_model.dart';
 import 'package:uni_connect/core/widgets/custom_form_field.dart';
-
 import '../../../../core/mock/mock_data.dart';
 import '../../../../core/widgets/custom_elevated_button.dart';
 
@@ -15,19 +14,25 @@ const List<String> kAcademicYears = [
 ];
 
 
-class CreateGroupScreen extends StatefulWidget {
-  CreateGroupScreen({Key? key}) : super(key: key);
+class CreateSubjectScreen extends StatefulWidget {
+
+  CreateSubjectScreen({
+    super.key,
+
+  });
 
   @override
-  _CreateGroupScreenState createState() {
-    return _CreateGroupScreenState();
+  _CreateSubjectScreenState createState() {
+    return _CreateSubjectScreenState();
   }
 }
 
-class _CreateGroupScreenState extends State<CreateGroupScreen> {
+class _CreateSubjectScreenState extends State<CreateSubjectScreen> {
+
 
   final _formKey = GlobalKey<FormState>();
-  TextEditingController _groupNameController = TextEditingController();
+  TextEditingController _subjectNameController = TextEditingController();
+  TextEditingController _subjectCodeController = TextEditingController();
 
   String? selectedYear;
   bool isLoading = false;
@@ -39,11 +44,12 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
 
   @override
   void dispose() {
-    _groupNameController.dispose();
+    _subjectNameController.dispose();
+    _subjectCodeController.dispose();
     super.dispose();
   }
 
-  void _onCreateGroup(){
+  void _onCreateSubject(){
     if(_formKey.currentState !=null && _formKey.currentState!.validate()){
       if(selectedYear == null){
         ScaffoldMessenger.of(context).showSnackBar(
@@ -51,13 +57,15 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
         );
         return;
       }
-      final newGroup = GroupModel(
-          groupName: _groupNameController.text.trim(),
-          membersCount: 0,
-          academicYear: selectedYear,
+      final newSubject = SubjectModel(
+        subjectId: 'sub_${DateTime.now().millisecondsSinceEpoch}',
+        subjectCode: _subjectCodeController.text.trim(),
+        subjectName: _subjectNameController.text.trim(),
+        academicYear: selectedYear,
+        postCount: 0
       );
 
-      MockData.addGroup(newGroup);
+      MockData.addSubject(newSubject);
       Navigator.pop(context,true);
     }
   }
@@ -91,13 +99,13 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                     child: Row(
                       children: [
                         Icon(Icons.chevron_left, color: Colors.white.withOpacity(0.7), size:20),
-                        Text('Groups', style: GoogleFonts.inter(color: Colors.white.withOpacity(0.7), fontWeight: FontWeight.w600)),
+                        Text('Subjects', style: GoogleFonts.inter(color: Colors.white.withOpacity(0.7), fontWeight: FontWeight.w600)),
                       ],
                     ),
                   ),
                   SizedBox(height:15),
                   Text(
-                      'Create New Group',
+                      'Create New Subject',
                       style: GoogleFonts.inter(fontSize: 18, fontWeight:  FontWeight.bold, color: Colors.white)
                   ),
                 ],
@@ -112,10 +120,17 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       CustomFormField(
-                        label: 'Group Name',
-                        hint: 'eg: Business Administration',
-                        controller: _groupNameController,
-                        validator: (value) => (value == null || value.trim().isEmpty) ? 'Please enter a group name' : null,
+                        label: 'Subject Name',
+                        hint: 'eg: Database Systems',
+                        controller: _subjectNameController,
+                        validator: (value) => (value == null || value.trim().isEmpty) ? 'Please enter a subject name' : null,
+                      ),
+                      SizedBox(height:20),
+                      CustomFormField(
+                        label: 'Subject Code',
+                        hint: 'eg: DB602',
+                        controller: _subjectCodeController,
+                        validator: (value) => (value == null || value.trim().isEmpty) ? 'Please enter a subject code' : null,
                       ),
                       SizedBox(height:20),
                       Text(
@@ -163,54 +178,20 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                           );
                         }).toList(),
                       ),
-                      SizedBox(height:50),
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(14),
-                        decoration: BoxDecoration(
-                          color:  Color(0xFFEFF6FF),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: Color(0xFF2563EB),
-                            width:1,
-                          ),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Auto-assignment',
-                              style: GoogleFonts.inter(
-                                color: Color(0xFF2563EB),
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                              ),
-                            ),
-                            Text(
-                              'Students who register with matching faculty and academic year are automatically assigned to the group.',
-                              style: GoogleFonts.inter(
-                                color: Color(0xFF2563EB),
-                                fontSize: 13,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
                     ],
                   ),
                 ),
               ),
             ),
             Padding(
-                padding: EdgeInsets.all(20),
+              padding: EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   SizedBox(height:20),
                   CustomElevatedButton(
                     text: 'Create Group',
-                    onPressed: _onCreateGroup,
+                    onPressed: _onCreateSubject,
                   ),
                 ],
               ),

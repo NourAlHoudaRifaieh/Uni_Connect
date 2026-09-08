@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:uni_connect/core/widgets/custom_form_field.dart';
+import 'package:uni_connect/features/feed/presentation/admin/create_subject_screen.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/academic_year_selector.dart';
 import '../../../../core/mock/mock_data.dart';
 import '../../../../core/widgets/custom_elevated_button.dart';
@@ -9,9 +11,11 @@ import '../widgets/subject_card.dart';
 class AdminSubjectsScreen extends StatefulWidget {
 
   final bool isStandalone;
+  // final VoidCallback onBack;
   AdminSubjectsScreen({
     super.key,
     this.isStandalone = false,
+    // required this.onBack,
   });
 
   @override
@@ -113,7 +117,136 @@ class _AdminSubjectsScreenState extends State<AdminSubjectsScreen> {
                     SizedBox(height:20),
                     CustomElevatedButton(
                         text: 'Add Subject to $_selectedYear',
-                        onPressed: (){},
+                        onPressed: () async{
+                          final result = await
+                          Navigator.push(
+                              context, 
+                              MaterialPageRoute(builder: (context) => CreateSubjectScreen())
+                          );
+                          if(result == true && mounted){
+                            setState(() {
+
+                            });
+                          }
+                        },
+                        // onPressed: (){
+                        //   showModalBottomSheet(
+                        //       context: context,
+                        //       isScrollControlled: true, // allows custom height
+                        //       shape: RoundedRectangleBorder(
+                        //         borderRadius: BorderRadius.vertical(
+                        //           top: Radius.circular(20),
+                        //         ),
+                        //       ),
+                        //       builder: (BuildContext context){
+                        //         return Padding(
+                        //           padding: EdgeInsets.only(
+                        //             bottom: MediaQuery.of(context).viewInsets.bottom,// handles keyboard padding
+                        //           ),
+                        //           child: Container(
+                        //             padding: EdgeInsets.all(20),
+                        //             height: 700, //set your desired popup  height
+                        //             width: double.infinity,
+                        //             child: Column(
+                        //               mainAxisSize: MainAxisSize.min,
+                        //               crossAxisAlignment: CrossAxisAlignment.stretch,
+                        //               children: [
+                        //                 Row(
+                        //                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        //                   children: [
+                        //                     Text(
+                        //                       'Edit Subject',
+                        //                       style: GoogleFonts.inter(
+                        //                         fontSize: 20,
+                        //                         fontWeight: FontWeight.bold,
+                        //                       ),
+                        //                     ),
+                        //                     Container(
+                        //                       width:40,
+                        //                       height: 40,
+                        //                       decoration: BoxDecoration(
+                        //                         border: Border.all(color: Colors.grey.shade200),
+                        //                         borderRadius: BorderRadius.circular(50),
+                        //                         color: Color(0xFF1D61FF).withOpacity(0.1),
+                        //                       ),
+                        //                       child: IconButton(
+                        //                         onPressed: (){
+                        //                           Navigator.pop(context);
+                        //                         },
+                        //                         icon: Icon(Icons.close, size: 20, color: Colors.grey.shade700),
+                        //                         style: IconButton.styleFrom(
+                        //
+                        //                         ),
+                        //                       ),
+                        //                     ),
+                        //                   ],
+                        //                 ),
+                        //                 SizedBox(height:20),
+                        //                 CustomFormField(
+                        //                     label: 'Subject Name',
+                        //                     hint: 'hint',
+                        //                     controller: '',
+                        //                 ),
+                        //                 CustomFormField(
+                        //                     label: 'Subject Code',
+                        //                     hint: 'hint',
+                        //                     controller: controller
+                        //                 ),
+                        //                 Text(
+                        //                   'Academic Year',
+                        //                   style: GoogleFonts.inter(
+                        //                     fontSize:14,
+                        //                     fontWeight: FontWeight.w600,
+                        //                     color: Color(0xFF2F3A4A),
+                        //                   ),
+                        //                 ),
+                        //                 Wrap(
+                        //                   spacing: 15,
+                        //                   runSpacing: 15,
+                        //                   children: kAcademicYears.map((year) {
+                        //                     final bool selected = selectedYear == year;
+                        //                     return GestureDetector(
+                        //                       onTap: (){
+                        //                         setState(() {
+                        //                           selectedYear = year;
+                        //                         });
+                        //                       },
+                        //                       child: Container(
+                        //                         width: (MediaQuery.of(context).size.width - 24 * 2 - 10) / 2,
+                        //                         padding: const EdgeInsets.symmetric(vertical: 14),
+                        //                         alignment: Alignment.center,
+                        //                         decoration: BoxDecoration(
+                        //                           color: selected ?  Color(0xFF2563EB) : Color(0xFFF3F4F6),
+                        //                           border: Border.all(
+                        //                             color: selected
+                        //                                 ?  Color(0xFFE2E8F0)
+                        //                                 : Colors.grey.shade300,
+                        //                             width: 1,
+                        //                           ),
+                        //                           borderRadius: BorderRadius.circular(20),
+                        //                         ),
+                        //                         child: Text(
+                        //                           year,
+                        //                           style: TextStyle(
+                        //                             color: selected ? Colors.white : Colors.black87,
+                        //                             fontWeight: FontWeight.w600,
+                        //                           ),
+                        //                         ),
+                        //                       ),
+                        //                     );
+                        //                   }).toList(),
+                        //                 ),
+                        //
+                        //               ],
+                        //             ),
+                        //           ),
+                        //         );
+                        //       },
+                        //   );
+                        // },
+
+
+
                         // onPressed: () async{
                         //   //await the result from createGroupScree
                         //   final result = await
