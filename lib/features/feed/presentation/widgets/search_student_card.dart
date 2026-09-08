@@ -4,40 +4,6 @@ import 'package:uni_connect/features/feed/presentation/widgets/seach_post_card.d
 
 import '../../../../core/models/user_model.dart';
 
-// class SearchStudentCardData{
-//   // final String category;
-//   final String authorInitials;
-//   final Color avatarColor;
-//   // final Color categoryColor;
-//   // final String subjectCode;
-//   // final String title;
-//   // final String preview;
-//   final String authorName;
-//   // final int likes;
-//   // final int comments;
-//   final String email;
-//   final String faculty;
-//   final String year;
-//   final int postCount;
-//
-//   const SearchStudentCardData({
-//     // required this.category,
-//     // required this.categoryColor,
-//     // required this.subjectCode,
-//     required this.authorInitials,
-//     required this.avatarColor,
-//     // required this.title,
-//     // required this.preview,
-//     // required this.likes,
-//     // required this.comments,
-//     required this.authorName,
-//     required this.email,
-//     required this.faculty,
-//     required this.year,
-//     required this.postCount,
-//   });
-// }
-
 class SearchStudentCard extends StatelessWidget {
 
   final UserModel user;

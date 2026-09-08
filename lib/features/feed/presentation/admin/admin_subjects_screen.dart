@@ -11,11 +11,9 @@ import '../widgets/subject_card.dart';
 class AdminSubjectsScreen extends StatefulWidget {
 
   final bool isStandalone;
-  // final VoidCallback onBack;
   AdminSubjectsScreen({
     super.key,
     this.isStandalone = false,
-    // required this.onBack,
   });
 
   @override

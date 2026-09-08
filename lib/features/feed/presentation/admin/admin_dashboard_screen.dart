@@ -117,12 +117,12 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     icon: Icons.menu_book_outlined,
                     title: 'Manage Subjects',
                     subTitle: '35 subjects',
-                    // onTap: (){
-                    //   Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(builder: (context)=> AdminSubjectsScreen()),
-                    //   );
-                    // },
+                    onTap: (){
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context)=> AdminSubjectsScreen(isStandalone: true)),
+                      );
+                    },
                   ),
                   DashboardManageStatCard(
                     icon: Icons.article_outlined,
