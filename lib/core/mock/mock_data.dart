@@ -11,39 +11,30 @@ import '../models/post_model.dart';
 
 class MockData {
 
-  // raw JSON list matching local storage format
-  static final List<Map<String, dynamic>> subjectsJson = [
-    {
-      'subjectId': 'sub_1',
-      'subjectName': 'Theses Project',
-      'subjectCode': 'THE601',
-      'academicYear': 'Year 5',
-      'postCount': 5,
-    },
-    {
-      'subjectId': 'sub_2',
-      'subjectName': 'Advanced Data Analysis',
-      'subjectCode': 'ADA601',
-      'academicYear': 'Year 4',
-      'postCount': 9,
-    },
-    {
-      'subjectId': 'sub_3',
-      'subjectName': 'Leadership & Innovation',
-      'subjectCode': 'LDR601',
-      'academicYear': 'Year 3',
-      'postCount': 5,
-    },
+  static final List<SubjectModel> _subjectList = [
+    SubjectModel(
+      subjectId: 'sub_1',
+      subjectName: 'Theses Project',
+      subjectCode: 'THE601',
+      academicYear: 'Year 5',
+      postCount: 5,
+    ),
+    SubjectModel(
+      subjectId: 'sub_2',
+      subjectName: 'Advanced Data Analysis',
+      subjectCode: 'ADA601',
+      academicYear: 'Year 4',
+      postCount: 9,
+    ),
+    SubjectModel(
+      subjectId: 'sub_3',
+      subjectName: 'Leadership & Innovation',
+      subjectCode: 'LDR601',
+      academicYear: 'Year 3',
+      postCount: 5,
+    ),
   ];
-  //Parsed Subject List using SubjectModel.fromJson
-  // static List<SubjectModel> get subjects {
-  //   return subjectsJson.map((json)=> SubjectModel.fromJson(json)).toList();
-  // }
-  static final List<SubjectModel> _subjectList =
-    subjectsJson.map((json) => SubjectModel .fromJson(json)).toList();
-
   static List <SubjectModel> get subjects => _subjectList;
-  //Add a new subject
   static void addSubject(SubjectModel newSubject){
     _subjectList.insert(0, newSubject);
   }
@@ -51,81 +42,65 @@ class MockData {
     _subjectList.removeWhere((s) => s.subjectId == subjectId);
   }
 
-  //raw JSON list for post
-  static final List<Map<String, dynamic>> postsJson = [
-    {
-      'postId': 'post_1',
-      'title': 'Assignment 3 - ER Diagram help Needed',
-      'description': "I'm stuck on the ER Diagram Help Needed",
-      'userId': 'user_1',
-      'authorName': 'Lara Haddad',
-      'categoryId': 'cat_1',
-      'categoryName': 'Assignments',
-      'subjectId': 'sub_1',
-      'subjectCode': 'D109',
-      'createdAt': DateTime.now().subtract(Duration(hours: 5)).toIso8601String(),
-      'likes': 7,
-      'comments': 2,
-      'isLiked': false,
-    },
-    {
-      'postId': 'post_2',
-      'title': 'Python OOP — Inheritance Pattern for AI Assignment',
-      'description': "For the AI assignment I structured my neural network using Python inheritance: Layer → DenseLayer...",
-      'userId': 'user_2',
-      'authorName': 'Rami Farhat',
-      'categoryId': 'cat_2',
-      'categoryName': 'Programming',
-      'subjectId': 'sub_2',
-      'subjectCode': 'DB105',
-      'createdAt': DateTime.now().subtract(Duration(hours: 1)).toIso8601String(),
-      'likes': 2,
-      'comments': 2,
-      'isLiked':false,
-    },
-    {
-      'postId': 'post_3',
-      'title': 'Database Normalization - Final Exam Tips',
-      'description': "Hey everyone! The final exam is next week. Professor Hajj mentioned that 3NF will be heavily tested on the test. Make sure to review functional dependencies, canonical covers, and candidate key decompositions carefully. Let's set up a study group in the campus library this Thursday around 4 PM if anyone wants to practice past exam questions together!",
-      'userId': 'user_3',
-      'authorName': 'Ahmad Khoury',
-      'categoryId': 'cat_1',
-      'categoryName': 'Exams',
-      'subjectId': 'sub_3',
-      'subjectCode': 'DB201',
-      'createdAt': DateTime.now().subtract(Duration(hours: 2)).toIso8601String(),
-      'likes': 7,
-      'comments': 1,
-      'isLiked': false,
-    },
+
+  static final List<PostModel> _postList =[
+    PostModel(
+      postId: 'post_1',
+      title: 'Assignment 3 - ER Diagram help Needed',
+      description: "I'm stuck on the ER Diagram Help Needed",
+      userId: 'user_1',
+      authorName: 'Lara Haddad',
+      categoryId: 'cat_1',
+      categoryName: 'Assignments',
+      subjectId: 'sub_1',
+      subjectCode: 'D109',
+      createdAt: DateTime.now().subtract(Duration(hours: 5)),
+      comments: 2,
+      likedBy:[],
+    ),
+    PostModel(
+      postId: 'post_2',
+      title: 'Python OOP — Inheritance Pattern for AI Assignment',
+      description: "For the AI assignment I structured my neural network using Python inheritance: Layer → DenseLayer...",
+      userId: 'user_2',
+      authorName: 'Rami Farhat',
+      categoryId: 'cat_2',
+      categoryName: 'Programming',
+      subjectId: 'sub_2',
+      subjectCode: 'DB105',
+      createdAt: DateTime.now().subtract(Duration(hours: 1)),
+      comments: 2,
+      likedBy:['user_1'],
+    ),
+    PostModel(
+      postId: 'post_3',
+      title: 'Database Normalization - Final Exam Tips',
+      description: "Hey everyone! The final exam is next week. Professor Hajj mentioned that 3NF will be heavily tested on the test. Make sure to review functional dependencies, canonical covers, and candidate key decompositions carefully. Let's set up a study group in the campus library this Thursday around 4 PM if anyone wants to practice past exam questions together!",
+      userId: 'user_3',
+      authorName: 'Ahmad Khoury',
+      categoryId: 'cat_1',
+      categoryName: 'Exams',
+      subjectId: 'sub_3',
+      subjectCode: 'DB201',
+      createdAt: DateTime.now().subtract(Duration(hours: 2)),
+      comments: 1,
+      likedBy:['user_1, user_2'],
+  ),
   ];
-  //Parsed Subject List using SubjectModel.fromJson
-  // static List<PostModel> get posts {
-  //   return postsJson.map((json)=> PostModel.fromJson(json)).toList();
-  // }
-  //in memory persistent list for posts
-  static final List<PostModel> _postList = postsJson.map((json) => PostModel.fromJson(json)).toList();
   static List<PostModel> get posts => _postList;
-  //adds new post to the top of the in-memory list
-   static void addPost(PostModel newPost){
-      posts.insert(0, newPost);
+  static void addPost(PostModel newPost){
+      _postList.insert(0, newPost);
    }
-  // static void toggleLike(String postId) {
-  //   final index = postsJson.indexWhere((json) => json['postId'] == postId);
-  //   if (index != -1) {
-  //     // Toggles between adding and removing a like dynamically
-  //     final isLiked = postsJson[index]['isLiked'] ?? false;
-  //     final currentLikes = postsJson[index]['likes'] as int? ?? 0;
-  //
-  //     postsJson[index]['isLiked'] = !isLiked;
-  //     postsJson[index]['likes'] = isLiked ? currentLikes - 1 : currentLikes + 1;
-  //   }
-  static void toggleLike(String postId) {
+  static void toggleLike(String postId, String userId) {
     final index = _postList.indexWhere((post) => post.postId == postId);
-    if (index != -1) {
+      if(index == -1) return;
       final post = _postList[index];
-      final newIsLiked = !post.isLiked;
-      final newLikes = newIsLiked ? post.likes + 1 : post.likes - 1;
+      final likedBy = List<String>.from(post.likedBy);
+      if(likedBy.contains(userId)){
+        likedBy.remove(userId);
+      }else{
+        likedBy.add(userId);
+      }
 
       _postList[index] = PostModel(
         postId: post.postId,
@@ -138,11 +113,10 @@ class MockData {
         subjectId: post.subjectId,
         subjectCode: post.subjectCode,
         createdAt: post.createdAt,
-        likes: newLikes,
         comments: post.comments,
-        isLiked: newIsLiked,
+        likedBy: likedBy,
       );
-    }
+    // }
   }
 
 
@@ -229,9 +203,29 @@ class MockData {
       'createdAt': DateTime.now().subtract(const Duration(hours: 1)).toIso8601String(),
     },
   ];
+  static final List<ReplyModel> _replList =[
+    ReplyModel(
+        replyId: 'reply_1',
+        postId: 'post_1',
+        userId: 'user_1',
+        authorName: 'Lara Haddad',
+        content: 'This is so helpful! Do you have practice questions too?',
+        createdAt: DateTime.now().subtract(const Duration(hours: 2)),
+    ),
+    ReplyModel(
+        replyId: 'reply_2',
+        postId: 'post_1',
+        userId: 'user_2',
+        authorName: 'Rami Farhat',
+        content: 'What about BCNF - is that include in the exam?',
+        createdAt: DateTime.now().subtract(const Duration(hours: 1)),
+    ),
+  ];
   //parsed replies List using ReplyModel.fromJson
-  static List<ReplyModel> get replies{
-    return repliesJson.map((json) => ReplyModel.fromJson(json)).toList();  }
+  static List<ReplyModel> get replies => _replList;
+  static void addReply(ReplyModel reply){
+    _replList.add(reply);
+  }
 
 
 

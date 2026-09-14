@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:uni_connect/features/feed/presentation/student/post_details_screen.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/category_selector.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/post_card.dart';
 import '../../../../core/mock/mock_data.dart';
@@ -151,7 +152,16 @@ class _SubjectDetailsScreenState extends State<SubjectDetailsScreen> {
                   final post = displayedPosts[index];
                   return PostCard(
                     post: post,
-                    onTap: () {
+                    onTap: () async{
+                      await Navigator.push(
+                          context, 
+                          MaterialPageRoute(builder: (context) => PostDetailsScreen(post: post))
+                      );
+                      if(mounted){
+                        setState(() {
+
+                        });
+                      }
                       // will open post detail screen later
                     },
                     onLikeTap: (){},

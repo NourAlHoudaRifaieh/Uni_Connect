@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 
 class SubjectModel{
   final String? subjectId;
@@ -25,23 +24,26 @@ class SubjectModel{
     );
   }
 
+  //For firestore
+  factory SubjectModel.fromFirestore(Map<String, dynamic> data, String id){
+    return SubjectModel(
+      subjectCode: data['subjectCode'] ?? '',
+      subjectName: data['subjectName'] ?? '',
+      academicYear: data['academicYear'] ?? '',
+      postCount: data['postCount'] ?? 0,
+    );
+  }
+
   Map<String, dynamic> toJson(){
     return{
-      'subjectId': subjectId,
+      if (subjectId != null ) 'subjectId': subjectId,
       'subjectCode': subjectCode,
       'subjectName': subjectName,
-      'academicYear': academicYear,
+      if(academicYear != null) 'academicYear': academicYear,
       'postCount': postCount,
     };
   }
 
-  //For firestore
-  factory SubjectModel.fromFirestore(Map<String, dynamic> data, String id){
-    return SubjectModel(
-        subjectCode: data['subjectCode'] ?? '',
-        subjectName: data['subjectName'] ?? '',
-        postCount: data['postCount'] ?? 0,
-    );
-  }
+
 
 }

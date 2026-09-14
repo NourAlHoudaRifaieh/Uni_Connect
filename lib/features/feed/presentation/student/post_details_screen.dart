@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/comment_card.dart';
@@ -25,6 +26,9 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
   late bool _isLiked;
   late int _likeCount;
 
+  //Whoever's currently logged in
+  String get _currentUserId => FirebaseAuth.instance.currentUser?.uid ?? '';
+
   @override
   void initState() {
     super.initState();
@@ -33,15 +37,15 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
         .where((reply) => reply.postId == widget.post.postId)
         .toList();
     //Inilize like state from post widgt
-    _isLiked = widget.post.isLiked;
+    _isLiked = widget.post.isLikedBy(_currentUserId);
     _likeCount = widget.post.likes;
   }
 
   void _toggleLike(){
-    if(widget.post.postId == null) return;
+    if(widget.post.postId == null || _currentUserId.isEmpty) return;
 
     //Update central state first
-    MockData.toggleLike(widget.post.postId!);
+    MockData.toggleLike(widget.post.postId!, _currentUserId);
 
     setState(() {
       _isLiked = !_isLiked;
@@ -67,16 +71,35 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
   void _addComment() {
     final text = _commentController.text.trim();
     if (text.isEmpty) return;
+    // get current logged-in user details 
+    final currentUser = FirebaseAuth.instance.currentUser;
+    final authorName = currentUser?.displayName ?? currentUser?.email?.split('@').first ?? 'User';
 
     final newReply = ReplyModel(
       replyId: 'reply_${DateTime.now().millisecondsSinceEpoch}',
       postId: widget.post.postId ?? '',
-      authorName: 'Nour Al Houda',
+      authorName: authorName,
       content: text,
       createdAt: DateTime.now(),
-      userId: '',
+      userId: _currentUserId,
     );
-
+    //Save reply to MockData
+    MockData.addReply(newReply);
+    //Update the post comment counter inside MockData feed list
+    if(widget.post.postId != null){
+      try{
+        final postIndex = MockData.posts.indexWhere((p) => p.postId == widget.post.postId);
+        if(postIndex != -1){
+          final currentPost = MockData.posts[postIndex];
+          MockData.posts[postIndex] = currentPost.copyWith(
+            comments: currentPost.comments + 1,
+          );
+        }
+      }catch(_){
+        
+      }
+    }
+    
     setState(() {
       _replies.add(newReply);
       _commentController.clear();

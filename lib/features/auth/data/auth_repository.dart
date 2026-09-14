@@ -72,7 +72,7 @@ class AuthRepository {
 
   String _mapAuthError(String code){
     switch(code){
-      case 'email-already-in-case':
+      case 'email-already-in-use':
         return ' An account already exists with this email.';
       case 'invalid-email':
         return 'That email address looks invalid.';

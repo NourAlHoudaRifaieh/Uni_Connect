@@ -4,6 +4,7 @@ import 'package:uni_connect/core/models/post_model.dart';
 import 'package:uni_connect/core/widgets/custom_form_field.dart';
 import 'package:uni_connect/features/feed/presentation/student/create_post_screen.dart';
 import 'package:uni_connect/features/feed/presentation/student/notification_screen.dart';
+import 'package:uni_connect/features/feed/presentation/student/post_details_screen.dart';
 import 'package:uni_connect/features/feed/presentation/student/profile_screen.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/category_selector.dart';
 import '../widgets/post_card.dart';
@@ -227,19 +228,43 @@ class _HomeScreenState extends State <HomeScreen>{
                   itemCount: displayedPosts.length,
                   itemBuilder: (context, index) {
                     final post = displayedPosts[index];
+                    // return PostCard(
+                    //   post: post,
+                    //   onTap: () {
+                    //     setState(() {
+                    //     });
+                    //     // will open post detail screen later
+                    //   },
+                    //   onLikeTap: (){
+                    //     setState(() {
+                    //
+                    //     });
+                    //   },
+                    //   onCommentTap: (){},
+                    // );
                     return PostCard(
                       post: post,
-                      onTap: () {
-                        setState(() {
-                        });
-                        // will open post detail screen later
+                      // onTap: () {
+                      //   // will open post detail screen later
+                      // },
+                      onTap: () async{
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => PostDetailsScreen(post: post))
+                        );
+                        if(mounted){
+                          setState(() {
+
+                          });
+                        }
                       },
                       onLikeTap: (){
                         setState(() {
 
                         });
                       },
-                      onCommentTap: (){},
+                      onCommentTap: () {
+                      },
                     );
                   },
                 ),

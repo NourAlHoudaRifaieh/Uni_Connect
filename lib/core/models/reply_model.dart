@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ReplyModel{
   final String replyId;
@@ -37,31 +37,41 @@ class ReplyModel{
     }
   }
 
-  factory ReplyModel.fromJson(Map<String, dynamic> json){
+  factory ReplyModel.fromJson(Map<String, dynamic> json) {
     return ReplyModel(
-        replyId: json['replyId'] ?? '',
-        postId: json['postId'] ?? '',
-        authorName: json['authorName'] ?? '',
-        userId: json['userId']?? '',
-        content: json['content'] ?? '',
-        createdAt: json['createdAt'] is DateTime
-          ? json['createdAt']
-          : (json['createdAt'] != null
-          ? DateTime.tryParse(json['createdAt'].toString()) ?? DateTime.now()
-          : DateTime.now()
-        ),
+      replyId: json['replyId'] ?? '' ,
+      postId: json['postId'] ?? '',
+      userId: json['userId'] ?? '',
+      authorName: json['authorName'] ?? '',
+      content: json['content'] ?? '',
+      createdAt: json['createdAt'] != null
+          ? (json['createdAt'] is DateTime
+            ? json['createdAt']
+            : DateTime.tryParse(json['createdAt'].toString()) ?? DateTime.now())
+          : DateTime.now(),
+    );
+  }
+
+  factory ReplyModel.fromFirestore(Map<String, dynamic> data, String id){
+    return ReplyModel(
+        replyId: id,
+        postId: data['postId'] ?? '',
+        authorName: data['authorName'] ?? '',
+        userId: data['userId']?? '',
+        content: data['content'] ?? '',
+        createdAt: data['createdAt'] is Timestamp
+         ? (data['createdAt'] as Timestamp).toDate()
+          : DateTime.now(),
     );
   }
 
   Map<String, dynamic> toJson(){
     return{
-      if( replyId != null) 'replyId': replyId,
       'postId': postId,
-      if(userId != null) 'userId': userId,
+      'userId': userId,
       'authorName': authorName,
-      'authorInitials': authorInitials,
       'content': content,
-      'createdAt': createdAt.toIso8601String(),
+      'createdAt': FieldValue.serverTimestamp(),
     };
   }
 

@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:uni_connect/core/mock/mock_data.dart';
@@ -47,6 +48,8 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         );
         return;
       }
+      final currentUserid = FirebaseAuth.instance.currentUser?.uid ?? '';
+
       final newPost = PostModel(
         postId: 'post_${DateTime.now().millisecondsSinceEpoch}',
         title: _titleController.text.trim(),
@@ -56,9 +59,8 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         subjectId: selectedSubject?.subjectId,
         categoryName: 'General',
         createdAt: DateTime.now(),
-        likes: 0,
         comments: 0,
-        isLiked: false,
+        likedBy: [],
       );
 
       MockData.addPost(newPost);
@@ -200,6 +202,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                         label:'Title',
                         hint: 'What is your question or topic',
                         controller: _titleController,
+                        maxLines: 1,
                         validator: (value) => (value == null || value.trim().isEmpty) ? 'Please enter a title' : null,
                       ),
                       SizedBox(height:20),

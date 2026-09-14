@@ -1,4 +1,3 @@
-import "package:flutter/material.dart";
 
 class GroupModel{
   final String? groupId;
@@ -7,8 +6,6 @@ class GroupModel{
   final String? subjectId; //foreign key
   final String? academicYear; //-> need to use it from the user model
   final int membersCount;
-  // final int postCount; --> need to use it from post moel
-
 
   GroupModel({
     this.groupId,
@@ -18,6 +15,25 @@ class GroupModel{
     this.academicYear,
     required this.membersCount,
   });
+
+  // Add copyWith to duplicate existing instances with updated fields
+  GroupModel copyWith({
+    String? groupId,
+    String? groupName,
+    String? userId,
+    String? subjectId,
+    String? academicYear,
+    int? membersCount,
+  }) {
+    return GroupModel(
+      groupId: groupId ?? this.groupId,
+      groupName: groupName ?? this.groupName,
+      userId: userId ?? this.userId,
+      subjectId: subjectId ?? this.subjectId,
+      academicYear: academicYear ?? this.academicYear,
+      membersCount: membersCount ?? this.membersCount,
+    );
+  }
 
   factory GroupModel.fromJson(Map<String, dynamic> json){
     return GroupModel(
@@ -30,24 +46,25 @@ class GroupModel{
     );
   }
 
+  factory GroupModel.fromFirestore(Map<String, dynamic> data, String id){
+    return GroupModel(
+      groupId: id,
+      groupName: data['groupName'] ?? '',
+      subjectId: data['subjectId'] ?? '',
+      membersCount: data['membersCount'] ?? 0,
+      academicYear: data['academicYear'] ?? '',
+      userId: data['userId'] ,
+    );
+  }
+
   Map<String, dynamic> toJson(){
     return{
       if(groupId != null) 'groupId': groupId,
       'groupName': groupName,
       if(userId != null) 'userId': userId,
-      // 'userId': userId,
       'subjectId': subjectId,
       'membersCount': membersCount,
     };
   }
 
-  factory GroupModel.fromFirestore(Map<String, dynamic> data, String id){
-    return GroupModel(
-        groupId: id,
-        groupName: data['groupName'] ?? '',
-        subjectId: data['subjectId'] ?? '',
-        membersCount: data['membersCount'] ?? 0,
-        userId: data['data'] as String?,
-    );
-  }
 }

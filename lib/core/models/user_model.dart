@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 
 class UserModel {
   final String userId;
@@ -21,6 +20,27 @@ class UserModel {
     this.postCount=0,
   });
 
+  UserModel copyWith({
+    String? userId,
+    String? fullName,
+    String? email,
+    String? role,
+    String? faculty,
+    String? academicYear,
+    String? major,
+    int? postCount,
+  }) {
+    return UserModel(
+      userId: userId ?? this.userId,
+      fullName: fullName ?? this.fullName,
+      email: email ?? this.email,
+      role: role ?? this.role,
+      faculty: faculty ?? this.faculty,
+      academicYear: academicYear ?? this.academicYear,
+      major: major ?? this.major,
+      postCount: postCount ?? this.postCount,
+    );
+  }
 
   bool get isAdmin => role == 'admin';
   bool get isStudent => role == 'student';
@@ -48,6 +68,19 @@ class UserModel {
     );
   }
 
+  factory UserModel.fromFirestore(Map<String, dynamic> data, String id){
+    return UserModel(
+        userId: id,
+        fullName: data['fullName'] ?? '',
+        email: data['email'] ?? '',
+        role: data['role'] ?? 'student',
+        faculty: data['faculty'],
+        academicYear: data['academicYear'],
+        major: data['major'],
+        postCount: data['postCount'] ?? 0,
+    );
+  }
+
   Map<String, dynamic> toJson(){
     return{
       'userId':userId,
@@ -57,7 +90,7 @@ class UserModel {
       if(faculty !=null) 'faculty': faculty,
       if(academicYear !=null) 'academicYear': academicYear,
       if(major !=null) 'major':major,
-      'postCount': major,
+      'postCount': postCount,
     };
   }
 

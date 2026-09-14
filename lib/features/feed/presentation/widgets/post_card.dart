@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:uni_connect/core/mock/mock_data.dart';
@@ -9,6 +10,8 @@ class PostCard extends StatelessWidget{
   final VoidCallback? onTap;
   final VoidCallback? onLikeTap;
   final VoidCallback? onCommentTap;
+  final VoidCallback? onEditPressed;
+  final VoidCallback? onDeletePressed;
 
   const PostCard({
     super.key,
@@ -16,23 +19,27 @@ class PostCard extends StatelessWidget{
     required this.post,
     this.onLikeTap,
     this.onCommentTap,
+    this.onEditPressed,
+    this.onDeletePressed,
   });
 
   @override
   Widget build(BuildContext context){
+    final currentUserId = FirebaseAuth.instance.currentUser?.uid ?? '';
     return GestureDetector(
-      onTap: () async{
-        //Get the updated post object from MockData
-        final currentPost = MockData.posts.firstWhere(
-            (p) => p.postId == post.postId,
-          orElse: () => post,
-        );
-        await Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context)=> PostDetailsScreen(post:post)),
-        );
-        if(onTap != null) onTap!();
-      },
+      // onTap: () async{
+      //   //Get the updated post object from MockData
+      //   final currentPost = MockData.posts.firstWhere(
+      //       (p) => p.postId == post.postId,
+      //     orElse: () => post,
+      //   );
+      //   await Navigator.push(
+      //     context,
+      //     MaterialPageRoute(builder: (context)=> PostDetailsScreen(post:post)),
+      //   );
+      //   if(onTap != null) onTap!();
+      // },
+      onTap: onTap,
       child: Container(
         margin: const EdgeInsets.only(bottom:14),
         padding: const EdgeInsets.all(14),
@@ -109,11 +116,68 @@ class PostCard extends StatelessWidget{
                     ],
                   ),
                 ),
-                GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: (){},
-                  child: Icon(Icons.more_vert, size: 20),
+                PopupMenuButton<String>(
+                  style: IconButton.styleFrom(
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    padding: EdgeInsets.zero,
+                    minimumSize: Size.zero,
+                  ),
+                  color: Colors.white,
+                  elevation: 5,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  offset: const Offset(-5, 30),
+                  onSelected: (value) {
+                    if (value == 'edit' && onEditPressed != null) {
+                      onEditPressed!();
+                    } else if (value == 'delete' && onDeletePressed != null) {
+                      onDeletePressed!();
+                    }
+                  },
+                  itemBuilder: (context) => [
+                    PopupMenuItem<String>(
+                      value: 'edit',
+                      child: Row(
+                        children: [
+                          const Icon(Icons.edit_outlined, color: Color(0xFF2563EB), size: 15),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Edit',
+                            style: GoogleFonts.inter(
+                              color: const Color(0xFF2563EB),
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem<String>(
+                      value: 'delete',
+                      child: Row(
+                        children: [
+                          const Icon(Icons.delete_outline, color: Colors.redAccent, size: 15),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Delete',
+                            style: GoogleFonts.inter(
+                              color: Colors.redAccent,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                  child: const Icon(Icons.more_vert, size: 20, color: Colors.grey),
                 ),
+                // GestureDetector(
+                //   behavior: HitTestBehavior.opaque,
+                //   onTap: (){},
+                //   child: Icon(Icons.more_vert, size: 20),
+                // ),
               ],
             ),
             const SizedBox(height:10),
@@ -158,8 +222,8 @@ class PostCard extends StatelessWidget{
                 Spacer(),
                 GestureDetector(
                   onTap: (){
-                    if(post.postId != null){
-                      MockData.toggleLike(post.postId!);
+                    if(post.postId != null && currentUserId.isNotEmpty){
+                      MockData.toggleLike(post.postId!, currentUserId);
                       if(onLikeTap !=null) onLikeTap!();
                     }
                   },
@@ -167,17 +231,17 @@ class PostCard extends StatelessWidget{
                   child: Row(
                     children: [
                       Icon(
-                        post.isLiked ? Icons.favorite : Icons.favorite_border,
+                        post.isLikedBy(currentUserId) ? Icons.favorite : Icons.favorite_border,
                         size: 16,
-                        color: post.isLiked ? Colors.red : Colors.grey.shade600,
+                        color: post.isLikedBy(currentUserId) ? Colors.red : Colors.grey.shade600,
                       ),
                       SizedBox(width:4),
                       Text(
                         '${post.likes}',
                         style: GoogleFonts.inter(
                           fontSize: 12,
-                          fontWeight: post.isLiked ? FontWeight.bold : FontWeight.normal,
-                          color:post.isLiked ? Colors.red: Colors.grey.shade600,
+                          fontWeight: post.isLikedBy(currentUserId) ? FontWeight.bold : FontWeight.normal,
+                          color:post.isLikedBy(currentUserId) ? Colors.red: Colors.grey.shade600,
                         ),
                       ),
                     ],

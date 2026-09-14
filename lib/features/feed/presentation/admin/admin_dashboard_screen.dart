@@ -105,6 +105,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                           context,
                           MaterialPageRoute(builder: (context) => AdminGroupsScreen(isStandalone: true)),
                       );
+                      if(mounted){
+                        setState(() {
+
+                        });
+                      }
                     },
                     // onTap: (){
                     //   Navigator.push(
@@ -122,18 +127,28 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                         context,
                         MaterialPageRoute(builder: (context)=> AdminSubjectsScreen(isStandalone: true)),
                       );
+                      if(mounted){
+                        setState(() {
+
+                        });
+                      }
                     },
                   ),
                   DashboardManageStatCard(
                     icon: Icons.article_outlined,
                     title: 'Manage Posts',
                     subTitle: '3,421 posts',
-                    // onTap: (){
-                    //   Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(builder: (context)=> AdminPostsScreen()),
-                    //   );
-                    // },
+                    onTap: (){
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context)=> AdminPostsScreen(isStandalone: true,)),
+                      );
+                      if(mounted){
+                        setState(() {
+
+                        });
+                      }
+                    },
                   ),
                   DashboardManageStatCard(
                     icon: Icons.add_outlined,
@@ -144,6 +159,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                         context,
                         MaterialPageRoute(builder: (context)=> CreatePostScreen()),
                       );
+                      if(mounted){
+                        setState(() {
+
+                        });
+                      }
                     },
                   ),
                 ],
