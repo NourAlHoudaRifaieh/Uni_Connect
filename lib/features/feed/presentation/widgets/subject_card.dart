@@ -17,7 +17,7 @@ class SubjectCard extends StatelessWidget {
     this.onEditPressed,
     this.onDeletePressed,
   });
-  final List<SubjectModel> subjects = MockData.subjects;
+  // final List<SubjectModel> subjects = MockData.subjects;
 
   @override
   Widget build(BuildContext context) {

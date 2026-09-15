@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:uni_connect/core/models/group_model.dart';
 import 'package:uni_connect/core/widgets/custom_form_field.dart';
+import 'package:uni_connect/features/auth/data/group_repository.dart';
 
 import '../../../../core/mock/mock_data.dart';
 import '../../../../core/widgets/custom_elevated_button.dart';
@@ -43,7 +44,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
     super.dispose();
   }
 
-  void _onCreateGroup(){
+  void _onCreateGroup() async{
     if(_formKey.currentState !=null && _formKey.currentState!.validate()){
       if(selectedYear == null){
         ScaffoldMessenger.of(context).showSnackBar(
@@ -51,14 +52,35 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
         );
         return;
       }
-      final newGroup = GroupModel(
+      setState(() {
+        isLoading = true;
+      });
+      try{
+        final newGroup = GroupModel(
           groupName: _groupNameController.text.trim(),
           membersCount: 0,
           academicYear: selectedYear,
-      );
+        );
 
-      MockData.addGroup(newGroup);
-      Navigator.pop(context,true);
+        final groupRepository = GroupRepository();
+        await groupRepository.createGroup(newGroup);
+
+        if(mounted){
+          Navigator.pop(context, true);
+        }
+      }catch(e){
+        if(mounted){
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to create group: $e')),
+          );
+        }
+      }finally{
+        if(mounted){
+          setState(() {
+            isLoading = false;
+          });
+        }
+      }
     }
   }
 

@@ -26,8 +26,9 @@ class GroupCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    //resolve academic year from direct string , user model or
-    final displayYear = academicYear ?? user?.academicYear ?? 'N/A';
+    final rawYear = academicYear ?? group.academicYear ?? user?.academicYear;
+    final bool hasYear = rawYear != null && rawYear.trim().isNotEmpty && rawYear != 'N/A';
+    final String displayYear = hasYear ? rawYear : '';
     return Container(
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -50,7 +51,8 @@ class GroupCard extends StatelessWidget {
             children: [
               Text(
                 // '${group.groupName} - ${subject?.academicYear ?? "N/A"}',
-                '${group.groupName} - $displayYear',
+                // '${group.groupName} - $displayYear',
+                hasYear ? '${group.groupName} - $displayYear' : group.groupName,
                 style: GoogleFonts.inter(
                   fontWeight: FontWeight.bold,
                   fontSize: 15,
@@ -193,7 +195,8 @@ class GroupCard extends StatelessWidget {
                     Text(
                       // 'Y1',
                       // subject?.academicYear ?? 'N/A',
-                      displayYear,
+                      displayYear.isNotEmpty ? displayYear : 'N/A',
+                      // displayYear,
                       style: GoogleFonts.inter(
                         color: Colors.black87,
                         fontWeight: FontWeight.w600,

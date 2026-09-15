@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:uni_connect/core/widgets/custom_form_field.dart';
+import 'package:uni_connect/core/models/subject_model.dart';
+import 'package:uni_connect/features/auth/data/subject_repository.dart';
 import 'package:uni_connect/features/feed/presentation/admin/create_subject_screen.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/academic_year_selector.dart';
-import '../../../../core/mock/mock_data.dart';
 import '../../../../core/widgets/custom_elevated_button.dart';
 import '../widgets/subject_card.dart';
 
@@ -23,28 +23,17 @@ class AdminSubjectsScreen extends StatefulWidget {
 }
 
 class _AdminSubjectsScreenState extends State<AdminSubjectsScreen> {
-
+  final SubjectRepository _subjectRepository = SubjectRepository();
   String _selectedYear = 'Year 1';
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     // Filter groups based on selected academic year
-    final filteredSubjects = MockData.subjects.where((subject) {
-      if (_selectedYear == 'All Years') return true;
-      return subject.academicYear == _selectedYear;
-    }).toList();
+    // final filteredSubjects = MockData.subjects.where((subject) {
+    //   if (_selectedYear == 'All Years') return true;
+    //   return subject.academicYear == _selectedYear;
+    // }).toList();
 
     return Scaffold(
       backgroundColor: widget.isStandalone
@@ -261,40 +250,72 @@ class _AdminSubjectsScreenState extends State<AdminSubjectsScreen> {
                         // }
                     ),
                     SizedBox(height:20),
-                    if (filteredSubjects.isEmpty)
-                      Center(
-                        child: Padding(
-                            padding: EdgeInsets.symmetric(
-                              vertical: 40,
-                            ),
-                          child: Text('No Subjects available for $_selectedYear',
-                            style: GoogleFonts.inter(
-                              color: Colors.grey.shade500,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
-                      )
-                    else
-                      ListView.separated(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: filteredSubjects.length,
-                        separatorBuilder: (context, index) => const SizedBox(height: 12),
-                        itemBuilder: (context, index) {
-                        final subject = filteredSubjects[index];
-                        return SubjectCard(
-                          subject: subject,
-                          academicYear: _selectedYear,
-                          onEditPressed: () {
-                          // Handle Subject Edit
-                          },
-                          onDeletePressed: () {
-                          // Handle Subject Delete
-                          },
-                        );
-                        },
-                      ),
+                    StreamBuilder<List<SubjectModel>>(
+                        stream: _subjectRepository.watchAllSubjects(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Center(
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(vertical: 40),
+                                child: CircularProgressIndicator(),
+                              ),
+                            );
+                          }
+
+                          final allSubjects = snapshot.data ?? [];
+                          final filteredSubjects = allSubjects.where((subject) {
+                            if (_selectedYear == 'All Years') return true;
+                            return subject.academicYear == _selectedYear;
+                          }).toList();
+
+                          if (filteredSubjects.isEmpty) {
+                            return Center(
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(
+                                  vertical: 40,
+                                ),
+                                child: Text(
+                                  'No Subjects available for $_selectedYear',
+                                  style: GoogleFonts.inter(
+                                    color: Colors.grey.shade500,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                            );
+                          }
+
+                          return ListView.separated(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: filteredSubjects.length,
+                            separatorBuilder: (context,
+                                index) => const SizedBox(height: 12),
+                            itemBuilder: (context, index) {
+                              final subject = filteredSubjects[index];
+                              return SubjectCard(
+                                subject: subject,
+                                academicYear: _selectedYear,
+                                onEditPressed: () {
+                                  // Handle Subject Edit
+                                },
+                                onDeletePressed: () async{
+                                  if(subject.subjectId != null){
+                                    await _subjectRepository.deleteSubject(subject.subjectId!);
+                                    if(mounted){
+                                      setState(() {
+
+                                      });
+                                    }
+                                  }
+                                },
+                              );
+                            },
+                          );
+
+                        }
+                    ),
                   ],
                 ),
               ),

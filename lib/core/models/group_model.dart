@@ -63,6 +63,7 @@ class GroupModel{
       'groupName': groupName,
       if(userId != null) 'userId': userId,
       'subjectId': subjectId,
+      'academicYear': academicYear,
       'membersCount': membersCount,
     };
   }

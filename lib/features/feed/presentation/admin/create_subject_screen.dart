@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:uni_connect/core/models/subject_model.dart';
 import 'package:uni_connect/core/widgets/custom_form_field.dart';
+import 'package:uni_connect/features/auth/data/subject_repository.dart';
 import '../../../../core/mock/mock_data.dart';
 import '../../../../core/widgets/custom_elevated_button.dart';
 
@@ -33,6 +34,7 @@ class _CreateSubjectScreenState extends State<CreateSubjectScreen> {
   final _formKey = GlobalKey<FormState>();
   TextEditingController _subjectNameController = TextEditingController();
   TextEditingController _subjectCodeController = TextEditingController();
+  final SubjectRepository _subjectRepository = SubjectRepository();
 
   String? selectedYear;
   bool isLoading = false;
@@ -49,7 +51,7 @@ class _CreateSubjectScreenState extends State<CreateSubjectScreen> {
     super.dispose();
   }
 
-  void _onCreateSubject(){
+  Future <void> _onCreateSubject() async{
     if(_formKey.currentState !=null && _formKey.currentState!.validate()){
       if(selectedYear == null){
         ScaffoldMessenger.of(context).showSnackBar(
@@ -57,16 +59,35 @@ class _CreateSubjectScreenState extends State<CreateSubjectScreen> {
         );
         return;
       }
-      final newSubject = SubjectModel(
-        subjectId: 'sub_${DateTime.now().millisecondsSinceEpoch}',
-        subjectCode: _subjectCodeController.text.trim(),
-        subjectName: _subjectNameController.text.trim(),
-        academicYear: selectedYear,
-        postCount: 0
-      );
+      setState(() {
+        isLoading= true;
+      });
 
-      MockData.addSubject(newSubject);
-      Navigator.pop(context,true);
+      try{
+        final newSubject = SubjectModel(
+          subjectId: 'sub_${DateTime.now().millisecondsSinceEpoch}',
+          subjectCode: _subjectCodeController.text.trim(),
+          subjectName: _subjectNameController.text.trim(),
+          academicYear: selectedYear,
+          postCount: 0
+        );
+        await _subjectRepository.createSubject(newSubject);
+        if(mounted){
+          Navigator.pop(context, true);
+        }
+      }catch(e){
+        if(mounted){
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error creating subject: $e')),
+          );
+        }
+      }finally{
+        if(mounted){
+          setState(() {
+            isLoading = false;
+          });
+        }
+      }
     }
   }
 

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:uni_connect/core/models/group_model.dart';
 import 'package:uni_connect/core/widgets/custom_elevated_button.dart';
+import 'package:uni_connect/features/auth/data/group_repository.dart';
 import '../../../../core/mock/mock_data.dart';
 import '../../../../core/models/subject_model.dart';
 import '../widgets/group_card.dart';
-import 'create_goup_screen.dart';
+import 'create_group_screen.dart';
 
 class AdminGroupsScreen extends StatefulWidget {
 
@@ -21,15 +23,35 @@ class AdminGroupsScreen extends StatefulWidget {
 }
 
 class _AdminGroupsScreenState extends State<AdminGroupsScreen> {
-  @override
-  void initState() {
-    super.initState();
-  }
+ final GroupRepository _groupRepository = GroupRepository();
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
+ void _deleteGroup(String? groupId) async{
+   if(groupId == null) return;
+   final confirm = await showDialog<bool>(
+       context: context,
+       builder: (context) => AlertDialog(
+         title: Text('Delete Group'),
+         content: Text('Are you sure you want to delete this group?'),
+         actions:[
+           TextButton(
+               onPressed: (){
+                 Navigator.pop(context, false);
+               },
+               child: Text('Cancel'),
+           ),
+           TextButton(
+               onPressed: (){
+                 Navigator.pop(context, true);
+               },
+               child: Text('Delete', style: GoogleFonts.inter(color: Colors.red)),
+           ),
+         ],
+       ),
+   );
+   if(confirm == true){
+     await _groupRepository.deleteGroup(groupId);
+   }
+ }
 
 
   @override
@@ -40,24 +62,6 @@ class _AdminGroupsScreenState extends State<AdminGroupsScreen> {
       backgroundColor: widget.isStandalone
           ? Colors.white
           : Color(0xFF1D61FF).withOpacity(0.02),
-      // appBar: widget.isStandalone
-      //     ? AppBar(
-      //   backgroundColor: Colors.white,
-      //   elevation: 0,
-      //   leading: IconButton(
-      //     icon: const Icon(Icons.arrow_back, color: Colors.black87),
-      //     onPressed: () => Navigator.pop(context),
-      //   ),
-      //   title: Text(
-      //     'Manage Groups',
-      //     style: GoogleFonts.inter(
-      //       color: Colors.black87,
-      //       fontWeight: FontWeight.bold,
-      //       fontSize: 18,
-      //     ),
-      //   ),
-      // )
-      //     : null,
       body: SafeArea(
         child: Column(
           children: [
@@ -130,19 +134,58 @@ class _AdminGroupsScreenState extends State<AdminGroupsScreen> {
                           }
                       ),
                       SizedBox(height:20),
-                      for (var group in MockData.groups) ...[
-                        GroupCard(
-                          group: group,
-                          academicYear: group.academicYear,
-                          subject: MockData.subjects.cast<SubjectModel?>().firstWhere(
-                                (s) => s?.subjectId == group.subjectId,
-                            orElse: () => null,
-                          ),
-                          onEditPressed: () {},
-                          onDeletePressed: () {},
-                        ),
-                        SizedBox(height: 16),
-                      ],
+                      StreamBuilder<List<GroupModel>>(
+                          stream: _groupRepository.watchAllGroups(),
+                          builder: (context, snapshot){
+                            if(snapshot.connectionState == ConnectionState.waiting){
+                              return Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            }
+                            if(snapshot.hasError){
+                              return Center(
+                                child: Text('Error: ${snapshot.error}'),
+                              );
+                            }
+                            final groups = snapshot.data ?? [];
+                            if(groups.isEmpty){
+                              return Center(
+                                child: Padding(
+                                  padding: EdgeInsets.all(40),
+                                  child: Text('No groups found.'),
+                                ),
+                              );
+                            }
+                            return Column(
+                              children: groups.map((group){
+                                return Padding(
+                                  padding: EdgeInsets.all(16),
+                                  child: GroupCard(
+                                      group: group,
+                                      academicYear: group.academicYear,
+                                    onEditPressed: (){},
+                                    onDeletePressed: (){
+                                        _deleteGroup(group.groupId);
+                                    },
+                                  ),
+                                );
+                              }).toList(),
+                            );
+                          }
+                      ),
+                      // for (var group in MockData.groups) ...[
+                      //   GroupCard(
+                      //     group: group,
+                      //     academicYear: group.academicYear,
+                      //     subject: MockData.subjects.cast<SubjectModel?>().firstWhere(
+                      //           (s) => s?.subjectId == group.subjectId,
+                      //       orElse: () => null,
+                      //     ),
+                      //     onEditPressed: () {},
+                      //     onDeletePressed: () {},
+                      //   ),
+                      //   SizedBox(height: 16),
+                      // ],
                       // SizedBox(height: 20),
                     ],
                   ),
