@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:uni_connect/features/auth/data/subject_repository.dart';
 import 'package:uni_connect/features/feed/presentation/student/subject_details_screen.dart';
 import '../../../../core/mock/mock_data.dart';
 import '../../../../core/models/subject_model.dart';
@@ -10,7 +11,8 @@ class SubjectScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    final List<SubjectModel> subjects = MockData.subjects;
+    // final List<SubjectModel> subjects = MockData.subjects;
+    final SubjectRepository _subjectRepository = SubjectRepository();
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -18,23 +20,46 @@ class SubjectScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('My Subjects',
-                      style: GoogleFonts.inter(fontSize: 22, fontWeight:  FontWeight.bold)
-                  ),
-                  SizedBox(height:4),
-                  Text('Master 2 - ${subjects.length} subjects enrolled',
-                    style: GoogleFonts.inter(
-                        fontSize: 13, color: Colors.grey.shade600
+            StreamBuilder<List<SubjectModel>>(
+                stream: _subjectRepository.watchAllSubjects(),
+                builder: (context, snapshot){
+                  final subjects = snapshot.data ?? [];
+                  return Padding(
+                    padding: EdgeInsets.all(20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('My Subjects',
+                            style: GoogleFonts.inter(fontSize: 22, fontWeight:  FontWeight.bold)
+                        ),
+                        SizedBox(height:4),
+                        Text('Master 2 - ${subjects.length} subjects enrolled',
+                          style: GoogleFonts.inter(
+                              fontSize: 13, color: Colors.grey.shade600
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
-              ),
+                  );
+                },
             ),
+            // Padding(
+            //   padding: EdgeInsets.all(20),
+            //   child: Column(
+            //     crossAxisAlignment: CrossAxisAlignment.start,
+            //     children: [
+            //       Text('My Subjects',
+            //           style: GoogleFonts.inter(fontSize: 22, fontWeight:  FontWeight.bold)
+            //       ),
+            //       SizedBox(height:4),
+            //       Text('Master 2 - ${subjects.length} subjects enrolled',
+            //         style: GoogleFonts.inter(
+            //             fontSize: 13, color: Colors.grey.shade600
+            //         ),
+            //       ),
+            //     ],
+            //   ),
+            // ),
             Container(
               height: 1,
               width: double.infinity,
@@ -60,83 +85,190 @@ class SubjectScreen extends StatelessWidget {
                 padding: EdgeInsets.all(20),
                 child: Column(
                   children: [
-                    GridView.builder(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: subjects.length,
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          mainAxisSpacing: 14,
-                          crossAxisSpacing: 14,
-                          childAspectRatio: 1.1
-                      ),
-                      itemBuilder: (context , index){
-                        SubjectModel subject = subjects[index];
-                        return GestureDetector(
-                          onTap: (){
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context)=> SubjectDetailsScreen(subject:subject)),
+                    StreamBuilder<List<SubjectModel>>(
+                        stream: _subjectRepository.watchAllSubjects(),
+                        builder: (context, snapshot){
+                          if(snapshot.connectionState == ConnectionState.waiting){
+                            return Center(
+                              child: Padding(
+                                  padding: EdgeInsets.symmetric(vertical:40),
+                                child: CircularProgressIndicator(),
+                              ),
                             );
-                          },
-                          child: Container(
-                            padding: EdgeInsets.all(14),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(color: Colors.grey.shade200),
+                          }
+
+                          final subjects = snapshot.data ?? [];
+                          if(subjects.isEmpty){
+                            return Center(
+                              child: Padding(
+                                  padding: EdgeInsets.symmetric(vertical:40),
+                                child: Text('No subjects enrolled yet.',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 14,
+                                    color: Colors.grey.shade500
+                                  ),
+                                ),
+                              ),
+                            );
+                          }
+
+                          return GridView.builder(
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            itemCount: subjects.length,
+                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                mainAxisSpacing: 14,
+                                crossAxisSpacing: 14,
+                                childAspectRatio: 1.1
                             ),
-                            child:  Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  width: 40,
-                                  height: 40,
+                            itemBuilder: (context , index){
+                              SubjectModel subject = subjects[index];
+                              return GestureDetector(
+                                onTap: (){
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context)=> SubjectDetailsScreen(subject:subject)),
+                                  );
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.all(14),
                                   decoration: BoxDecoration(
-                                    color: Color(0xFF1D61FF).withOpacity(0.12),
-                                    borderRadius: BorderRadius.circular(10),
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(20),
+                                    border: Border.all(color: Colors.grey.shade200),
                                   ),
-                                  child: Icon(Icons.menu_book, color: Color(0xFF1D61FF), size:20),
-                                ),
-                                SizedBox(height:10),
-                                Text(
-                                  subject.subjectCode,
-                                  style: GoogleFonts.inter(
-                                      fontSize: 11,
-                                      color: Colors.grey.shade500
-                                  ),
-                                ),
-                                SizedBox(height:2),
-                                Text(
-                                  subject.subjectName,
-                                  style: GoogleFonts.inter(
-                                      fontSize: 14, fontWeight: FontWeight.bold
-                                  ),
-                                ),
-                                Spacer(),
-                                Row(
-                                  children: [
-                                    Container(
-                                      width:6,
-                                      height:6,
-                                      decoration: BoxDecoration(
-                                        color: Color(0xFF1D61FF),
-                                        shape: BoxShape.circle,
+                                  child:  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Container(
+                                        width: 40,
+                                        height: 40,
+                                        decoration: BoxDecoration(
+                                          color: Color(0xFF1D61FF).withOpacity(0.12),
+                                          borderRadius: BorderRadius.circular(10),
+                                        ),
+                                        child: Icon(Icons.menu_book, color: Color(0xFF1D61FF), size:20),
                                       ),
-                                    ),
-                                    SizedBox(width:6),
-                                    Text(
-                                        '${subject.postCount} posts',
-                                        style: GoogleFonts.inter(fontSize: 11, color: Colors.grey.shade500)
-                                    ),
-                                  ],
+                                      SizedBox(height:10),
+                                      Text(
+                                        subject.subjectCode ?? '',
+                                        style: GoogleFonts.inter(
+                                            fontSize: 11,
+                                            color: Colors.grey.shade500
+                                        ),
+                                      ),
+                                      SizedBox(height:2),
+                                      Text(
+                                        subject.subjectName ?? '',
+                                        style: GoogleFonts.inter(
+                                            fontSize: 14, fontWeight: FontWeight.bold
+                                        ),
+                                      ),
+                                      Spacer(),
+                                      Row(
+                                        children: [
+                                          Container(
+                                            width:6,
+                                            height:6,
+                                            decoration: BoxDecoration(
+                                              color: Color(0xFF1D61FF),
+                                              shape: BoxShape.circle,
+                                            ),
+                                          ),
+                                          SizedBox(width:6),
+                                          Text(
+                                              '${subject.postCount ?? 0} posts',
+                                              style: GoogleFonts.inter(fontSize: 11, color: Colors.grey.shade500)
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
+                              );
+                            },
+                          );
+
+                        }
                     ),
+                    // GridView.builder(
+                    //   shrinkWrap: true,
+                    //   physics: NeverScrollableScrollPhysics(),
+                    //   itemCount: subjects.length,
+                    //   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    //       crossAxisCount: 2,
+                    //       mainAxisSpacing: 14,
+                    //       crossAxisSpacing: 14,
+                    //       childAspectRatio: 1.1
+                    //   ),
+                    //   itemBuilder: (context , index){
+                    //     SubjectModel subject = subjects[index];
+                    //     return GestureDetector(
+                    //       onTap: (){
+                    //         Navigator.push(
+                    //           context,
+                    //           MaterialPageRoute(builder: (context)=> SubjectDetailsScreen(subject:subject)),
+                    //         );
+                    //       },
+                    //       child: Container(
+                    //         padding: EdgeInsets.all(14),
+                    //         decoration: BoxDecoration(
+                    //           color: Colors.white,
+                    //           borderRadius: BorderRadius.circular(20),
+                    //           border: Border.all(color: Colors.grey.shade200),
+                    //         ),
+                    //         child:  Column(
+                    //           crossAxisAlignment: CrossAxisAlignment.start,
+                    //           children: [
+                    //             Container(
+                    //               width: 40,
+                    //               height: 40,
+                    //               decoration: BoxDecoration(
+                    //                 color: Color(0xFF1D61FF).withOpacity(0.12),
+                    //                 borderRadius: BorderRadius.circular(10),
+                    //               ),
+                    //               child: Icon(Icons.menu_book, color: Color(0xFF1D61FF), size:20),
+                    //             ),
+                    //             SizedBox(height:10),
+                    //             Text(
+                    //               subject.subjectCode,
+                    //               style: GoogleFonts.inter(
+                    //                   fontSize: 11,
+                    //                   color: Colors.grey.shade500
+                    //               ),
+                    //             ),
+                    //             SizedBox(height:2),
+                    //             Text(
+                    //               subject.subjectName,
+                    //               style: GoogleFonts.inter(
+                    //                   fontSize: 14, fontWeight: FontWeight.bold
+                    //               ),
+                    //             ),
+                    //             Spacer(),
+                    //             Row(
+                    //               children: [
+                    //                 Container(
+                    //                   width:6,
+                    //                   height:6,
+                    //                   decoration: BoxDecoration(
+                    //                     color: Color(0xFF1D61FF),
+                    //                     shape: BoxShape.circle,
+                    //                   ),
+                    //                 ),
+                    //                 SizedBox(width:6),
+                    //                 Text(
+                    //                     '${subject.postCount} posts',
+                    //                     style: GoogleFonts.inter(fontSize: 11, color: Colors.grey.shade500)
+                    //                 ),
+                    //               ],
+                    //             ),
+                    //           ],
+                    //         ),
+                    //       ),
+                    //     );
+                    //   },
+                    // ),
                     SizedBox(height:20),
                     Container(
                       width: double.infinity,
