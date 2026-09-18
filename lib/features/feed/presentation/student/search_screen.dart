@@ -1,11 +1,14 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:uni_connect/core/mock/mock_data.dart';
 import 'package:uni_connect/core/models/post_model.dart';
 import 'package:uni_connect/core/widgets/custom_elevated_button.dart';
 import 'package:uni_connect/core/widgets/custom_form_field.dart';
+import 'package:uni_connect/features/auth/data/post_repository.dart';
+import 'package:uni_connect/features/auth/data/user_repository.dart';
 import 'package:uni_connect/features/feed/presentation/student/post_details_screen.dart';
-import 'package:uni_connect/features/feed/presentation/widgets/seach_post_card.dart';
+import 'package:uni_connect/features/feed/presentation/widgets/search_post_card.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/search_student_card.dart';
 
 import '../../../../core/models/user_model.dart';
@@ -24,9 +27,11 @@ class SearchScreenState extends State<SearchScreen>{
 
   final TextEditingController _searchController = TextEditingController();
   int _selectedIndex = 0;
+  final PostRepository _postRepository = PostRepository();
+  UserRepository _userRepository = UserRepository();
 
-  List<PostModel> get posts => MockData.posts;
-  List<UserModel> get students => MockData.students;
+  // List<PostModel> get posts => MockData.posts;
+  // List<UserModel> get students => MockData.students;
 
 
   @override
@@ -45,7 +50,7 @@ class SearchScreenState extends State<SearchScreen>{
     super.dispose();
   }
 
-  List<PostModel> get _filteredPosts{
+  List<PostModel> _filteredPosts(List<PostModel> posts){
     final query = _searchController.text.trim().toLowerCase();
     if (query.isEmpty) return posts;
     
@@ -60,7 +65,7 @@ class SearchScreenState extends State<SearchScreen>{
     }).toList();
   }
 
-  List <UserModel> get _filteredStudents{
+  List <UserModel> _filteredStudents(List<UserModel> students){
     final query = _searchController.text.trim().toLowerCase();
     if (query.isEmpty) return students;
     return students.where((student){
@@ -163,60 +168,80 @@ class SearchScreenState extends State<SearchScreen>{
             SizedBox(height:15),
             Expanded(
                 child: _selectedIndex ==0
-                ?(_filteredPosts.isEmpty
-                    ? Center(
-                      child: Text(
-                        'No results found',
-                        style: GoogleFonts.inter(
-                          fontSize: 16,
-                          color: Colors.grey.shade500,
-                        ),
-                      ),
-                    )
-                    : ListView.builder(
+                ? StreamBuilder<List<PostModel>>(
+                    stream: _postRepository.watchAllPosts(),
+                    builder: (context, snapshot){
+                      if( snapshot.connectionState == ConnectionState.waiting){
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+                      final filteredPosts = _filteredPosts(snapshot.data ?? []);
+                      if(filteredPosts.isEmpty){
+                        return Center(
+                          child: Text(
+                            'No results found',
+                            style: GoogleFonts.inter(
+                              fontSize: 16,
+                              color: Colors.grey.shade500,
+                            ),
+                          ),
+                        );
+                      }
+                      return ListView.builder(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
-                        itemCount: _filteredPosts.length,
+                        itemCount: filteredPosts.length,
                         itemBuilder: (context, index) {
-                          final post = _filteredPosts[index];
+                          final post = filteredPosts[index];
                           return SearchPostCard(
-                            post: post,
-                            onTap: () async {
-                              final currentPost = MockData.posts.firstWhere(
-                                    (p) => p.postId == post.postId,
-                                orElse: () => post,
-                              );
-                             await  Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context)=> PostDetailsScreen(post: post)),
-                            );
-                             setState(() {
+                              post: post,
+                              onTap: () async {
+                                await  Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context)=> PostDetailsScreen(post: post)),
+                                );
+                                setState(() {
 
-                             });
-                            }
+                                });
+                              }
                           );
                         },
-                    )
-                )
-                : (_filteredStudents.isEmpty
-                    ? Center(
-                      child: Text(
-                        'No results found',
-                        style: GoogleFonts.inter(
-                          fontSize: 16,
-                          color: Colors.grey.shade500,
-                        ),
-                      ),
-                    )
-                    : ListView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      itemCount: _filteredStudents.length,
-                      itemBuilder: (context, index) {
-                        return SearchStudentCard(
-                          user: _filteredStudents[index],
+                      );
+                    }
+                  )
+                : StreamBuilder<List<UserModel>>(
+                    stream: _userRepository.watchAllUsers(),
+                    builder: (context, snapshot){
+                      if(snapshot.connectionState == ConnectionState.waiting){
+                        return Center(
+                          child: CircularProgressIndicator(),
                         );
-                      },
-                    )
-                ),
+                      }
+                      final filteredStudents = _filteredStudents(snapshot.data ?? []);
+                      if(filteredStudents.isEmpty){
+                        return Center(
+                          child: Text(
+                            'No results found',
+                            style: GoogleFonts.inter(
+                              fontSize: 16,
+                              color: Colors.grey.shade500,
+                            ),
+                          ),
+                        );
+                      }
+                      return ListView.builder(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        itemCount: filteredStudents.length,
+                        itemBuilder: (context, index) {
+                          return SearchStudentCard(
+                            user: filteredStudents[index],
+                          );
+                        },
+                      );
+                    },
+                  )
+
+
             ),
           ],
         ),

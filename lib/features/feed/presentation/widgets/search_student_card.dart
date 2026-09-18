@@ -1,6 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:uni_connect/features/feed/presentation/widgets/seach_post_card.dart';
+import 'package:uni_connect/features/auth/data/user_repository.dart';
+import 'package:uni_connect/features/feed/presentation/widgets/search_post_card.dart';
 
 import '../../../../core/models/user_model.dart';
 
@@ -20,7 +22,6 @@ class SearchStudentCard extends StatelessWidget {
       if(facultyText.isNotEmpty) facultyText,
       if(yearText.isNotEmpty) yearText,
     ].join('-');
-
 
     // TODO: implement build
     return Container(
@@ -47,7 +48,7 @@ class SearchStudentCard extends StatelessWidget {
                 radius: 18,
                 backgroundColor:Color(0xFF1D61FF),
                 child: Text(
-                  user.authorInitials,
+                  user.authorInitials.isNotEmpty ? user.authorInitials : "U",
                   style: GoogleFonts.inter(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -63,14 +64,14 @@ class SearchStudentCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      user.fullName,
+                      user.fullName ?? "Unknown Student",
                       style: GoogleFonts.inter(
                           fontWeight: FontWeight.bold,
                           fontSize:14
                       ),
                     ),
                     Text(
-                      user.email,
+                      user.email ?? 'No email provided',
                       style: GoogleFonts.inter(
                           fontSize: 12,
                           color: Colors.grey.shade600
@@ -79,7 +80,8 @@ class SearchStudentCard extends StatelessWidget {
                       overflow:  TextOverflow.ellipsis,
                     ),
                     Text(
-                      '${user.faculty} - ${user.academicYear}',
+                      metadataLine.isNotEmpty ? metadataLine : 'No details provided',
+                      // '${user.faculty} - ${user.academicYear}',
                       style: GoogleFonts.inter(
                           fontSize: 12,
                           color: Colors.grey.shade600
@@ -92,7 +94,7 @@ class SearchStudentCard extends StatelessWidget {
                 crossAxisAlignment:  CrossAxisAlignment.end,
                 children: [
                   Text(
-                    '${user.postCount}',
+                    '${user.postCount ?? 0}',
                     style: GoogleFonts.inter(
                         fontWeight: FontWeight.bold,
                         fontSize:14
