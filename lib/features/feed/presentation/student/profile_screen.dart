@@ -5,7 +5,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uni_connect/features/auth/data/post_repository.dart';
 import 'package:uni_connect/features/auth/data/user_repository.dart';
+import 'package:uni_connect/features/feed/presentation/student/post_details_screen.dart';
+import 'package:uni_connect/features/feed/presentation/widgets/post_card.dart';
 
+import '../../../../core/models/post_model.dart';
 import '../../../../core/models/user_model.dart';
 import '../../../auth/data/auth_repository.dart';
 
@@ -21,8 +24,10 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
 
   final UserRepository _userRepository = UserRepository();
+  final PostRepository _postRepository = PostRepository();
+
   String _getNameFromEmail(String? email) {
-    if (email == null || email.isEmpty) return 'Nour Al Houda';
+    if (email == null || email.isEmpty) return 'User';
     String emailPrefix = email.split('@').first;
     List<String> parts = emailPrefix.split(RegExp(r'[._-]'));
     return parts.map((p) => p.isNotEmpty ? '${p[0].toUpperCase()}${p.substring(1)}' : '').join(' ');
@@ -39,29 +44,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
         builder: (context, snapshot) {
           // Fallback data based on Firebase Auth if stream is loading or empty
           final userModel = snapshot.data;
-          final email = currentUser?.email ?? 'nour@example.com';
+          final email = currentUser?.email ?? 'user@example.com';
           final fullName = userModel?.fullName?.isNotEmpty == true
               ? userModel!.fullName!
               : _getNameFromEmail(email);
 
-          final faculty = userModel?.faculty?.isNotEmpty == true
-              ? userModel!.faculty!
-              : 'Business Administration';
-
-          final academicYear = userModel?.academicYear?.isNotEmpty == true
-              ? userModel!.academicYear!
-              : 'Master 2';
+          final faculty = userModel?.faculty ?? '';
+          final academicYear = userModel?.academicYear ?? '';
+          final departmentText = faculty.isNotEmpty && academicYear.isNotEmpty
+            ? '$faculty, $academicYear'
+            : (faculty.isNotEmpty
+              ? faculty
+              : (academicYear.isNotEmpty
+                ? academicYear
+                : (userModel?.major ?? 'Business Administration, Master 2')));
           final postCount = userModel?.postCount?.toString() ?? '0';
 
-          String initials = 'N';
-          if (fullName.isNotEmpty) {
-            final parts = fullName.trim().split(RegExp(r'\s+'));
-            if (parts.length == 1) {
-              initials = parts[0][0].toUpperCase();
-            } else if (parts.length > 1) {
-              initials = '${parts[0][0]}${parts[parts.length - 1][0]}'.toUpperCase();
-            }
-          }
+          final initials = userModel?.authorInitials.isNotEmpty == true
+              ? userModel!.authorInitials
+              : (fullName.isNotEmpty ? fullName[0].toUpperCase() : 'U');
 
           return SingleChildScrollView(
             child: Column(
@@ -189,7 +190,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 children: [
                                   Text(
                                     // 'Nour Rifaieh',
-                                    fullName.isNotEmpty ? fullName : 'UnKown',
+                                    fullName.isNotEmpty ? fullName : 'UnKnown',
                                     style: GoogleFonts.inter(
                                       fontSize:20,
                                       fontWeight: FontWeight.bold,
@@ -330,32 +331,114 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           color: Color(0xFF1E293B),
                         ),
                       ),
-                      TextButton(
-                        onPressed: (){},
-                        child: Text(
-                          'See all',
-                          style: GoogleFonts.inter(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFF2563EB),
-                          ),
-                        ),
-                      ),
+                      // TextButton(
+                      //   onPressed: (){},
+                      //   child: Text(
+                      //     'See all',
+                      //     style: GoogleFonts.inter(
+                      //       fontSize: 13,
+                      //       fontWeight: FontWeight.w600,
+                      //       color: Color(0xFF2563EB),
+                      //     ),
+                      //   ),
+                      // ),
                     ],
                   ),
                 ),
-                SizedBox(height: 40),
-                Center(
-                  child: Text(
-                    'No posts yet',
-                    style: GoogleFonts.inter(
-                      fontWeight: FontWeight.w500,
-                      fontSize: 15,
-                      color: Colors.grey.shade400,
-                    ),
-                  ),
+                SizedBox(height: 10),
+                StreamBuilder<List<PostModel>>(
+                    stream: _postRepository.watchAllPosts(),
+                    builder: (context, postSnapshot){
+                      if(postSnapshot.connectionState == ConnectionState.waiting){
+                        return Padding(
+                            padding: EdgeInsets.symmetric(vertical: 20),
+                            child: Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                        );
+                      }
+                      final allPosts = postSnapshot.data ?? [];
+                      final userPosts = allPosts.where((post) => post.userId == currentUser?.uid).toList();
+                      if(userPosts.isEmpty){
+                        return Padding(
+                          padding: EdgeInsets.symmetric(vertical: 30),
+                          child: Center(
+                            child: Text(
+                              'No posts yet.',
+                              style: GoogleFonts.inter(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.grey.shade400,
+                              ),
+                            ),
+                          ),
+                        );
+                      }
+                      return ListView.builder(
+                        shrinkWrap: true,
+                        physics:  NeverScrollableScrollPhysics(),
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        itemCount: userPosts.length,
+                        itemBuilder: (context, index){
+                          final post = userPosts[index];
+                          return Padding(
+                            padding: EdgeInsets.only(bottom:16),
+                            child: PostCard(
+                              post: post,
+                              onTap: () async{
+                                await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => PostDetailsScreen(post: post),
+                                  ),
+                                );
+                                if(mounted){
+                                  setState(() {
+
+                                  });
+                                };
+                              },
+                              onLikeTap: () async{
+                                if(currentUser == null || post.postId == null) return;
+                                final userName = userModel?.fullName.trim().isNotEmpty == true
+                                  ? userModel!.fullName.trim()
+                                  : 'User';
+                                await _postRepository.toggleLike(
+                                    post.postId!,
+                                    currentUser.uid,
+                                    userName,
+                                );
+                              },
+                              onCommentTap: () async{
+                                await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => PostDetailsScreen(post: post),
+                                  ),
+                                );
+                                if(mounted){
+                                  setState(() {
+
+                                  });
+                                }
+                              },
+                            ),
+                          );
+                        },
+                      );
+                    }
                 ),
-                SizedBox(height:40),
+                // Center(
+                //   child: Text(
+                //     'No posts yet',
+                //     style: GoogleFonts.inter(
+                //       fontWeight: FontWeight.w500,
+                //       fontSize: 15,
+                //       color: Colors.grey.shade400,
+                //     ),
+                //   ),
+                // ),
+                SizedBox(height:10),
               ],
             ),
           );
