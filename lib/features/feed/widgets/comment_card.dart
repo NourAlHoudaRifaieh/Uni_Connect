@@ -14,6 +14,9 @@ class CommentCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
+
+    final authorName = reply.authorName.isNotEmpty ? reply.authorName : 'Anonymous';
+
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 20),
       padding:  EdgeInsets.all(14),
@@ -46,8 +49,7 @@ class CommentCard extends StatelessWidget {
                   ),
                   SizedBox(width:8),
                   Text(
-                    // reply.authorName,
-                    reply.authorName.isEmpty ? 'Anonymous' : reply.authorName,
+                    reply.formattedAuthorName,
                     style: GoogleFonts.inter(
                       fontSize: 13,
                       fontWeight: FontWeight.bold,

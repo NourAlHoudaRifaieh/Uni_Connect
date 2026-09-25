@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:uni_connect/features/auth/data/post_repository.dart';
 import 'package:uni_connect/features/auth/data/reply_repository.dart';
 import 'package:uni_connect/features/auth/data/subject_repository.dart';
+import 'package:uni_connect/features/auth/data/user_repository.dart';
 import 'package:uni_connect/features/feed/widgets/comment_card.dart';
 import '../../../../core/mock/mock_data.dart';
 import '../../../../core/models/post_model.dart';
@@ -27,6 +28,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
   final PostRepository _postRepository = PostRepository();
   final ReplyRepository _replyRepository = ReplyRepository();
   final SubjectRepository _subjectRepository = SubjectRepository();
+  final UserRepository _userRepository = UserRepository();
 
   // late List<ReplyModel> _replies;
   // late bool _isLiked;
@@ -35,17 +37,55 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
   //Whoever's currently logged in
   String get _currentUserId => FirebaseAuth.instance.currentUser?.uid ?? '';
 
-  void _toggleLike() async{
-    if(widget.post.postId == null || _currentUserId.isEmpty) return;
-    await _postRepository.toggleLike(widget.post.postId!, _currentUserId);
+  // void _toggleLike() async{
+  //   if(widget.post.postId == null || _currentUserId.isEmpty) return;
+  //   await _postRepository.toggleLike(widget.post.postId!, _currentUserId);
+  // }
+  // void _toggleLike() async {
+  //   if (widget.post.postId == null || _currentUserId.isEmpty) return;
+  //
+  //   final currentUser = FirebaseAuth.instance.currentUser;
+  //   final username = currentUser?.displayName ?? currentUser?.email?.split('@').first ?? 'User';
+  //
+  //   await _postRepository.toggleLike(widget.post.postId!, _currentUserId, username);
+  // }
+
+  void _toggleLike() async {
+    if (widget.post.postId == null || _currentUserId.isEmpty) return;
+
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if(currentUser == null) return;
+
+    final userModel = await _userRepository.getUserById(currentUser.uid);
+    final userName = userModel?.fullName.trim().isNotEmpty == true
+      ? userModel!.fullName.trim()
+      : (currentUser.displayName != null && currentUser.displayName!.trim().isNotEmpty
+          ? currentUser.displayName!.trim()
+          : (currentUser.email != null
+              ? currentUser.email!.split('@').first
+              : 'User'));
+    await _postRepository.toggleLike(widget.post.postId!, _currentUserId, userName);
   }
 
   void _addComment() async{
     final text = _commentController.text.trim();
-    if(text.isEmpty || widget.post.postId == null) return;
+
+    // print('--- ATTEMPTING TO ADD COMMENT ---');
+    // print('Post ID: ${widget.post.postId}');
+    // print('Comment Text: $text');
+    // print('User ID: $_currentUserId');
+
+    if (text.isEmpty || widget.post.postId == null || widget.post.postId!.isEmpty) {
+      // print('ERROR: Cannot add comment because text is empty or postId is missing!');
+      return;
+    }
+    // if(text.isEmpty || widget.post.postId == null) return;
 
     final currentUser = FirebaseAuth.instance.currentUser;
-    final authorName = currentUser?.displayName ?? currentUser?.email?.split('@').first ?? 'User';
+    // final authorName = currentUser?.displayName ?? currentUser?.email?.split('@').first ?? 'User';
+    final authorName = (currentUser?.displayName != null && currentUser!.displayName!.isNotEmpty)
+        ? currentUser.displayName!
+        : (currentUser?.email != null ? currentUser!.email!.split('@').first : 'User');
     final newReply = ReplyModel(
         replyId: 'reply_${DateTime.now().millisecondsSinceEpoch}',
         postId: widget.post.postId!,
@@ -588,6 +628,11 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                     StreamBuilder<List<ReplyModel>>(
                         stream: _replyRepository.watchRepliesForPost(post.postId ?? ''),
                         builder: (context, snapshot){
+
+                          print('Stream connection state: ${snapshot.connectionState}');
+                          print('Stream has error: ${snapshot.error}');
+                          print('Replies count received from stream: ${snapshot.data?.length ?? 0}');
+
                           final replies = snapshot.data ?? [];
                           return Column(
                             crossAxisAlignment:  CrossAxisAlignment.start,
@@ -651,12 +696,81 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
             ),
 
             // Fixed Comment Input Bar
+            // Container(
+            //   padding: EdgeInsets.symmetric(
+            //     horizontal: 16,
+            //     vertical: 10,
+            //   ),
+            //   decoration: BoxDecoration(
+            //     color: Colors.white,
+            //     border: Border(
+            //       top: BorderSide(color: Color(0xFFE2E8F0)),
+            //     ),
+            //   ),
+            //   child: Row(
+            //     children: [
+            //       CircleAvatar(
+            //         radius: 16,
+            //         backgroundColor: Color(0xFF1D61FF),
+            //         child: Text(
+            //           currentInitials,
+            //           style: TextStyle(
+            //             color: Colors.white,
+            //             fontWeight: FontWeight.bold,
+            //             fontSize: 12,
+            //           ),
+            //         ),
+            //       ),
+            //       SizedBox(width: 10),
+            //       Expanded(
+            //         child: Container(
+            //           padding: const EdgeInsets.symmetric(horizontal: 14),
+            //           decoration: BoxDecoration(
+            //             color: const Color(0xFFF1F5F9),
+            //             borderRadius: BorderRadius.circular(24),
+            //           ),
+            //           child: Row(
+            //             children: [
+            //               Expanded(
+            //                 child: TextField(
+            //                   controller: _commentController,
+            //                   textInputAction: TextInputAction.send,
+            //                   onSubmitted: (_) => _addComment(),
+            //                   decoration: InputDecoration(
+            //                     hintText: 'Add a comment...',
+            //                     hintStyle: GoogleFonts.inter(
+            //                       fontSize: 13,
+            //                       color: Colors.grey.shade500,
+            //                     ),
+            //                     border: InputBorder.none,
+            //                     isDense: true,
+            //                     contentPadding: const EdgeInsets.symmetric(
+            //                       vertical: 10,
+            //                     ),
+            //                   ),
+            //                 ),
+            //               ),
+            //               GestureDetector(
+            //                 onTap: _addComment,
+            //                 child: const Icon(
+            //                   Icons.send_rounded,
+            //                   size: 18,
+            //                   color: Color(0xFF2563EB),
+            //                 ),
+            //               ),
+            //             ],
+            //           ),
+            //         ),
+            //       ),
+            //     ],
+            //   ),
+            // ),
             Container(
-              padding: EdgeInsets.symmetric(
+              padding: const EdgeInsets.symmetric(
                 horizontal: 16,
                 vertical: 10,
               ),
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Colors.white,
                 border: Border(
                   top: BorderSide(color: Color(0xFFE2E8F0)),
@@ -666,54 +780,46 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                 children: [
                   CircleAvatar(
                     radius: 16,
-                    backgroundColor: Color(0xFFEF4444),
+                    backgroundColor: const Color(0xFF1D61FF),
                     child: Text(
                       currentInitials,
-                      style: TextStyle(
+                      style: GoogleFonts.inter(
                         color: Colors.white,
+                        fontSize: 11,
                         fontWeight: FontWeight.bold,
-                        fontSize: 12,
                       ),
                     ),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 12),
                   Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 14),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF1F5F9),
-                        borderRadius: BorderRadius.circular(24),
+                    child: TextField(
+                      controller: _commentController,
+                      decoration: InputDecoration(
+                        hintText: 'Write a comment...',
+                        hintStyle: GoogleFonts.inter(color: Colors.grey.shade400, fontSize: 13),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          borderSide: BorderSide.none,
+                        ),
+                        filled: true,
+                        fillColor: const Color(0xFFF1F5F9),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: TextField(
-                              controller: _commentController,
-                              textInputAction: TextInputAction.send,
-                              onSubmitted: (_) => _addComment(),
-                              decoration: InputDecoration(
-                                hintText: 'Add a comment...',
-                                hintStyle: GoogleFonts.inter(
-                                  fontSize: 13,
-                                  color: Colors.grey.shade500,
-                                ),
-                                border: InputBorder.none,
-                                isDense: true,
-                                contentPadding: const EdgeInsets.symmetric(
-                                  vertical: 10,
-                                ),
-                              ),
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: _addComment,
-                            child: const Icon(
-                              Icons.send_rounded,
-                              size: 18,
-                              color: Color(0xFF2563EB),
-                            ),
-                          ),
-                        ],
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  GestureDetector(
+                    onTap: _addComment,
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: const BoxDecoration(
+                        color: Color(0xFF1D61FF),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.send,
+                        color: Colors.white,
+                        size: 16,
                       ),
                     ),
                   ),

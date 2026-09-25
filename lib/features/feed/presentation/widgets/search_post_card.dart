@@ -39,22 +39,39 @@ class SearchPostCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal:10, vertical:4),
-                  decoration: BoxDecoration(
-                    color: Color(0xFF1D61FF).withOpacity(0.15),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    post.categoryName!,
-                    style: GoogleFonts.inter(
-                      color: Color(0xFF1D61FF),
-                      fontWeight: FontWeight.bold,
-                      fontSize:13,
+                if (post.categoryName != null) ...[
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal:10, vertical:4),
+                    decoration: BoxDecoration(
+                      color: Color(0xFF1D61FF).withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      post.categoryName!,
+                      style: GoogleFonts.inter(
+                        color: Color(0xFF1D61FF),
+                        fontWeight: FontWeight.bold,
+                        fontSize:13,
+                      ),
                     ),
                   ),
-                ),
-                SizedBox(width:10),
+                  // Container(
+                  //   padding: const EdgeInsets.symmetric(horizontal:10, vertical:4),
+                  //   decoration: BoxDecoration(
+                  //     color: Color(0xFF1D61FF).withOpacity(0.15),
+                  //     borderRadius: BorderRadius.circular(20),
+                  //   ),
+                  //   child: Text(
+                  //     post.categoryName!,
+                  //     style: GoogleFonts.inter(
+                  //       color: Color(0xFF1D61FF),
+                  //       fontWeight: FontWeight.bold,
+                  //       fontSize:13,
+                  //     ),
+                  //   ),
+                  // ),
+                  SizedBox(width:10),
+                ],
                 Text(
                   '${post.subjectCode}',
                   style: GoogleFonts.inter(

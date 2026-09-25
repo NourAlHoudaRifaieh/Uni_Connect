@@ -14,7 +14,7 @@ class PostModel{
   // final int likes;
   final int comments;
   // final bool isLiked;
-  final List<String> likedBy;
+  final List<dynamic> likedBy;
 
   PostModel({
     this.postId,
@@ -45,7 +45,7 @@ class PostModel{
     String? subjectCode,
     DateTime? createdAt,
     int? comments,
-    List<String>? likedBy,
+    List<dynamic>? likedBy,
   }) {
     return PostModel(
       postId: postId ?? this.postId,
@@ -64,7 +64,13 @@ class PostModel{
   }
 
   int get likes => likedBy.length;
-  bool isLikedBy(String userId) => likedBy.contains(userId);
+  // bool isLikedBy(String userId) => likedBy.contains(userId);
+  bool isLikedBy(String userId) => likedBy.any((item) {
+    if(item is Map){
+      return item['userId'] == userId;
+    }
+    return item == userId;
+  });
 
   String get authorInitials {
     final trimmedName = authorName.trim();
@@ -100,6 +106,7 @@ class PostModel{
       // likes: json['likes'] ?? 0,
       comments: json['comments'] ?? 0,
       // isLiked: json['isLiked'] ??  false,
+      likedBy: json['likedBy'] ?? [],
       createdAt: json['createdAt'] is DateTime
         ? json['createdAt']
         : (json['createdAt'] != null
@@ -121,7 +128,8 @@ class PostModel{
       subjectId: data['subjectId'] as String?,
       subjectCode: data['subjectCode'] as String?,
       comments: data['comments'] ?? 0,
-      likedBy: List<String>.from(data['likedBy'] ?? []),
+      // likedBy: List<String>.from(data['likedBy'] ?? []),
+      likedBy: (data['likedBy'] as List<dynamic>? ?? []),
       createdAt: data['createdAt'] is Timestamp
         ? (data['createdAt'] as Timestamp).toDate()
         : DateTime.now(),

@@ -17,9 +17,21 @@ class ReplyModel{
     required this.createdAt,
   });
 
-  String get authorInitials {
+  String get formattedAuthorName {
     final trimmedName = authorName.trim();
-    if(trimmedName.isEmpty) return 'U';
+    if(trimmedName.isEmpty) return 'Anonymous';
+    final namePart = trimmedName.contains('@') ? trimmedName.split('@').first : trimmedName;
+    final words = namePart.replaceAll(RegExp(r'[._-]'), ' ').split(RegExp(r'\s+'));
+    return words.map((word){
+      if(word.isEmpty) return '';
+      return word[0].toUpperCase() + word.substring(1).toLowerCase();
+    }).join(' ');
+  }
+
+  String get authorInitials {
+    final name = formattedAuthorName;
+    final trimmedName = name.trim();
+    if(trimmedName.isEmpty || trimmedName == 'Anonymous') return 'U';
     final parts = trimmedName.split(RegExp(r'\s+'));
     if(parts.length ==1 ) return parts[0][0].toUpperCase();
     return '${parts[0][0]}${parts[parts.length -1][0]}'.toUpperCase();

@@ -49,20 +49,33 @@ class PostRepository {
   }
 
   //toggle like/unlike for a specific user, safely even with concurrent taps
-  Future<void> toggleLike(String postId, String userId) async{
+  Future<void> toggleLike(String postId, String userId, String userName) async{
     final postRef = _firestore.collection('posts').doc(postId);
     final postDoc = await postRef.get();
     if(!postDoc.exists) return;
-    final likedBy = List<String>.from(postDoc.data()?['likedBy'] ?? []);
-    if(likedBy.contains(userId)){
-      await postRef.update({
-        'likedBy': FieldValue.arrayRemove([userId]),
-      });
-    } else{
-      await postRef.update({
-        'likedBy': FieldValue.arrayUnion([userId]),
+    List<dynamic> likedBy = postDoc.data()?['likedBy'] ?? [];
+    bool hasLiked = likedBy.any((item) => item is Map && item['userId'] == userId);    if (hasLiked){
+      likedBy.removeWhere((item) => item is Map && item['userId'] == userId);
+    }else{
+      likedBy.add({
+        'userId': userId,
+        'userName': userName,
       });
     }
+    await postRef.update({
+      'likedBy': likedBy,
+      'likes': likedBy.length,
+    });
+    // final likedBy = List<String>.from(postDoc.data()?['likedBy'] ?? []);
+    // if(likedBy.contains(userId)){
+    //   await postRef.update({
+    //     'likedBy': FieldValue.arrayRemove([userId]),
+    //   });
+    // } else{
+    //   await postRef.update({
+    //     'likedBy': FieldValue.arrayUnion([userId]),
+    //   });
+    // }
   }
 
   Future<void> deletePost(String postId, {String? subjectId, String? userId}) async{

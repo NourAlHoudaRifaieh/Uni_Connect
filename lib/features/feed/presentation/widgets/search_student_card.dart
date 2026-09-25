@@ -15,6 +15,7 @@ class SearchStudentCard extends StatelessWidget {
     required this.user,
   });
 
+  @override
   Widget build(BuildContext context) {
     final facultyText = user.faculty ?? '';
     final yearText = user.academicYear ?? '';
