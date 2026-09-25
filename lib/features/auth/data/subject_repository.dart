@@ -26,6 +26,13 @@ class SubjectRepository {
         .toList());
   }
 
+  Future<List<SubjectModel>> getSubjects() async {
+    final snapshot = await _firestore.collection('subjects').get();
+    return snapshot.docs
+        .map((doc) => SubjectModel.fromFirestore(doc.data(), doc.id))
+        .toList();
+  }
+
   // admin: create a new subject
   Future<void> createSubject(SubjectModel subject) async {
     await _firestore.collection('subjects').add(subject.toJson());

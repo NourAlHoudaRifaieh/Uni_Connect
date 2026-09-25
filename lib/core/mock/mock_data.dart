@@ -84,7 +84,7 @@ class MockData {
       subjectCode: 'DB201',
       createdAt: DateTime.now().subtract(Duration(hours: 2)),
       comments: 1,
-      likedBy:['user_1, user_2'],
+      likedBy:['user_1', 'user_2'],
   ),
   ];
   static List<PostModel> get posts => _postList;

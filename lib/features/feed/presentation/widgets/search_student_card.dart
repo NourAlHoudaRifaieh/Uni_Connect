@@ -64,14 +64,14 @@ class SearchStudentCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      user.fullName ?? "Unknown Student",
+                      user.fullName ,
                       style: GoogleFonts.inter(
                           fontWeight: FontWeight.bold,
                           fontSize:14
                       ),
                     ),
                     Text(
-                      user.email ?? 'No email provided',
+                      user.email,
                       style: GoogleFonts.inter(
                           fontSize: 12,
                           color: Colors.grey.shade600
@@ -94,7 +94,7 @@ class SearchStudentCard extends StatelessWidget {
                 crossAxisAlignment:  CrossAxisAlignment.end,
                 children: [
                   Text(
-                    '${user.postCount ?? 0}',
+                    '${user.postCount}',
                     style: GoogleFonts.inter(
                         fontWeight: FontWeight.bold,
                         fontSize:14

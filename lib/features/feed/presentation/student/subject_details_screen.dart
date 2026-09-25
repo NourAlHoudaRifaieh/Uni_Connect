@@ -26,15 +26,29 @@ class _SubjectDetailsScreenState extends State<SubjectDetailsScreen> {
   final PostRepository _postRepository = PostRepository();
   String selectedCategory = 'All';
 
+  bool _matchesSubject(PostModel post) {
+    final matchesCode = widget.subject.subjectCode.isNotEmpty &&
+        post.subjectCode?.trim().toLowerCase() == widget.subject.subjectCode.trim().toLowerCase();
+
+    final matchesId = widget.subject.subjectId != null &&
+        widget.subject.subjectId!.isNotEmpty &&
+        post.subjectId?.trim().toLowerCase() == widget.subject.subjectId!.trim().toLowerCase();
+
+    return matchesCode || matchesId;
+  }
+
   List<String> _getCategories(List <PostModel> posts) {
     final categorySet = <String>{'All'};
     for(var post in posts){
-      final matchesSubject = post.subjectCode?.trim().toLowerCase() == widget.subject.subjectCode.trim().toLowerCase()
-          || post.subjectId?.trim().toLowerCase() == widget.subject.subjectId!.trim().toLowerCase(); ;
-      // final matchesSubject = post.subjectCode?.trim().toLowerCase() == widget.subject.subjectCode.trim().toLowerCase();
-      if(matchesSubject && post.categoryName !=null && post.categoryName!.trim().isNotEmpty){
+      if(_matchesSubject(post) && post.categoryName != null && post.categoryName!.trim().isNotEmpty){
         categorySet.add(post.categoryName!.trim());
       }
+      // final matchesSubject = post.subjectCode?.trim().toLowerCase() == widget.subject.subjectCode.trim().toLowerCase()
+      //     || post.subjectId?.trim().toLowerCase() == widget.subject.subjectId!.trim().toLowerCase(); ;
+      // // final matchesSubject = post.subjectCode?.trim().toLowerCase() == widget.subject.subjectCode.trim().toLowerCase();
+      // if(matchesSubject && post.categoryName !=null && post.categoryName!.trim().isNotEmpty){
+      //   categorySet.add(post.categoryName!.trim());
+      // }
     }
     return categorySet.toList();
   }
@@ -42,12 +56,16 @@ class _SubjectDetailsScreenState extends State<SubjectDetailsScreen> {
   // List <PostModel> get posts => MockData.posts;
   List <PostModel> _getFilteredPosts(List<PostModel> posts){
     return posts.where((post){
-      final matchesSubject = post.subjectCode?.trim().toLowerCase() ==
-          widget.subject.subjectCode.trim().toLowerCase() ||
-          post.subjectId?.trim().toLowerCase() == widget.subject.subjectId!.trim().toLowerCase();
-      // final matchesSubject = post.subjectCode?.trim().toLowerCase() == widget.subject.subjectCode.trim().toLowerCase();
-      final matchesCategory = selectedCategory == 'All' || post.categoryName?.trim().toLowerCase() == selectedCategory.trim().toLowerCase();
-      return matchesSubject && matchesCategory ;
+      final matchesSubject = _matchesSubject(post);
+      final matchesCategory = selectedCategory == 'All' ||
+        post.categoryName?.trim().toLowerCase() == selectedCategory.trim().toLowerCase();
+      return matchesSubject && matchesCategory;
+      // final matchesSubject = post.subjectCode?.trim().toLowerCase() ==
+      //     widget.subject.subjectCode.trim().toLowerCase() ||
+      //     post.subjectId?.trim().toLowerCase() == widget.subject.subjectId!.trim().toLowerCase();
+      // // final matchesSubject = post.subjectCode?.trim().toLowerCase() == widget.subject.subjectCode.trim().toLowerCase();
+      // final matchesCategory = selectedCategory == 'All' || post.categoryName?.trim().toLowerCase() == selectedCategory.trim().toLowerCase();
+      // return matchesSubject && matchesCategory ;
     }).toList();
   }
 
@@ -61,7 +79,7 @@ class _SubjectDetailsScreenState extends State<SubjectDetailsScreen> {
         child: StreamBuilder<List<PostModel>>(
             stream: _postRepository.watchAllPosts(),
             builder: (context, snapshot){
-              if(snapshot.connectionState == ConnectionState.waiting){
+              if(!snapshot.hasData && snapshot.connectionState == ConnectionState.waiting){
                 return Center(
                   child: CircularProgressIndicator(),
                 );

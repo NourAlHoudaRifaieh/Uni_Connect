@@ -28,7 +28,7 @@ class SearchScreenState extends State<SearchScreen>{
   final TextEditingController _searchController = TextEditingController();
   int _selectedIndex = 0;
   final PostRepository _postRepository = PostRepository();
-  UserRepository _userRepository = UserRepository();
+  final UserRepository _userRepository = UserRepository();
 
   // List<PostModel> get posts => MockData.posts;
   // List<UserModel> get students => MockData.students;
@@ -67,14 +67,17 @@ class SearchScreenState extends State<SearchScreen>{
 
   List <UserModel> _filteredStudents(List<UserModel> students){
     final query = _searchController.text.trim().toLowerCase();
-    if (query.isEmpty) return students;
-    return students.where((student){
+
+    final onlyStudents = students.where((student) => student.role != 'admin').toList();
+
+    if (query.isEmpty) return onlyStudents;
+    return onlyStudents.where((student){
       final matchesName = student.fullName.toLowerCase().contains(query);
       final matchesEmail = student.email.toLowerCase().contains(query);
-      final matchesFaculty = student.faculty?.toLowerCase().contains(query);
-      final matchesMajor = student.major?.toLowerCase().contains(query);
+      final matchesFaculty = student.faculty?.toLowerCase().contains(query) ?? false;
+      final matchesMajor = student.major?.toLowerCase().contains(query) ?? false;
 
-      return matchesName || matchesEmail || matchesFaculty! || matchesMajor!;
+      return matchesName || matchesEmail || matchesFaculty || matchesMajor;
     }).toList();
   }
 
@@ -212,6 +215,12 @@ class SearchScreenState extends State<SearchScreen>{
                 : StreamBuilder<List<UserModel>>(
                     stream: _userRepository.watchAllUsers(),
                     builder: (context, snapshot){
+
+                      print("Connection State: ${snapshot.connectionState}");
+                      print("Has Error: ${snapshot.hasError}");
+                      print("Error details: ${snapshot.error}");
+                      print("Users Data from Firebase: ${snapshot.data}");
+
                       if(snapshot.connectionState == ConnectionState.waiting){
                         return Center(
                           child: CircularProgressIndicator(),
@@ -221,7 +230,7 @@ class SearchScreenState extends State<SearchScreen>{
                       if(filteredStudents.isEmpty){
                         return Center(
                           child: Text(
-                            'No results found',
+                            'No results found......',
                             style: GoogleFonts.inter(
                               fontSize: 16,
                               color: Colors.grey.shade500,

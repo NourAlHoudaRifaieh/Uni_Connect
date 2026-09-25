@@ -52,6 +52,12 @@ class UserRepository {
     });
   }
 
+  Future<void> decrementUserPostCount(String uid) async{
+    await _firestore.collection('users').doc(uid).update({
+      'postCount' : FieldValue.increment(-1),
+    });
+  }
+
   // Delete user document from Firestore (Admin action)
   Future<void> deleteUser(String uid) async {
     await _firestore.collection('users').doc(uid).delete();

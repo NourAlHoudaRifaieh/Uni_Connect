@@ -27,6 +27,7 @@ class SubjectModel{
   //For firestore
   factory SubjectModel.fromFirestore(Map<String, dynamic> data, String id){
     return SubjectModel(
+      subjectId:  id,
       subjectCode: data['subjectCode'] ?? '',
       subjectName: data['subjectName'] ?? '',
       academicYear: data['academicYear'] ?? '',

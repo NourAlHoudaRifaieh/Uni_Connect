@@ -1,11 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:uni_connect/features/auth/data/subject_repository.dart';
+import 'package:uni_connect/features/auth/data/user_repository.dart';
 
 import '../../../core/models/post_model.dart';
 
 class PostRepository {
   final _firestore = FirebaseFirestore.instance;
   final _subjectRepository = SubjectRepository();
+  final _userRepository = UserRepository();
 
   //all posts, news first - used by Home feed
   Stream<List<PostModel>> watchAllPosts() {
@@ -15,6 +17,13 @@ class PostRepository {
         .snapshots()
         .map((snapshot) => snapshot.docs
           .map((doc) => PostModel.fromFirestore(doc.data(), doc.id)).toList());
+  }
+
+  Stream<PostModel?> watchPostById(String postId) {
+    return _firestore.collection('posts').doc(postId).snapshots().map((doc) {
+      if (!doc.exists) return null;
+      return PostModel.fromFirestore(doc.data()!, doc.id);
+    });
   }
 
   //posts for one specific subject - used by subject Details
@@ -33,6 +42,9 @@ class PostRepository {
     await _firestore.collection('posts').add(post.toJson());
     if(post.subjectId != null){
       await _subjectRepository.incrementPostCount(post.subjectId!);
+    }
+    if(post.userId != null){
+      await _userRepository.incrementUserPostCount(post.userId!);
     }
   }
 
@@ -53,10 +65,13 @@ class PostRepository {
     }
   }
 
-  Future<void> deletePost(String postId, {String? subjectId}) async{
+  Future<void> deletePost(String postId, {String? subjectId, String? userId}) async{
     await _firestore.collection('posts').doc(postId).delete();
     if(subjectId != null && subjectId.isNotEmpty){
       await _subjectRepository.decrementPostCount(subjectId);
+    }
+    if(userId != null && userId.isNotEmpty){
+      await _userRepository.decrementUserPostCount(userId);
     }
   }
 

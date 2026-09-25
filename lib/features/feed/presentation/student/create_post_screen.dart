@@ -6,6 +6,11 @@ import 'package:uni_connect/core/models/post_model.dart';
 import 'package:uni_connect/core/models/subject_model.dart';
 import 'package:uni_connect/core/widgets/custom_elevated_button.dart';
 import 'package:uni_connect/core/widgets/custom_form_field.dart';
+import 'package:uni_connect/features/auth/data/post_repository.dart';
+import 'package:uni_connect/features/auth/data/subject_repository.dart';
+import 'package:uni_connect/features/auth/data/user_repository.dart';
+
+import '../../../../core/models/user_model.dart';
 
 class CreatePostScreen extends StatefulWidget {
   CreatePostScreen({Key? key}) : super(key: key);
@@ -22,8 +27,13 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   TextEditingController _titleController = TextEditingController();
   TextEditingController _descriptionController = TextEditingController();
 
+  final PostRepository _postRepository = PostRepository();
+  final UserRepository _userRepository = UserRepository();
+  final SubjectRepository _subjectRepository = SubjectRepository();
+
   List<SubjectModel> subjects = [];
   SubjectModel? selectedSubject;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -31,48 +41,152 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     _loadSubjects();
   }
 
-  void _loadSubjects(){
-    setState(() {
-      subjects = MockData.subjects;
-      if(subjects.isNotEmpty){
-        selectedSubject = subjects.first;
+  void _loadSubjects() async {
+    try{
+      final loadedSubjects = await _subjectRepository.getSubjects();
+      setState(() {
+        subjects = loadedSubjects;
+        if(subjects.isNotEmpty){
+          selectedSubject = subjects.first;
+        }
+      });
+    }catch(e){
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to publish post: $e')),
+        );
       }
-    });
+    }
   }
 
-  void _publishPost(){
-    if(_formKey.currentState !=null && _formKey.currentState!.validate()){
-      if(selectedSubject == null){
+  // Future <void> _publishPost() async {
+  //   if(_formKey.currentState !=null && _formKey.currentState!.validate()){
+  //     if(selectedSubject == null){
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(content: Text('Please select a subject')),
+  //       );
+  //       return;
+  //     }
+  //     final currentUser = FirebaseAuth.instance.currentUser;
+  //     if(currentUser == null ) return;
+  //
+  //     setState(() {
+  //       _isLoading = true;
+  //     });
+  //
+  //     try{
+  //       UserModel? userModel = await _userRepository.getUserById(currentUser.uid);
+  //       String authorName = userModel?.fullName ?? currentUser.displayName ?? 'User';
+  //
+  //       final newPost = PostModel(
+  //         postId: 'post_${DateTime.now().millisecondsSinceEpoch}',
+  //         userId: currentUser.uid,
+  //         title: _titleController.text.trim(),
+  //         description: _descriptionController.text.trim(),
+  //         authorName: authorName,
+  //         subjectCode: selectedSubject?.subjectCode,
+  //         subjectId: selectedSubject?.subjectId,
+  //         categoryName: 'General',
+  //         createdAt: DateTime.now(),
+  //         comments: 0,
+  //         likedBy: [],
+  //       );
+  //
+  //       await _postRepository.createPost(newPost);
+  //       await _userRepository.incrementUserPostCount(currentUser.uid);
+  //
+  //       if(mounted){
+  //         Navigator.pop(context, true);
+  //       }
+  //     }catch(e){
+  //       if(mounted){
+  //         setState(() {
+  //           _isLoading = false;
+  //         });
+  //       }
+  //     }
+  //     // final newPost = PostModel(
+  //     //   postId: 'post_${DateTime.now().millisecondsSinceEpoch}',
+  //     //   title: _titleController.text.trim(),
+  //     //   description: _descriptionController.text.trim(),
+  //     //   authorName: 'Nour Al Houda',
+  //     //   subjectCode: selectedSubject?.subjectCode,
+  //     //   subjectId: selectedSubject?.subjectId,
+  //     //   categoryName: 'General',
+  //     //   createdAt: DateTime.now(),
+  //     //   comments: 0,
+  //     //   likedBy: [],
+  //     // );
+  //
+  //     // MockData.addPost(newPost);
+  //     // Navigator.pop(context,true);
+  //   }
+  // }
+
+  Future<void> _publishPost() async {
+    if (_formKey.currentState != null && _formKey.currentState!.validate()) {
+      if (selectedSubject == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Please select a subject')),
+          const SnackBar(content: Text('Please select a subject')),
         );
         return;
       }
-      final currentUserid = FirebaseAuth.instance.currentUser?.uid ?? '';
 
-      final newPost = PostModel(
-        postId: 'post_${DateTime.now().millisecondsSinceEpoch}',
-        title: _titleController.text.trim(),
-        description: _descriptionController.text.trim(),
-        authorName: 'Nour Al Houda',
-        subjectCode: selectedSubject?.subjectCode,
-        subjectId: selectedSubject?.subjectId,
-        categoryName: 'General',
-        createdAt: DateTime.now(),
-        comments: 0,
-        likedBy: [],
-      );
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) return;
 
-      MockData.addPost(newPost);
-      Navigator.pop(context,true);
+      setState(() {
+        _isLoading = true;
+      });
+
+      try {
+        String authorName = 'User';
+        if (currentUser.email != null && currentUser.email!.isNotEmpty) {
+          String emailPrefix = currentUser.email!.split('@').first;
+          List<String> parts = emailPrefix.split(RegExp(r'[._-]'));
+          authorName = parts.map((p) => p.isNotEmpty ? '${p[0].toUpperCase()}${p.substring(1)}' : '').join(' ');
+        }
+
+        final newPost = PostModel(
+          postId: 'post_${DateTime.now().millisecondsSinceEpoch}',
+          userId: currentUser.uid,
+          title: _titleController.text.trim(),
+          description: _descriptionController.text.trim(),
+          authorName: authorName,
+          subjectCode: selectedSubject?.subjectCode,
+          subjectId: selectedSubject?.subjectId,
+          categoryName: 'General',
+          createdAt: DateTime.now(),
+          comments: 0,
+          likedBy: [],
+        );
+
+        await _postRepository.createPost(newPost);
+
+        if (mounted) {
+          Navigator.pop(context, true);
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to publish post: $e')),
+          );
+        }
+      } finally {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      }
     }
   }
 
   @override
   void dispose() {
-    super.dispose();
     _titleController.dispose();
     _descriptionController.dispose();
+    super.dispose();
   }
 
   @override
@@ -254,10 +368,14 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                         ),
                       ),
                       SizedBox(height:30),
-                      CustomElevatedButton(
-                          text: 'Analyse & Publish',
-                          onPressed: _publishPost,
-                      ),
+                      _isLoading
+                        ? Center(
+                            child:  CircularProgressIndicator(),
+                          )
+                        : CustomElevatedButton(
+                            text: 'Analyse & Publish',
+                            onPressed: _publishPost,
+                          ),
                       SizedBox(height:20),
                     ],
                   ),
