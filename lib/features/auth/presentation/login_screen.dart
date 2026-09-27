@@ -139,17 +139,22 @@ class _LoginScreenState extends State<LoginScreen> {
                         label: 'University Email',
                         hint: 'name@ul.edu.lb',
                         controller: _emailController,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
                         keyboardType: TextInputType.emailAddress,
                         validator: (value) {
                           if( value == null || value.isEmpty){
                             return 'Email is required';
                           }
-                          final email = value.toLowerCase();
+                          final email = value.toLowerCase().trim();
                           final isStudent = email.endsWith('@st.ul.edu.lb');
                           final isAdmin = email.endsWith('@admin.ul.edu.lb');
                           if (!isStudent && !isAdmin) {
                             return 'Use your university email';
                           }
+                          // final usernamePart = email.split('@')[0];
+                          // if(RegExp(r'[0-9]').hasMatch(usernamePart)){
+                          //   return 'Email username cannot contain numbers';
+                          // }
                           return null;
                         },
                       ),
@@ -160,6 +165,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         hint: 'Enter your password',
                         controller: _passwordController,
                         obscureText: _obscureText,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
                         suffixIcon: IconButton(
                             onPressed: (){
                               setState(() {
@@ -174,8 +180,17 @@ class _LoginScreenState extends State<LoginScreen> {
                           if (value == null || value.isEmpty){
                             return 'Password is required';
                           }
-                          if(value.length <6){
-                            return 'Password must be at least 6 characters';
+                          if(value.length <8){
+                            return 'Password must be at least 8 characters';
+                          }
+                          if(!value.contains(RegExp(r'[A-Z]'))){
+                            return 'Must contain at least one uppercase letter';
+                          }
+                          if(!value.contains(RegExp(r'[0-9]'))){
+                            return 'Must contain at least one number';
+                          }
+                          if(!value.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))){
+                            return 'Must contain at least one special character';
                           }
                           return null;
                         },

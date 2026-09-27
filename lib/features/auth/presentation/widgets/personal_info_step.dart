@@ -3,13 +3,14 @@ import 'package:uni_connect/core/widgets/custom_elevated_button.dart';
 import '../../../../../../core/widgets/custom_form_field.dart';
 import "package:google_fonts/google_fonts.dart";
 
-class PersonalInfoStep extends StatelessWidget {
+class PersonalInfoStep extends StatefulWidget {
 
   final GlobalKey<FormState> formKey;
   final TextEditingController fullNameController;
   final TextEditingController emailController;
   final TextEditingController passwordController;
   final VoidCallback onContinue;
+
 
   const PersonalInfoStep({
     super.key,
@@ -21,12 +22,19 @@ class PersonalInfoStep extends StatelessWidget {
   });
 
   @override
+  State<PersonalInfoStep> createState() => _PersonalInfoStepState();
+}
+
+class _PersonalInfoStepState extends State<PersonalInfoStep> {
+  bool _obscureText = true;
+
+  @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
       child: Form(
-        key: formKey,
+        key: widget.formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -40,12 +48,16 @@ class PersonalInfoStep extends StatelessWidget {
             const SizedBox(height: 16),
             CustomFormField(
               label: 'Full Name',
-              hint: 'e.g. Nour Al Houda Ghazi Rifaieh',
+              hint: 'Enter your full name',
               color: Colors.white30,
-              controller: fullNameController,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              controller: widget.fullNameController,
               validator: (value) {
                 if(value == null || value.isEmpty){
                   return 'Full name is required';
+                }
+                if(RegExp(r'[0-9]').hasMatch(value)){
+                  return 'Full name cannot contain numbers';
                 }
                 return null;
               },
@@ -53,8 +65,9 @@ class PersonalInfoStep extends StatelessWidget {
             const SizedBox(height:18),
             CustomFormField(
               label:'University Email',
-              hint: 'nour@ul.edu.lb',
-              controller: emailController,
+              hint: 'Enter your university email',
+              controller: widget.emailController,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
               keyboardType: TextInputType.emailAddress,
               validator: (value) {
                 if(value == null || value.isEmpty){
@@ -66,18 +79,53 @@ class PersonalInfoStep extends StatelessWidget {
                 if(!isStudent && !isAdmin){
                   return 'Use your university email';
                 }
+                // final usernamePart = email.split('@')[0];
+                // if (RegExp(r'[0-9]').hasMatch(usernamePart)) {
+                //   return 'Email username cannot contain numbers';
+                // }
                 return null;
               },
+            ),
+            SizedBox(height:10),
+            Text(
+              'Must end with @st.ul.edu.lb (Students) or @admin.ul.edu.lb (Admins)',
+              style: GoogleFonts.inter(
+                fontSize: 12,
+                color: Colors.grey.shade600,
+              ),
             ),
             const SizedBox(height:18),
             CustomFormField(
               label:'Password',
-              hint: 'Min. 6 characters',
-              controller: passwordController,
-              obscureText: true,
+              hint: 'Min. 8 characters',
+              controller: widget.passwordController,
+              obscureText: _obscureText,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              suffixIcon: IconButton(
+                onPressed: (){
+                  setState(() {
+                    _obscureText = !_obscureText;
+                  });
+                },
+                icon: Icon(
+                  _obscureText ? Icons.visibility_off : Icons.visibility,
+                ),
+              ),
               validator: (value) {
                 if(value == null || value.isEmpty){
                   return 'Password is required';
+                }
+                if (value.length < 8) {
+                  return 'Password must be at least 8 characters';
+                }
+                if (!value.contains(RegExp(r'[A-Z]'))) {
+                  return 'Must contain at least one uppercase letter';
+                }
+                if (!value.contains(RegExp(r'[0-9]'))) {
+                  return 'Must contain at least one number';
+                }
+                if (!value.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) {
+                  return 'Must contain at least one special character';
                 }
                 return null;
               },
@@ -88,8 +136,8 @@ class PersonalInfoStep extends StatelessWidget {
               child: CustomElevatedButton(
                   text: 'Continue',
                   onPressed: (){
-                    if(formKey.currentState?.validate() ?? false){
-                      onContinue();
+                    if(widget.formKey.currentState?.validate() ?? false){
+                      widget.onContinue();
                     }
                   },
               ),

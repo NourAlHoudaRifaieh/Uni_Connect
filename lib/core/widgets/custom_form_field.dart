@@ -16,6 +16,7 @@ class CustomFormField extends StatelessWidget {
   final Widget? prefixIcon;
   final Widget? suffixIcon;
   final int? maxLines;
+  final AutovalidateMode? autovalidateMode;
 
   const CustomFormField({
     super.key,
@@ -29,6 +30,7 @@ class CustomFormField extends StatelessWidget {
     this.prefixIcon,
     this.suffixIcon,
     this.maxLines,
+    this.autovalidateMode,
 
   });
 
@@ -53,6 +55,7 @@ class CustomFormField extends StatelessWidget {
           obscureText: obscureText,
           keyboardType: keyboardType,
           validator: validator,
+          autovalidateMode: autovalidateMode,
           maxLines: obscureText ? 1: maxLines,
           style: GoogleFonts.inter(
             fontSize:16,
