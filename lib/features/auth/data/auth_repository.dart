@@ -118,4 +118,14 @@ class AuthRepository {
     return 'student';
   }
 
+
+  // For password reset method
+  Future<void> sendPasswordResentEmail(String email) async{
+    try{
+      await _auth.sendPasswordResetEmail(email: email.trim());
+    }catch(e){
+      throw Exception(e.toString());
+    }
+  }
+
 }

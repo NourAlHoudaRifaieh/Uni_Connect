@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:uni_connect/core/widgets/custom_elevated_button.dart';
+import 'package:uni_connect/features/auth/presentation/forgot_password_screen.dart';
 import '../../../core/widgets/custom_form_field.dart';
 import 'package:go_router/go_router.dart';
 import 'package:uni_connect/core/widgets/auth_header.dart';
@@ -221,7 +222,10 @@ class _LoginScreenState extends State<LoginScreen> {
                               overlayColor: WidgetStateProperty.all(Colors.transparent),
                             ),
                             onPressed: () {
-                              //to handle the forgot password later
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context)=> ForgotPasswordScreen()),
+                              );
                             },
                             child: Text('Forgot password?',
                               style: GoogleFonts.inter(
