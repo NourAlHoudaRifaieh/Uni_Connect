@@ -4,6 +4,7 @@ import 'package:uni_connect/core/models/subject_model.dart';
 import 'package:uni_connect/features/auth/data/subject_repository.dart';
 import 'package:uni_connect/features/feed/presentation/admin/create_subject_screen.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/academic_year_selector.dart';
+import 'package:uni_connect/features/feed/presentation/widgets/delete_subject_dialog.dart';
 import '../../../../core/widgets/custom_elevated_button.dart';
 import '../widgets/subject_card.dart';
 
@@ -300,15 +301,34 @@ class _AdminSubjectsScreenState extends State<AdminSubjectsScreen> {
                                 onEditPressed: () {
                                   // Handle Subject Edit
                                 },
-                                onDeletePressed: () async{
-                                  if(subject.subjectId != null){
-                                    await _subjectRepository.deleteSubject(subject.subjectId!);
-                                    if(mounted){
-                                      setState(() {
-
-                                      });
-                                    }
-                                  }
+                                // onDeletePressed: () async{
+                                //   if(subject.subjectId != null){
+                                //     await _subjectRepository.deleteSubject(subject.subjectId!);
+                                //     if(mounted){
+                                //       setState(() {
+                                //
+                                //       });
+                                //     }
+                                //   }
+                                // },
+                                onDeletePressed: (){
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return DeleteSubjectDialog(
+                                          subject: subject,
+                                          onDeleteConfirmed: () async{
+                                            if(subject.subjectId != null){
+                                              await _subjectRepository.deleteSubject(subject.subjectId!);
+                                              if(mounted){
+                                                setState(() {
+                                                });
+                                              }
+                                            }
+                                          },
+                                        );
+                                      },
+                                  );
                                 },
                               );
                             },

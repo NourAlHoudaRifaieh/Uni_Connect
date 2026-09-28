@@ -52,7 +52,6 @@ class SubjectCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (subject?.subjectCode != null && subject!.subjectCode!.isNotEmpty)
                     Text(
                       subject!.subjectCode!,
                       style: GoogleFonts.inter(
