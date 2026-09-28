@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:uni_connect/features/auth/presentation/widgets/academic_info_step.dart';
 import 'package:uni_connect/features/auth/presentation/widgets/personal_info_step.dart';
 import 'package:uni_connect/core/widgets/auth_header.dart';
@@ -26,7 +27,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   final _authRepository = AuthRepository();
 
-  String? _selectedFaculty;
+  // String? _selectedFaculty;
+  String? _selectedDepartment;
   String? _selectedYear;
   String? _selectedMajor;
   bool _isLoading = false;
@@ -102,47 +104,100 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  void _handleCreateAccount() async {
-    if(_selectedFaculty == null || _selectedYear == null || _selectedMajor == null) return;
-      setState(() {
-        _isLoading = true;
-      });
-      final error = await _authRepository.register(
+  // void _handleCreateAccount() async {
+  //   if(_selectedFaculty == null || _selectedYear == null || _selectedMajor == null) return;
+  //     setState(() {
+  //       _isLoading = true;
+  //     });
+  //     final error = await _authRepository.register(
+  //       fullName: _fullNameController.text.trim(),
+  //       email: _emailController.text.trim(),
+  //       password: _passwordController.text,
+  //       faculty: _selectedFaculty!,
+  //       academicYear: _selectedYear!,
+  //       major: _selectedMajor!,
+  //     );
+  //     if(!mounted) return;
+  //     setState(() {
+  //       _isLoading = false;
+  //     });
+  //     if(error != null){
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(
+  //           content: Text(error),
+  //           backgroundColor: Colors.red
+  //         ),
+  //       );
+  //     }else{
+  //       // direct navigation to login
+  //       context.go('/login');
+  //       //welcome notification snackbar
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         const SnackBar(
+  //           content: Text('Account created successfully! Please sign in.'),
+  //           backgroundColor:  Colors.green,
+  //         ),
+  //       );
+  //     }
+  //
+  //   //Firebase Auth + Firestore logic goes here next
+  //   // print('Name: ${_fullNameController.text}');
+  //   // print('Email: ${_emailController.text}');
+  //   // print('Faculty: ${_selectedFaculty}');
+  //   // print('Auto-assigned group: $_selectedFaculty - $_selectedYear');
+  // }
+
+  void _handleCreateAccount() async{
+    if(_selectedDepartment == null || _selectedYear == null) return;
+    bool isBusiness = _selectedDepartment == 'Business Administration';
+    bool isYearOne = _selectedYear == 'Year 1';
+
+    if(isBusiness && !isYearOne && _selectedMajor == null){
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Please select your major for Business Administration.',),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+    setState(() {
+      _isLoading = true;
+    });
+
+    String? finalMajor = _selectedMajor;
+    if(isBusiness && isYearOne){
+      finalMajor = ' Common Core';
+    }
+
+    final error = await _authRepository.register(
         fullName: _fullNameController.text.trim(),
         email: _emailController.text.trim(),
-        password: _passwordController.text,
-        faculty: _selectedFaculty!,
-        academicYear: _selectedYear!,
-        major: _selectedMajor!,
-      );
-      if(!mounted) return;
-      setState(() {
-        _isLoading = false;
-      });
-      if(error != null){
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(error),
-            backgroundColor: Colors.red
-          ),
-        );
-      }else{
-        // direct navigation to login
-        context.go('/login');
-        //welcome notification snackbar
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Account created successfully! Please sign in.'),
-            backgroundColor:  Colors.green,
-          ),
-        );
-      }
+        password: _passwordController.text.trim(),
+      department: _selectedDepartment,
+      academicYear: _selectedYear,
+      major: finalMajor,
+    );
 
-    //Firebase Auth + Firestore logic goes here next
-    // print('Name: ${_fullNameController.text}');
-    // print('Email: ${_emailController.text}');
-    // print('Faculty: ${_selectedFaculty}');
-    // print('Auto-assigned group: $_selectedFaculty - $_selectedYear');
+    if(!mounted) return;
+    setState(() {
+      _isLoading = false;
+    });
+
+    if(error != null){
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text( error, style: GoogleFonts.inter(color: Colors.white,)),
+        backgroundColor:  Colors.red,),
+      );
+    }else {
+      context.go('/login');
+      ScaffoldMessenger.of(context).showSnackBar(
+       SnackBar(
+          content: Text('Account created successfully! Please sign in.'),
+          backgroundColor:  Colors.green,
+        ),
+      );
+    }
   }
 
   @override
@@ -201,16 +256,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   onContinue: _goToStep2,
                 ),
                 AcademicInfoStep(
-                  selectedFaculty: _selectedFaculty,
+                  // selectedFaculty: _selectedFaculty,
+                  selectedDepartment: _selectedDepartment,
                   selectedMajor: _selectedMajor,
                   selectedYear: _selectedYear,
                   isLoading: _isLoading,
-                  onFacultyChanged: (value) =>
-                      setState(() => _selectedFaculty = value),
+                  // onFacultyChanged: (value) =>
+                  //     setState(() => _selectedFaculty = value),
+                  onDepartmentChanged: (value) =>
+                      setState(() {
+                        _selectedDepartment = value;
+                        if(value == 'Economic Science'){
+                          _selectedMajor = null;
+                        }
+                      }),
                   onMajorChanged: (value) =>
                       setState(() => _selectedMajor = value),
                   onYearChanged: (value) =>
-                      setState(() => _selectedYear = value),
+                      setState(() {
+                        _selectedYear = value;
+                        if(_selectedDepartment == "Business Administration" && value == "Year 1"){
+                          _selectedMajor = null;
+                        }
+                      }),
                   onBack: _goBackToStep1,
                   onCreateAccount: _handleCreateAccount,
                 ),

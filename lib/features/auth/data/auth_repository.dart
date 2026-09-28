@@ -7,12 +7,13 @@ class AuthRepository {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  //register a new user and creates their Forestore profile document
+  //register a new user and creates their Firestore profile document
   Future<String?> register({
     required String fullName,
     required String email,
     required String password,
-    String? faculty,
+    // String? faculty,
+    String? department,
     String? academicYear,
     String? major,
   }) async{
@@ -30,20 +31,33 @@ class AuthRepository {
         'fullName': fullName,
         'email': email,
         'role': role,
+        'faculty': 'Faculty of Economics and Business Administration',
         'createdAt': FieldValue.serverTimestamp(),
       };
 
       // Only include these fields when they actually have a value
-      if (faculty != null) userData['faculty'] = faculty;
-      if (major != null) userData['major'] = major;
+      // if (faculty != null) userData['faculty'] = faculty;
+      if(department != null) userData['department'] = department;
       if (academicYear != null) userData['academicYear'] = academicYear;
+      if (major != null) {
+        userData['major'] = major;
+      }else if( department == 'Business Administration' && academicYear == 'Year 1'){
+        userData['major'] = 'Common Core';
+      }
 
-      await _firestore.collection('users').doc(uid).set(userData);
+      if(role == 'student' && department != null && academicYear != null){
+        userData['groupId'] = '${department}_${academicYear}'.replaceAll(' ', '_');
+      }
 
-      //force sign out : prevents firebase from keeping the user logged in automatically after registration
-      await _auth.signOut();
+        // await _firestore.collection('users').doc(uid).set(userData);
+        await _firestore.collection('users').doc(uid).set(userData);
 
-      return null;
+
+        //force sign out : prevents firebase from keeping the user logged in automatically after registration
+        await _auth.signOut();
+
+        return null;
+      // }
     } on FirebaseAuthException catch(e){
       return _mapAuthError(e.code);
     }catch(e){

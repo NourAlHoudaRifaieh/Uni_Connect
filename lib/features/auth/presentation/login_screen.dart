@@ -137,7 +137,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       //CustomFormField for Email
                       CustomFormField(
                         label: 'University Email',
-                        hint: 'name@ul.edu.lb',
+                        hint: 'Enter your university email',
                         controller: _emailController,
                         autovalidateMode: AutovalidateMode.onUserInteraction,
                         keyboardType: TextInputType.emailAddress,

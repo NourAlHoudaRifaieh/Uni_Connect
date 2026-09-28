@@ -33,7 +33,7 @@ class CustomDropdown extends StatelessWidget{
         child:DropdownButtonHideUnderline(
           child: DropdownButton<String>(
             isExpanded: true,
-            hint:  Text(' Select your faculty',
+            hint:  Text( hint,
               style: GoogleFonts.inter(
                 fontSize:14,
                 color: Color(0xFFB5B5C3),

@@ -121,7 +121,7 @@ class _HomeScreenState extends State <HomeScreen>{
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text('UniConnect', style: GoogleFonts.inter(fontSize:25, fontWeight: FontWeight.bold)),
-                                      Text(departmentText, style: GoogleFonts.inter(fontSize:15, color: Colors.grey)),
+                                      // Text(departmentText, style: GoogleFonts.inter(fontSize:15, color: Colors.grey)),
                                     ],
                                   );
                                 },
@@ -263,7 +263,8 @@ class _HomeScreenState extends State <HomeScreen>{
                               width:70,
                               height:70,
                               decoration: BoxDecoration(
-                                color: Color(0xFFF3F4F6),
+                                // color: Color(0xFFF3F4F6),
+                                color: Color(0xFFF8FAFC),
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child:  Icon(Icons.article_outlined , size:36, color: Color(0xFF9CA3AF)),

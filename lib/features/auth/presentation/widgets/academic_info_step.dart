@@ -3,21 +3,20 @@ import 'package:uni_connect/core/widgets/custom_dropdown.dart';
 import 'package:uni_connect/core/widgets/custom_elevated_button.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-const List<String> kFaculties = [
-  'Business Administration',
-  'Computer Science',
-  'Engineering',
-  'Law',
-  'Medicine',
-];
+// const List<String> kFaculties = [
+//   'Business Administration',
+//   'Computer Science',
+//   'Engineering',
+//   'Law',
+//   'Medicine',
+// ];
 
-const List<String> kMajors = [
+const List<String> kBusinessMajors = [
   'Business Computer',
   'Accounting and Auditing',
   'Finance and Financial Establishments',
   'Management',
   'Marketing',
-  'Econometric',
 ];
 
 const List<String> kAcademicYears = [
@@ -28,34 +27,49 @@ const List<String> kAcademicYears = [
   'Year 5',
 ];
 
+const List<String> kDepartments = [
+  'Business Administration',
+  'Economic Science',
+];
 
 class AcademicInfoStep extends StatelessWidget {
-  final String? selectedFaculty;
+  // final String? selectedFaculty;
   final String? selectedYear;
   final bool isLoading;
-  final ValueChanged<String?> onFacultyChanged;
+  // final ValueChanged<String?> onFacultyChanged;
   final ValueChanged<String> onYearChanged;
   final VoidCallback onBack;
   final VoidCallback onCreateAccount;
   final String? selectedMajor;
   final ValueChanged<String?> onMajorChanged;
+  final String? selectedDepartment;
+  final ValueChanged<String?> onDepartmentChanged;
 
   const AcademicInfoStep({
     super.key,
     required this.isLoading,
     required this.onBack,
     required this.onCreateAccount,
-    required this.onFacultyChanged,
+    // required this.onFacultyChanged,
     required this.onYearChanged,
-    required this.selectedFaculty,
+    // required this.selectedFaculty,
     required this.selectedYear,
     required this.selectedMajor,
     required this.onMajorChanged,
+    required this.selectedDepartment,
+    required this.onDepartmentChanged,
   });
 
   @override
   Widget build(BuildContext context) {
-    final bool hasGroup = selectedFaculty != null && selectedYear != null && selectedMajor !=null;
+    // final bool hasGroup = selectedFaculty != null && selectedYear != null && selectedMajor !=null;
+
+    bool isBusiness = selectedDepartment == 'Business Administration';
+    bool needsMajor = isBusiness && selectedYear != null && selectedYear != 'Year 1';
+    bool hasValidMajor = !needsMajor || (selectedMajor != null);
+
+    final bool canProceed = selectedDepartment != null && selectedYear != null && hasValidMajor;
+
     // TODO: implement build
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
@@ -71,7 +85,7 @@ class AcademicInfoStep extends StatelessWidget {
           ),
           const SizedBox(height:20),
           Text(
-            'Faculty',
+            'Department / Program',
             style: GoogleFonts.inter(
               fontSize:14,
               fontWeight: FontWeight.w600,
@@ -80,27 +94,27 @@ class AcademicInfoStep extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           CustomDropdown(
-              value: selectedFaculty,
-              hint: 'Select your faculty',
-              items: kFaculties,
-              onChanged: onFacultyChanged,
+              value: selectedDepartment,
+              hint: 'Select your department',
+              items: kDepartments,
+              onChanged: onDepartmentChanged,
           ),
-          const SizedBox(height:20),
-          Text(
-            'Major',
-            style: GoogleFonts.inter(
-              fontSize:14,
-              fontWeight: FontWeight.w600,
-              color: Color(0xFF2F3A4A),
-            ),
-          ),
-          const SizedBox(height: 8),
-          CustomDropdown(
-            value: selectedMajor,
-            hint: 'Select your major',
-            items: kMajors,
-            onChanged: onMajorChanged,
-          ),
+          // SizedBox(height:20),
+          // Text(
+          //   'Major',
+          //   style: GoogleFonts.inter(
+          //     fontSize:14,
+          //     fontWeight: FontWeight.w600,
+          //     color: Color(0xFF2F3A4A),
+          //   ),
+          // ),
+          // const SizedBox(height: 8),
+          // CustomDropdown(
+          //   value: selectedMajor,
+          //   hint: 'Select your major',
+          //   items: kMajors,
+          //   onChanged: onMajorChanged,
+          // ),+
           const SizedBox(height:20),
           Text(
             'Academic Year',
@@ -143,8 +157,27 @@ class AcademicInfoStep extends StatelessWidget {
               );
             }).toList(),
           ),
+
+          if(isBusiness && selectedYear != null && selectedYear != 'Year 1') ...[
+            const SizedBox(height: 20),
+            Text(
+              'Major',
+              style: GoogleFonts.inter(
+                fontSize:14,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF2F3A4A),
+              ),
+            ),
+            const SizedBox(height: 8),
+            CustomDropdown(
+              value: selectedMajor,
+              hint: 'Select your major',
+              items: kBusinessMajors,
+              onChanged: onMajorChanged,
+            ),
+          ],
           const SizedBox(height: 20),
-          if (hasGroup)
+          if (canProceed)
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(14),
@@ -169,7 +202,9 @@ class AcademicInfoStep extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '$selectedFaculty · $selectedMajor · $selectedYear',
+                    (isBusiness && selectedYear != 'Year 1' && selectedMajor != null && selectedMajor!.isNotEmpty)
+                        ? 'Faculty of Economics & Business Administration · $selectedMajor · $selectedYear'
+                        : 'Faculty of Economics & Business Administration · $selectedYear',
                     style: GoogleFonts.inter(
                       color: Color(0xFF2563EB),
                       fontSize: 13,
@@ -198,7 +233,7 @@ class AcademicInfoStep extends StatelessWidget {
                   height: 50,
                   child: CustomElevatedButton(
                       text: 'Create Account',
-                      onPressed: (hasGroup && !isLoading) ? onCreateAccount : null,
+                      onPressed: (canProceed && !isLoading) ? onCreateAccount : null,
                       isLoading: isLoading,
                   ),
                 ),
