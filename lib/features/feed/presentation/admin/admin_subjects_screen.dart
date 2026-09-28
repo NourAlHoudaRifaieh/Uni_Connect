@@ -5,6 +5,7 @@ import 'package:uni_connect/features/auth/data/subject_repository.dart';
 import 'package:uni_connect/features/feed/presentation/admin/create_subject_screen.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/academic_year_selector.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/delete_subject_dialog.dart';
+import 'package:uni_connect/features/feed/presentation/widgets/edit_subject_dialog.dart';
 import '../../../../core/widgets/custom_elevated_button.dart';
 import '../widgets/subject_card.dart';
 
@@ -299,7 +300,31 @@ class _AdminSubjectsScreenState extends State<AdminSubjectsScreen> {
                                 subject: subject,
                                 academicYear: _selectedYear,
                                 onEditPressed: () {
-                                  // Handle Subject Edit
+                                  showDialog(
+                                      context: context,
+                                      builder: (context){
+                                        return EditSubjectDialog(
+                                            subject: subject,
+                                            onUpdateConfirmed: (updateName, updateYear) async{
+                                              if(subject.subjectId != null){
+                                                SubjectModel updatedSubject = SubjectModel(
+                                                  subjectId:  subject.subjectId,
+                                                  subjectName: updateName,
+                                                  subjectCode: subject.subjectCode,
+                                                  academicYear: updateYear,
+                                                  postCount: subject.postCount,
+                                                );
+                                                await _subjectRepository.updateSubject(updatedSubject);
+                                                if(mounted){
+                                                  setState(() {
+
+                                                  });
+                                                }
+                                              }
+                                            }
+                                        );
+                                      }
+                                  );
                                 },
                                 // onDeletePressed: () async{
                                 //   if(subject.subjectId != null){
