@@ -1,8 +1,17 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:uni_connect/core/models/subject_model.dart';
 
 class SubjectRepository {
   final _firestore = FirebaseFirestore.instance;
+
+  String _generateSubjectId(String subjectName) {
+    String cleanName = subjectName.trim().replaceAll(' ', '').toUpperCase();
+    String prefix = cleanName.length >= 3 ? cleanName.substring(0, 3) : cleanName.padRight(3, 'X');
+    int randomNum = Random().nextInt(900) + 100;
+    return '$prefix$randomNum';
+  }
 
   // students: watch subjects for their specific academic year
   // Stream means the UI updates automatically if admin adds/edits/deletes a subject
@@ -35,7 +44,20 @@ class SubjectRepository {
 
   // admin: create a new subject
   Future<void> createSubject(SubjectModel subject) async {
-    await _firestore.collection('subjects').add(subject.toJson());
+    final generatedCode = _generateSubjectId(subject.subjectName ?? 'SUB');
+
+    // subj_1, subj_2
+    final querySnapshot = await _firestore.collection('subjects').get();
+    final nextIndex = querySnapshot.docs.length + 1;
+    final sequentialSubjectId = 'subj_$nextIndex';
+
+    final docRef = _firestore.collection('subjects').doc(sequentialSubjectId);
+
+    final subjectData = subject.toJson();
+    subjectData['subjectId'] = sequentialSubjectId; // subj_1
+    subjectData['subjectCode'] = generatedCode; // INF387
+
+    await docRef.set(subjectData);
   }
 
   // admin: update an existing subject

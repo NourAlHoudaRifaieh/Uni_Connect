@@ -33,7 +33,7 @@ class _CreateSubjectScreenState extends State<CreateSubjectScreen> {
 
   final _formKey = GlobalKey<FormState>();
   TextEditingController _subjectNameController = TextEditingController();
-  TextEditingController _subjectCodeController = TextEditingController();
+  // TextEditingController _subjectCodeController = TextEditingController();
   final SubjectRepository _subjectRepository = SubjectRepository();
 
   String? selectedYear;
@@ -47,7 +47,7 @@ class _CreateSubjectScreenState extends State<CreateSubjectScreen> {
   @override
   void dispose() {
     _subjectNameController.dispose();
-    _subjectCodeController.dispose();
+    // _subjectCodeController.dispose();
     super.dispose();
   }
 
@@ -65,8 +65,10 @@ class _CreateSubjectScreenState extends State<CreateSubjectScreen> {
 
       try{
         final newSubject = SubjectModel(
-          subjectId: 'sub_${DateTime.now().millisecondsSinceEpoch}',
-          subjectCode: _subjectCodeController.text.trim(),
+          // subjectId: 'sub_${DateTime.now().millisecondsSinceEpoch}',
+          subjectId: '',
+          // subjectCode: _subjectCodeController.text.trim(),
+            subjectCode: '',
           subjectName: _subjectNameController.text.trim(),
           academicYear: selectedYear,
           postCount: 0
@@ -147,13 +149,13 @@ class _CreateSubjectScreenState extends State<CreateSubjectScreen> {
                         validator: (value) => (value == null || value.trim().isEmpty) ? 'Please enter a subject name' : null,
                       ),
                       SizedBox(height:20),
-                      CustomFormField(
-                        label: 'Subject Code',
-                        hint: 'eg: DB602',
-                        controller: _subjectCodeController,
-                        validator: (value) => (value == null || value.trim().isEmpty) ? 'Please enter a subject code' : null,
-                      ),
-                      SizedBox(height:20),
+                      // CustomFormField(
+                      //   label: 'Subject Code',
+                      //   hint: 'eg: DB602',
+                      //   controller: _subjectCodeController,
+                      //   validator: (value) => (value == null || value.trim().isEmpty) ? 'Please enter a subject code' : null,
+                      // ),
+                      // SizedBox(height:20),
                       Text(
                         'Academic Year',
                         style: GoogleFonts.inter(

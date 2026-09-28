@@ -263,8 +263,7 @@ class _HomeScreenState extends State <HomeScreen>{
                               width:70,
                               height:70,
                               decoration: BoxDecoration(
-                                // color: Color(0xFFF3F4F6),
-                                color: Color(0xFFF8FAFC),
+                                color: Color(0xFFF3F4F6),
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child:  Icon(Icons.article_outlined , size:36, color: Color(0xFF9CA3AF)),

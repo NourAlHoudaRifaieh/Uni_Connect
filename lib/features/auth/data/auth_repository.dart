@@ -7,6 +7,12 @@ class AuthRepository {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  Future<String> _generateSequentialUserId() async {
+    final querySnapshot = await _firestore.collection('users').get();
+    int nextId = querySnapshot.docs.length + 1;
+    return nextId.toString();
+  }
+
   //register a new user and creates their Firestore profile document
   Future<String?> register({
     required String fullName,
@@ -23,11 +29,13 @@ class AuthRepository {
         password: password,
       );
       final uid = credential.user!.uid;
+      final sequentialId = await _generateSequentialUserId();
       final role = email.toLowerCase().endsWith('@admin.ul.edu.lb') ? 'admin' : 'student';
 
 
       //to remove the academicYear and faculty fields if added admin
       final userData = <String, dynamic>{
+        'userId': sequentialId,
         'fullName': fullName,
         'email': email,
         'role': role,
@@ -64,6 +72,9 @@ class AuthRepository {
       debugPrint('Firestore write error: $e');
       return 'Something went wrong. Please try again.';
     }
+
+
+
   }
 
   //Sign in an existing user
