@@ -6,6 +6,21 @@ import 'package:uni_connect/core/models/group_model.dart';
 class GroupRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  Future<String> _generateGroupId() async{
+    final querySnapshot = await _firestore.collection('groups').get();
+    int maxId = 0;
+    for(var doc in querySnapshot.docs){
+      final id= doc.id;
+      if(id.startsWith('group_')){
+        final numberPart = int.tryParse(id.replaceFirst('group_', '')) ?? 0;
+        if(numberPart > maxId){
+          maxId = numberPart;
+        }
+      }
+    }
+    return 'group_${maxId + 1}';
+  }
+
   //Stream all groups across academic years
   Stream <List<GroupModel>> watchAllGroups(){
     return _firestore
@@ -29,7 +44,9 @@ class GroupRepository {
 
   //Create a new group
   Future<void> createGroup(GroupModel group) async{
-    await _firestore.collection('groups').add(group.toJson());
+    final String groupId = group.groupId ?? await _generateGroupId();
+    final groupWithId = group.copyWith(groupId: groupId);
+    await _firestore.collection('groups').doc(groupId).set(groupWithId.toJson());
   }
 
   //Update an existing group
