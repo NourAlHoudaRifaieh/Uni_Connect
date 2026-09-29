@@ -23,7 +23,7 @@ class DeleteSubjectDialog extends StatelessWidget {
         borderRadius:  BorderRadius.circular(20),
       ),
       titlePadding: EdgeInsets.fromLTRB(24, 24, 24, 0),
-      contentPadding: EdgeInsets.all(25),
+      contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 35),
       title: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
@@ -31,7 +31,7 @@ class DeleteSubjectDialog extends StatelessWidget {
               onPressed: (){
                 Navigator.pop(context);
               },
-              icon: Icon(Icons.close_outlined, size:20, color: Colors.grey),
+              icon: Icon(Icons.close, size:20, color: Colors.grey),
               style: IconButton.styleFrom(
                 padding: EdgeInsets.zero,
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -40,13 +40,13 @@ class DeleteSubjectDialog extends StatelessWidget {
         ],
       ),
       content: SizedBox(
-        width: MediaQuery.of(context).size.width * 0.85,
+        width: MediaQuery.of(context).size.width * 0.95,
         child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                padding:  EdgeInsets.all(12),
+                padding:  EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: Colors.red.shade50,
                   borderRadius: BorderRadius.circular(15),
@@ -57,7 +57,7 @@ class DeleteSubjectDialog extends StatelessWidget {
                 child: Icon(
                   Icons.delete_outline_outlined,
                   color: Colors.redAccent,
-                  size:28,
+                  size:22,
                 ),
               ),
               SizedBox(height:10),
