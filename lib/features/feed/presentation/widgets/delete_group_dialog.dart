@@ -23,29 +23,27 @@ class DeleteGroupDialog extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius:  BorderRadius.circular(20),
       ),
-      titlePadding: EdgeInsets.fromLTRB(24, 24, 24, 0),
       contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 35),
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          IconButton(
-            onPressed: (){
-              Navigator.pop(context);
-            },
-            icon: Icon(Icons.close, size:20, color: Colors.grey),
-            style: IconButton.styleFrom(
-              padding: EdgeInsets.zero,
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            ),
-          ),
-        ],
-      ),
       content: SizedBox(
         width: MediaQuery.of(context).size.width * 0.95,
         child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              Align(
+                alignment: Alignment.topRight,
+                child: IconButton(
+                  onPressed: (){
+                    Navigator.pop(context);
+                  },
+                  icon: Icon(Icons.close, size:20, color: Colors.grey),
+                  style: IconButton.styleFrom(
+                    padding: EdgeInsets.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                ),
+              ),
+              // SizedBox(height:5),
               Container(
                 padding:  EdgeInsets.all(10),
                 decoration: BoxDecoration(
@@ -61,7 +59,7 @@ class DeleteGroupDialog extends StatelessWidget {
                   size:22,
                 ),
               ),
-              SizedBox(height:10),
+              SizedBox(height:15),
               Text(
                 'Delete Group?',
                 style: GoogleFonts.inter(
