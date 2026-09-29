@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:uni_connect/core/models/group_model.dart';
 import 'package:uni_connect/core/widgets/custom_elevated_button.dart';
 import 'package:uni_connect/features/auth/data/group_repository.dart';
+import 'package:uni_connect/features/feed/presentation/widgets/edit_group_dialog.dart';
 import '../../../../core/mock/mock_data.dart';
 import '../../../../core/models/subject_model.dart';
 import '../widgets/group_card.dart';
@@ -24,7 +25,7 @@ class AdminGroupsScreen extends StatefulWidget {
 
 class _AdminGroupsScreenState extends State<AdminGroupsScreen> {
  final GroupRepository _groupRepository = GroupRepository();
-
+  String _selectedYear = 'Year 1';
  // void _deleteGroup(String? groupId) async{
  //   if(groupId == null) return;
  //   final confirm = await showDialog<bool>(
@@ -163,7 +164,29 @@ class _AdminGroupsScreenState extends State<AdminGroupsScreen> {
                                   child: GroupCard(
                                       group: group,
                                       academicYear: group.academicYear,
-                                    onEditPressed: (){},
+                                    onEditPressed: (){
+                                        showDialog(
+                                            context: context,
+                                            builder: (context){
+                                              return EditGroupDialog(
+                                                  group: group,
+                                                  onUpdateConfirmed: (updatedName, updatedYear) async{
+                                                    if(group.groupId != null){
+                                                      GroupModel updatedGroup = group.copyWith(
+                                                        groupName: updatedName,
+                                                        academicYear: updatedYear,
+                                                      );
+                                                      await _groupRepository.updateGroup(updatedGroup);
+                                                      if(mounted){
+                                                        setState(() {
+                                                        });
+                                                      }
+                                                    }
+                                                  }
+                                              );
+                                            }
+                                        );
+                                    },
                                     onDeletePressed: (){
                                         // _deleteGroup(group.groupId);
                                     },
@@ -173,20 +196,6 @@ class _AdminGroupsScreenState extends State<AdminGroupsScreen> {
                             );
                           }
                       ),
-                      // for (var group in MockData.groups) ...[
-                      //   GroupCard(
-                      //     group: group,
-                      //     academicYear: group.academicYear,
-                      //     subject: MockData.subjects.cast<SubjectModel?>().firstWhere(
-                      //           (s) => s?.subjectId == group.subjectId,
-                      //       orElse: () => null,
-                      //     ),
-                      //     onEditPressed: () {},
-                      //     onDeletePressed: () {},
-                      //   ),
-                      //   SizedBox(height: 16),
-                      // ],
-                      // SizedBox(height: 20),
                     ],
                   ),
                 ),
