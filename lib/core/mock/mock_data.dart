@@ -17,6 +17,7 @@ class MockData {
       subjectName: 'Theses Project',
       subjectCode: 'THE601',
       academicYear: 'Year 5',
+      groupId: 'group_1',
       postCount: 5,
     ),
     SubjectModel(
@@ -24,6 +25,7 @@ class MockData {
       subjectName: 'Advanced Data Analysis',
       subjectCode: 'ADA601',
       academicYear: 'Year 4',
+      groupId: 'group_2',
       postCount: 9,
     ),
     SubjectModel(
@@ -31,6 +33,7 @@ class MockData {
       subjectName: 'Leadership & Innovation',
       subjectCode: 'LDR601',
       academicYear: 'Year 3',
+      groupId: 'group_3',
       postCount: 5,
     ),
   ];

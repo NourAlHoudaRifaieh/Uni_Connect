@@ -4,6 +4,7 @@ class SubjectModel{
   final String subjectCode;
   final String subjectName;
   final String? academicYear;
+  final String groupId;
   final int postCount;
 
   SubjectModel({
@@ -11,6 +12,7 @@ class SubjectModel{
     required this.subjectCode,
     required this.subjectName,
     this.academicYear,
+    required this.groupId,
     required this.postCount,
   });
 
@@ -20,6 +22,7 @@ class SubjectModel{
         subjectCode: json['subjectCode'] ?? '',
         subjectName: json['subjectName'] ?? '',
         academicYear: json['academicYear'] ?? '',
+        groupId: json['groupId'] ?? '',
         postCount: json['postCount'] ?? 0,
     );
   }
@@ -31,6 +34,7 @@ class SubjectModel{
       subjectCode: data['subjectCode'] ?? '',
       subjectName: data['subjectName'] ?? '',
       academicYear: data['academicYear'] ?? '',
+      groupId: data['groupId'] ?? '',
       postCount: data['postCount'] ?? 0,
     );
   }
@@ -40,11 +44,28 @@ class SubjectModel{
       if (subjectId != null ) 'subjectId': subjectId,
       'subjectCode': subjectCode,
       'subjectName': subjectName,
+      'groupId': groupId,
       if(academicYear != null) 'academicYear': academicYear,
       'postCount': postCount,
     };
   }
 
-
+  SubjectModel copyWith({
+    String? subjectId,
+    String? subjectCode,
+    String? subjectName,
+    String? academicYear,
+    String? groupId,
+    int? postCount,
+  }) {
+    return SubjectModel(
+      subjectId: subjectId ?? this.subjectId,
+      subjectCode: subjectCode ?? this.subjectCode,
+      subjectName: subjectName ?? this.subjectName,
+      academicYear: academicYear ?? this.academicYear,
+      groupId: groupId ?? this.groupId,
+      postCount: postCount ?? this.postCount,
+    );
+  }
 
 }

@@ -180,6 +180,7 @@ class _AdminSubjectsScreenState extends State<AdminSubjectsScreen> {
                                                   subjectName: updateName,
                                                   subjectCode: subject.subjectCode,
                                                   academicYear: updateYear,
+                                                  groupId: subject.groupId,
                                                   postCount: subject.postCount,
                                                 );
                                                 await _subjectRepository.updateSubject(updatedSubject);

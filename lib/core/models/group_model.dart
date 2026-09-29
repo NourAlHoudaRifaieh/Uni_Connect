@@ -5,7 +5,7 @@ class GroupModel{
   final String? userId;// foreign key
   final String? subjectId; //foreign key
   final String? academicYear; //-> need to use it from the user model
-  final int membersCount;
+  final int? membersCount;
 
   GroupModel({
     this.groupId,
@@ -13,7 +13,7 @@ class GroupModel{
     this.userId,
     this.subjectId,
     this.academicYear,
-    required this.membersCount,
+    this.membersCount,
   });
 
   // Add copyWith to duplicate existing instances with updated fields
