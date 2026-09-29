@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:uni_connect/core/models/group_model.dart';
 import 'package:uni_connect/core/widgets/custom_elevated_button.dart';
 import 'package:uni_connect/features/auth/data/group_repository.dart';
+import 'package:uni_connect/features/feed/presentation/widgets/delete_group_dialog.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/edit_group_dialog.dart';
 import '../../../../core/mock/mock_data.dart';
 import '../../../../core/models/subject_model.dart';
@@ -25,35 +26,6 @@ class AdminGroupsScreen extends StatefulWidget {
 
 class _AdminGroupsScreenState extends State<AdminGroupsScreen> {
  final GroupRepository _groupRepository = GroupRepository();
-  String _selectedYear = 'Year 1';
- // void _deleteGroup(String? groupId) async{
- //   if(groupId == null) return;
- //   final confirm = await showDialog<bool>(
- //       context: context,
- //       builder: (context) => AlertDialog(
- //         title: Text('Delete Group'),
- //         content: Text('Are you sure you want to delete this group?'),
- //         actions:[
- //           TextButton(
- //               onPressed: (){
- //                 Navigator.pop(context, false);
- //               },
- //               child: Text('Cancel'),
- //           ),
- //           TextButton(
- //               onPressed: (){
- //                 Navigator.pop(context, true);
- //               },
- //               child: Text('Delete', style: GoogleFonts.inter(color: Colors.red)),
- //           ),
- //         ],
- //       ),
- //   );
- //   if(confirm == true){
- //     await _groupRepository.deleteGroup(groupId);
- //   }
- // }
-
 
   @override
   Widget build(BuildContext context) {
@@ -164,7 +136,7 @@ class _AdminGroupsScreenState extends State<AdminGroupsScreen> {
                                   child: GroupCard(
                                       group: group,
                                       academicYear: group.academicYear,
-                                    onEditPressed: (){
+                                      onEditPressed: (){
                                         showDialog(
                                             context: context,
                                             builder: (context){
@@ -187,9 +159,25 @@ class _AdminGroupsScreenState extends State<AdminGroupsScreen> {
                                             }
                                         );
                                     },
-                                    onDeletePressed: (){
-                                        // _deleteGroup(group.groupId);
-                                    },
+                                      onDeletePressed: (){
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return DeleteGroupDialog(
+                                              group: group,
+                                              onDeleteConfirmed: () async{
+                                                if(group.groupId != null){
+                                                  await _groupRepository.deleteGroup(group.groupId!);
+                                                  if(mounted){
+                                                    setState(() {
+                                                    });
+                                                  }
+                                                }
+                                              },
+                                            );
+                                          },
+                                        );
+                                      }
                                   ),
                                 );
                               }).toList(),
