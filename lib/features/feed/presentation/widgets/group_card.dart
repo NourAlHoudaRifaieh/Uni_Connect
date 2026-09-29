@@ -49,13 +49,14 @@ class GroupCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                // '${group.groupName} - ${subject?.academicYear ?? "N/A"}',
-                // '${group.groupName} - $displayYear',
-                hasYear ? '${group.groupName} - $displayYear' : group.groupName,
-                style: GoogleFonts.inter(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15,
+              Expanded(
+                child: Text(
+                  hasYear ? '${group.groupName} - $displayYear' : group.groupName,
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
               PopupMenuButton<String>(

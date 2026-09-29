@@ -25,33 +25,33 @@ class AdminGroupsScreen extends StatefulWidget {
 class _AdminGroupsScreenState extends State<AdminGroupsScreen> {
  final GroupRepository _groupRepository = GroupRepository();
 
- void _deleteGroup(String? groupId) async{
-   if(groupId == null) return;
-   final confirm = await showDialog<bool>(
-       context: context,
-       builder: (context) => AlertDialog(
-         title: Text('Delete Group'),
-         content: Text('Are you sure you want to delete this group?'),
-         actions:[
-           TextButton(
-               onPressed: (){
-                 Navigator.pop(context, false);
-               },
-               child: Text('Cancel'),
-           ),
-           TextButton(
-               onPressed: (){
-                 Navigator.pop(context, true);
-               },
-               child: Text('Delete', style: GoogleFonts.inter(color: Colors.red)),
-           ),
-         ],
-       ),
-   );
-   if(confirm == true){
-     await _groupRepository.deleteGroup(groupId);
-   }
- }
+ // void _deleteGroup(String? groupId) async{
+ //   if(groupId == null) return;
+ //   final confirm = await showDialog<bool>(
+ //       context: context,
+ //       builder: (context) => AlertDialog(
+ //         title: Text('Delete Group'),
+ //         content: Text('Are you sure you want to delete this group?'),
+ //         actions:[
+ //           TextButton(
+ //               onPressed: (){
+ //                 Navigator.pop(context, false);
+ //               },
+ //               child: Text('Cancel'),
+ //           ),
+ //           TextButton(
+ //               onPressed: (){
+ //                 Navigator.pop(context, true);
+ //               },
+ //               child: Text('Delete', style: GoogleFonts.inter(color: Colors.red)),
+ //           ),
+ //         ],
+ //       ),
+ //   );
+ //   if(confirm == true){
+ //     await _groupRepository.deleteGroup(groupId);
+ //   }
+ // }
 
 
   @override
@@ -159,13 +159,13 @@ class _AdminGroupsScreenState extends State<AdminGroupsScreen> {
                             return Column(
                               children: groups.map((group){
                                 return Padding(
-                                  padding: EdgeInsets.all(16),
+                                  padding: EdgeInsets.all(10),
                                   child: GroupCard(
                                       group: group,
                                       academicYear: group.academicYear,
                                     onEditPressed: (){},
                                     onDeletePressed: (){
-                                        _deleteGroup(group.groupId);
+                                        // _deleteGroup(group.groupId);
                                     },
                                   ),
                                 );
