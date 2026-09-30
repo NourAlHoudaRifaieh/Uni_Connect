@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uni_connect/features/auth/data/group_repository.dart';
 import 'package:uni_connect/features/auth/data/post_repository.dart';
 import 'package:uni_connect/features/auth/data/user_repository.dart';
 import 'package:uni_connect/features/feed/presentation/student/post_details_screen.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/post_card.dart';
 
+import '../../../../core/models/group_model.dart';
 import '../../../../core/models/post_model.dart';
 import '../../../../core/models/user_model.dart';
 import '../../../auth/data/auth_repository.dart';
@@ -25,6 +27,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   final UserRepository _userRepository = UserRepository();
   final PostRepository _postRepository = PostRepository();
+  final GroupRepository _groupRepository = GroupRepository();
 
   String _getNameFromEmail(String? email) {
     if (email == null || email.isEmpty) return 'User';
@@ -49,15 +52,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ? userModel!.fullName!
               : _getNameFromEmail(email);
 
-          final faculty = userModel?.faculty ?? '';
-          final academicYear = userModel?.academicYear ?? '';
-          final departmentText = faculty.isNotEmpty && academicYear.isNotEmpty
-            ? '$faculty, $academicYear'
-            : (faculty.isNotEmpty
-              ? faculty
-              : (academicYear.isNotEmpty
-                ? academicYear
-                : (userModel?.major ?? 'Business Administration, Master 2')));
+          // final faculty = userModel?.faculty ?? '';
+          // final academicYear = userModel?.academicYear ?? '';
+          // final departmentText = faculty.isNotEmpty && academicYear.isNotEmpty
+          //   ? '$faculty, $academicYear'
+          //   : (faculty.isNotEmpty
+          //     ? faculty
+          //     : (academicYear.isNotEmpty
+          //       ? academicYear
+          //       : (userModel?.major ?? 'Business Administration, Master 2')));
           final postCount = userModel?.postCount?.toString() ?? '0';
 
           final initials = userModel?.authorInitials.isNotEmpty == true
@@ -206,48 +209,103 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     ),
                                   ),
                                   SizedBox(height:6),
-                                  Container(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 18,
-                                      vertical: 3,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white.withOpacity(0.25),
-                                      borderRadius:   BorderRadius.circular(12),
-                                    ),
-                                    child: Text(
-                                      academicYear,
-                                      style: GoogleFonts.inter(
-                                        color: Colors.white,
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
+                                  FutureBuilder<GroupModel?>(
+                                      future: userModel?.groupId != null && userModel!.groupId!.isNotEmpty
+                                        ? _groupRepository.getGroupById(userModel.groupId!)
+                                        : Future.value(null),
+                                      builder: (context, groupSnapshot){
+                                        final group = groupSnapshot.data;
+                                        final academicYearText = group?.academicYear ?? 'Master 2';
+                                        return Container(
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: 18,
+                                            vertical: 3,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Colors.white.withOpacity(0.25),
+                                            borderRadius:   BorderRadius.circular(12),
+                                          ),
+                                          child: Text(
+                                            academicYearText,
+                                            style: GoogleFonts.inter(
+                                              color: Colors.white,
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        );
+                                      }
                                   ),
+                                  // Container(
+                                  //   padding: EdgeInsets.symmetric(
+                                  //     horizontal: 18,
+                                  //     vertical: 3,
+                                  //   ),
+                                  //   decoration: BoxDecoration(
+                                  //     color: Colors.white.withOpacity(0.25),
+                                  //     borderRadius:   BorderRadius.circular(12),
+                                  //   ),
+                                  //   child: Text(
+                                  //     academicYear,
+                                  //     style: GoogleFonts.inter(
+                                  //       color: Colors.white,
+                                  //       fontSize: 11,
+                                  //       fontWeight: FontWeight.w600,
+                                  //     ),
+                                  //   ),
+                                  // ),
                                 ],
                               ),
                             ],
                           ),
                           SizedBox(height:16),
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.business_sharp,
-                                color: Colors.white.withOpacity(0.8),
-                                size: 18,
-                              ),
-                              SizedBox(width:8),
-                              Text(
-                                faculty,
-                                // user?.faculty ?? 'Business Administration',
-                                style: GoogleFonts.inter(
-                                  color: Colors.white.withOpacity(0.9),
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 13,
-                                ),
-                              ),
-                            ],
+                          FutureBuilder<GroupModel?>(
+                              future: userModel?.groupId != null && userModel!.groupId!.isNotEmpty
+                                ? _groupRepository.getGroupById(userModel.groupId!)
+                                : Future.value(null),
+                              builder: (context, groupSnapshot){
+                                final group = groupSnapshot.data;
+                                final facultyText = group?.faculty ?? 'Business Administration';
+                                return Row(
+                                  children: [
+                                    Icon(
+                                      Icons.business_sharp,
+                                      color: Colors.white.withOpacity(0.8),
+                                      size: 18,
+                                    ),
+                                    SizedBox(width:8),
+                                    Text(
+                                      facultyText,
+                                      // user?.faculty ?? 'Business Administration',
+                                      style: GoogleFonts.inter(
+                                        color: Colors.white.withOpacity(0.9),
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 13,
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
                           ),
+                          // Row(
+                          //   children: [
+                          //     Icon(
+                          //       Icons.business_sharp,
+                          //       color: Colors.white.withOpacity(0.8),
+                          //       size: 18,
+                          //     ),
+                          //     SizedBox(width:8),
+                          //     Text(
+                          //       faculty,
+                          //       // user?.faculty ?? 'Business Administration',
+                          //       style: GoogleFonts.inter(
+                          //         color: Colors.white.withOpacity(0.9),
+                          //         fontWeight: FontWeight.w500,
+                          //         fontSize: 13,
+                          //       ),
+                          //     ),
+                          //   ],
+                          // ),
                         ],
                       ),
                     ),

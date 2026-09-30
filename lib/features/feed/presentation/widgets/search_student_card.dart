@@ -1,14 +1,17 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:uni_connect/features/auth/data/group_repository.dart';
 import 'package:uni_connect/features/auth/data/user_repository.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/search_post_card.dart';
 
+import '../../../../core/models/group_model.dart';
 import '../../../../core/models/user_model.dart';
 
 class SearchStudentCard extends StatelessWidget {
 
   final UserModel user;
+  final GroupRepository _groupRepository = GroupRepository();
 
   SearchStudentCard({
     super.key,
@@ -81,14 +84,60 @@ class SearchStudentCard extends StatelessWidget {
                       overflow:  TextOverflow.ellipsis,
                     ),
                     SizedBox(height:2),
-                    Text(
-                      metadataLine.isNotEmpty ? metadataLine : 'No details provided',
-                      // '${user.faculty} - ${user.academicYear}',
-                      style: GoogleFonts.inter(
-                          fontSize: 12,
-                          color: Colors.grey.shade600
-                      ),
-                    ),
+                    user.groupId != null && user.groupId!.isNotEmpty
+                      ? FutureBuilder<GroupModel?>(
+                          future: _groupRepository.getGroupById(user.groupId!),
+                          builder: (context, snapshot){
+                            if(snapshot.connectionState == ConnectionState.waiting){
+                              return Text(
+                                'Loading group...',
+                                style: GoogleFonts.inter(
+                                  fontSize: 12,
+                                  color: Colors.grey.shade400,
+                                  fontStyle:  FontStyle.italic,
+                                ),
+                              );
+                            }
+                            final group = snapshot.data;
+                            if(group == null){
+                              return Text(
+                                'Group not found',
+                                style: GoogleFonts.inter(
+                                  fontSize: 12,
+                                  color: Colors.red.shade400,
+                                ),
+                              );
+                            }
+                            final details = [
+                              if(group.faculty != null && group.faculty!.isNotEmpty) group.faculty!,
+                              if(group.groupName.isNotEmpty) group.groupName,
+                              if(group.academicYear != null) group.academicYear!,
+                            ].join(' - ');
+                            return Text(
+                              details.isNotEmpty ? details : 'No details provided',
+                              style: GoogleFonts.inter(
+                                fontSize: 12,
+                                color: Colors.grey.shade600,
+                              ),
+                            );
+                          },
+                        )
+                      : Text(
+                          'No group assigned',
+                          style: GoogleFonts.inter(
+                            fontSize: 12,
+                            color: Colors.grey.shade500,
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
+                    // Text(
+                    //   metadataLine.isNotEmpty ? metadataLine : 'No details provided',
+                    //   // '${user.faculty} - ${user.academicYear}',
+                    //   style: GoogleFonts.inter(
+                    //       fontSize: 12,
+                    //       color: Colors.grey.shade600
+                    //   ),
+                    // ),
                   ],
                 ),
               ),

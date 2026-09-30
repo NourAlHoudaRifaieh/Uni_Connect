@@ -5,12 +5,14 @@ import 'package:uni_connect/core/mock/mock_data.dart';
 import 'package:uni_connect/core/models/post_model.dart';
 import 'package:uni_connect/core/widgets/custom_elevated_button.dart';
 import 'package:uni_connect/core/widgets/custom_form_field.dart';
+import 'package:uni_connect/features/auth/data/group_repository.dart';
 import 'package:uni_connect/features/auth/data/post_repository.dart';
 import 'package:uni_connect/features/auth/data/user_repository.dart';
 import 'package:uni_connect/features/feed/presentation/student/post_details_screen.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/search_post_card.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/search_student_card.dart';
 
+import '../../../../core/models/group_model.dart';
 import '../../../../core/models/user_model.dart';
 
 class SearchScreen extends StatefulWidget{
@@ -29,14 +31,14 @@ class SearchScreenState extends State<SearchScreen>{
   int _selectedIndex = 0;
   final PostRepository _postRepository = PostRepository();
   final UserRepository _userRepository = UserRepository();
+  final GroupRepository _groupRepository = GroupRepository();
 
-  // List<PostModel> get posts => MockData.posts;
-  // List<UserModel> get students => MockData.students;
-
+  Map<String, GroupModel> _groupsMap = {};
 
   @override
   void initState(){
     super.initState();
+    _loadGroups();
     _searchController.addListener((){
       setState(() {
 
@@ -48,6 +50,20 @@ class SearchScreenState extends State<SearchScreen>{
   void dispose(){
     _searchController.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadGroups() async{
+    try{
+      _groupRepository.watchAllGroups().listen((groups){
+        if(mounted){
+          setState(() {
+            _groupsMap = {for (var g in groups ) g.groupId!: g};
+          });
+        }
+      });
+    }catch(e){
+      print('Error loading groups: $e');
+    }
   }
 
   List<PostModel> _filteredPosts(List<PostModel> posts){
@@ -74,9 +90,15 @@ class SearchScreenState extends State<SearchScreen>{
     return onlyStudents.where((student){
       final matchesName = student.fullName.toLowerCase().contains(query);
       final matchesEmail = student.email.toLowerCase().contains(query);
-      final matchesFaculty = student.faculty?.toLowerCase().contains(query) ?? false;
-      final matchesMajor = student.major?.toLowerCase().contains(query) ?? false;
 
+      final group = student.groupId != null ? _groupsMap[student.groupId] : null;
+      final faculty = group?.faculty?.toLowerCase() ?? '';
+      final major = group?.major?.toLowerCase() ?? '';
+
+      final matchesFaculty = faculty.contains(query);
+      final matchesMajor = major.contains(query);
+
+      // return matchesName || matchesEmail || matchesFaculty || matchesMajor;
       return matchesName || matchesEmail || matchesFaculty || matchesMajor;
     }).toList();
   }
@@ -216,10 +238,10 @@ class SearchScreenState extends State<SearchScreen>{
                     stream: _userRepository.watchAllUsers(),
                     builder: (context, snapshot){
 
-                      print("Connection State: ${snapshot.connectionState}");
-                      print("Has Error: ${snapshot.hasError}");
-                      print("Error details: ${snapshot.error}");
-                      print("Users Data from Firebase: ${snapshot.data}");
+                      // print("Connection State: ${snapshot.connectionState}");
+                      // print("Has Error: ${snapshot.hasError}");
+                      // print("Error details: ${snapshot.error}");
+                      // print("Users Data from Firebase: ${snapshot.data}");
 
                       if(snapshot.connectionState == ConnectionState.waiting){
                         return Center(

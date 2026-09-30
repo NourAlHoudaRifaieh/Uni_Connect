@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:uni_connect/features/auth/data/group_repository.dart';
 
+import '../../../../core/models/group_model.dart';
 import '../../../../core/models/user_model.dart';
 
 class AdminSearchStudentCard extends StatelessWidget {
@@ -8,6 +10,7 @@ class AdminSearchStudentCard extends StatelessWidget {
   final UserModel user;
   final VoidCallback? onEditPressed;
   final VoidCallback? onDeletePressed;
+  final GroupRepository _groupRepository = GroupRepository();
 
   AdminSearchStudentCard({
     super.key,
@@ -74,13 +77,60 @@ class AdminSearchStudentCard extends StatelessWidget {
                       maxLines: 1,
                       overflow:  TextOverflow.ellipsis,
                     ),
-                    Text(
-                      '${user.faculty} - ${user.academicYear}',
-                      style: GoogleFonts.inter(
+                    SizedBox(height:2),
+                    user.groupId != null && user.groupId!.isNotEmpty
+                      ? FutureBuilder<GroupModel?>(
+                          future: _groupRepository.getGroupById(user.groupId!),
+                          builder: (context, snapshot){
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              return Text(
+                                'Loading group...',
+                                style: GoogleFonts.inter(
+                                  fontSize: 12,
+                                  color: Colors.grey.shade400,
+                                  fontStyle: FontStyle.italic,
+                                ),
+                              );
+                            }
+                            final group = snapshot.data;
+                            if(group == null){
+                              return Text(
+                                'Group not found',
+                                style: GoogleFonts.inter(
+                                  fontSize: 12,
+                                  color: Colors.red.shade400,
+                                ),
+                              );
+                            }
+                            final details = [
+                              if(group.faculty != null && group.faculty!.isNotEmpty) group.faculty!,
+                              if(group.groupName.isNotEmpty) group.groupName,
+                              if(group.academicYear != null) group.academicYear!,
+                            ].join(' - ');
+                            return Text(
+                              details.isNotEmpty ? details : 'No details provided',
+                              style: GoogleFonts.inter(
+                                fontSize: 12,
+                                color: Colors.grey.shade600,
+                              ),
+                            );
+                          }
+                        )
+                      : Text(
+                        'No group assigned',
+                        style: GoogleFonts.inter(
                           fontSize: 12,
-                          color: Colors.grey.shade600
+                          color: Colors.grey.shade500,
+                          fontStyle: FontStyle.italic,
+                        ),
                       ),
-                    ),
+                    // Text(
+                    //   '${user.faculty} - ${user.academicYear}',
+                    //   style: GoogleFonts.inter(
+                    //       fontSize: 12,
+                    //       color: Colors.grey.shade600
+                    //   ),
+                    // ),
                   ],
                 ),
               ),
@@ -141,59 +191,6 @@ class AdminSearchStudentCard extends StatelessWidget {
                 ],
                 child: const Icon(Icons.more_vert, size: 20, color: Colors.grey),
               ),
-              // Column(
-              //   crossAxisAlignment:  CrossAxisAlignment.end,
-              //   children: [
-              //     Container(
-              //       height:28,
-              //       decoration: BoxDecoration(
-              //         border: Border.all(
-              //           color: Color(0xFF1D61FF),
-              //         ),
-              //         borderRadius: BorderRadius.circular(20),
-              //         color: Color(0xFF1D61FF).withOpacity(0.03),
-              //       ),
-              //       child: TextButton(
-              //         onPressed: (){
-              //
-              //         },
-              //         child: Text(
-              //           'Edit',
-              //           style:GoogleFonts.inter(
-              //             fontWeight: FontWeight.bold,
-              //             fontSize: 12,
-              //             color: Color(0xFF1D61FF),
-              //           ),
-              //         ),
-              //       ),
-              //     ),
-              //     SizedBox(height:5),
-              //     Container(
-              //       padding: EdgeInsets.zero,
-              //       height:28,
-              //       decoration: BoxDecoration(
-              //         border: Border.all(
-              //           color: Colors.red,
-              //         ),
-              //         borderRadius: BorderRadius.circular(20),
-              //         color: Colors.red.withOpacity(0.03),
-              //       ),
-              //       child: TextButton(
-              //         onPressed: (){
-              //
-              //         },
-              //         child: Text(
-              //           'Remove',
-              //           style:GoogleFonts.inter(
-              //             fontWeight: FontWeight.bold,
-              //             fontSize: 12,
-              //             color: Colors.red,
-              //           ),
-              //         ),
-              //       ),
-              //     ),
-              //   ],
-              // ),
             ],
           ),
         ],

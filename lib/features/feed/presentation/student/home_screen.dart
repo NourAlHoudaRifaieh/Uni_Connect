@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:uni_connect/core/mock/mock_data.dart';
 import 'package:uni_connect/core/models/post_model.dart';
 import 'package:uni_connect/core/widgets/custom_form_field.dart';
+import 'package:uni_connect/features/auth/data/group_repository.dart';
 import 'package:uni_connect/features/auth/data/post_repository.dart';
 import 'package:uni_connect/features/auth/data/user_repository.dart';
 import 'package:uni_connect/features/feed/presentation/student/create_post_screen.dart';
@@ -26,6 +27,7 @@ class _HomeScreenState extends State <HomeScreen>{
   String selectedCategory = 'All';
   final PostRepository _postRepository = PostRepository();
   final UserRepository _userRepository = UserRepository();
+  final GroupRepository _groupRepository = GroupRepository();
 
   List<String> _getCategories(List <PostModel> posts) {
     final categorySet = <String>{'All'};
@@ -107,21 +109,45 @@ class _HomeScreenState extends State <HomeScreen>{
                                 stream: _userRepository.watchCurrentUser(),
                                 builder: (context, userSnapshot){
                                   final userModel = userSnapshot.data;
-                                  final faculty = userModel?.faculty ?? '';
-                                  final academicYear = userModel?.academicYear ?? '';
-                                  final departmentText = faculty.isNotEmpty && academicYear.isNotEmpty
-                                      ? '$faculty, $academicYear'
-                                      : (faculty.isNotEmpty
-                                        ? faculty
-                                        : (academicYear.isNotEmpty
-                                          ? academicYear
-                                          : (userModel?.major ?? 'Business Administration')));
-
+                                  // final faculty = userModel?.faculty ?? '';
+                                  // final academicYear = userModel?.academicYear ?? '';
+                                  // final departmentText = faculty.isNotEmpty && academicYear.isNotEmpty
+                                  //     ? '$faculty, $academicYear'
+                                  //     : (faculty.isNotEmpty
+                                  //       ? faculty
+                                  //       : (academicYear.isNotEmpty
+                                  //         ? academicYear
+                                  //         : (userModel?.major ?? 'Business Administration')));
                                   return  Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text('UniConnect', style: GoogleFonts.inter(fontSize:25, fontWeight: FontWeight.bold)),
                                       // Text(departmentText, style: GoogleFonts.inter(fontSize:15, color: Colors.grey)),
+                                      SizedBox(height:2),
+                                      if (userModel?.groupId != null && userModel!.groupId!.isNotEmpty)
+                                        FutureBuilder(
+                                          future: _groupRepository.getGroupById(userModel.groupId!),
+                                          builder: (context, groupSnapshot) {
+                                            if (!groupSnapshot.hasData) return const SizedBox.shrink();
+                                            final group = groupSnapshot.data;
+                                            if (group == null) return const SizedBox.shrink();
+
+                                            final departmentText = [
+                                              if (group.faculty != null) group.faculty!,
+                                              if (group.academicYear != null) group.academicYear!,
+                                            ].join(', ');
+
+                                            return Text(
+                                              departmentText.isNotEmpty ? departmentText : 'Business Administration',
+                                              style: GoogleFonts.inter(fontSize: 14, color: Colors.grey),
+                                            );
+                                          },
+                                        )
+                                      else
+                                        Text(
+                                          'Business Administration, Master 2',
+                                          style: GoogleFonts.inter(fontSize: 14, color: Colors.grey),
+                                        ),
                                     ],
                                   );
                                 },

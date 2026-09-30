@@ -26,7 +26,7 @@ class GroupCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    final rawYear = academicYear ?? group.academicYear ?? user?.academicYear;
+    final rawYear = academicYear ?? group.academicYear;
     final bool hasYear = rawYear != null && rawYear.trim().isNotEmpty && rawYear != 'N/A';
     final String displayYear = hasYear ? rawYear : '';
     return Container(
