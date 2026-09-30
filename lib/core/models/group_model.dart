@@ -2,36 +2,37 @@
 class GroupModel{
   final String? groupId;
   final String groupName;
-  final String? userId;// foreign key
-  final String? subjectId; //foreign key
-  final String? academicYear; //-> need to use it from the user model
+  final String? academicYear;
   final int? membersCount;
+  final String? faculty;
+  final String? major;
 
   GroupModel({
     this.groupId,
     required this.groupName,
-    this.userId,
-    this.subjectId,
     this.academicYear,
     this.membersCount,
+    this.faculty,
+    this.major,
   });
 
   // Add copyWith to duplicate existing instances with updated fields
   GroupModel copyWith({
     String? groupId,
     String? groupName,
-    String? userId,
-    String? subjectId,
     String? academicYear,
     int? membersCount,
+    String? faculty,
+    String? major,
+
   }) {
     return GroupModel(
       groupId: groupId ?? this.groupId,
       groupName: groupName ?? this.groupName,
-      userId: userId ?? this.userId,
-      subjectId: subjectId ?? this.subjectId,
       academicYear: academicYear ?? this.academicYear,
       membersCount: membersCount ?? this.membersCount,
+      faculty: faculty ?? this.faculty,
+      major: major ?? this.major,
     );
   }
 
@@ -39,10 +40,10 @@ class GroupModel{
     return GroupModel(
         groupName: json['groupName'] ?? '',
         groupId: json['groupId'] ?? '',
-        userId: json['userId'] ?? '',
-        subjectId: json['subjectId'] ?? '',
         academicYear: json['academicYear'] ?? '',
         membersCount: json['membersCount'] ?? 0,
+        faculty: json['faculty'],
+        major: json['major'],
     );
   }
 
@@ -50,19 +51,19 @@ class GroupModel{
     return GroupModel(
       groupId: id,
       groupName: data['groupName'] ?? '',
-      subjectId: data['subjectId'] ?? '',
       membersCount: data['membersCount'] ?? 0,
       academicYear: data['academicYear'] ?? '',
-      userId: data['userId'] ,
+      faculty: data['faculty'],
+      major: data['major'],
     );
   }
 
   Map<String, dynamic> toJson(){
     return{
       if(groupId != null) 'groupId': groupId,
+      if(faculty != null) 'faculty': faculty,
+      if(major != null) 'major': major,
       'groupName': groupName,
-      if(userId != null) 'userId': userId,
-      'subjectId': subjectId,
       'academicYear': academicYear,
       'membersCount': membersCount,
     };

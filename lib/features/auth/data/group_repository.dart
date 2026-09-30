@@ -21,7 +21,13 @@ class GroupRepository {
     return 'group_${maxId + 1}';
   }
 
-
+  Future<GroupModel?> getGroupById(String groupId) async{
+    final doc = await _firestore.collection('groups').doc(groupId).get();
+    if(doc.exists && doc.data() != null){
+      return GroupModel.fromFirestore(doc.data()!, doc.id);
+    }
+    return null;
+  }
 
   //Stream all groups across academic years
   Stream <List<GroupModel>> watchAllGroups(){
