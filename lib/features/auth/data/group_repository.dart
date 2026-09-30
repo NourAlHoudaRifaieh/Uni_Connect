@@ -21,6 +21,8 @@ class GroupRepository {
     return 'group_${maxId + 1}';
   }
 
+
+
   //Stream all groups across academic years
   Stream <List<GroupModel>> watchAllGroups(){
     return _firestore

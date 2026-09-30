@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:uni_connect/core/models/user_model.dart';
 import 'package:uni_connect/core/widgets/custom_form_field.dart';
+import 'package:uni_connect/features/auth/data/user_repository.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/admin_search_student_card.dart';
 
 import '../../../../core/mock/mock_data.dart';
@@ -24,8 +25,8 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
 
   final _formKey = GlobalKey<FormState>();
   TextEditingController _searchController = TextEditingController();
-
- List<UserModel> get students => MockData.students;
+  final UserRepository _userRepository = UserRepository();
+ // List<UserModel> get students => MockData.students;
 
   @override
   void initState() {
@@ -43,18 +44,18 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
     super.dispose();
   }
 
-  List<UserModel> get _filteredStudents {
-    final query = _searchController.text.trim().toLowerCase();
-    if (query.isEmpty) return students;
-    return students.where((student) {
-      final matchesName = student.fullName.toLowerCase().contains(query);
-      final matchesEmail = student.email.toLowerCase().contains(query);
-      final matchesFaculty = student.faculty?.toLowerCase().contains(query) ?? false;
-      final matchesMajor = student.major?.toLowerCase().contains(query) ?? false;
-
-      return matchesName || matchesEmail || matchesFaculty || matchesMajor;
-    }).toList();
-  }
+  // List<UserModel> get _filteredStudents {
+  //   final query = _searchController.text.trim().toLowerCase();
+  //   if (query.isEmpty) return students;
+  //   return students.where((student) {
+  //     final matchesName = student.fullName.toLowerCase().contains(query);
+  //     final matchesEmail = student.email.toLowerCase().contains(query);
+  //     final matchesFaculty = student.faculty?.toLowerCase().contains(query) ?? false;
+  //     final matchesMajor = student.major?.toLowerCase().contains(query) ?? false;
+  //
+  //     return matchesName || matchesEmail || matchesFaculty || matchesMajor;
+  //   }).toList();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -163,26 +164,58 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
             ),
             Expanded(
               child: Padding(
-                  padding: EdgeInsets.all(20),
-                child: _filteredStudents.isEmpty
-                    ? Center(
-                  child: Text(
-                    'No results found',
-                    style: GoogleFonts.inter(
-                      fontSize: 16,
-                      color: Colors.grey.shade500,
-                    ),
-                  ),
-                )
-                    : ListView.builder(
-                  itemCount: _filteredStudents.length,
-                  itemBuilder: (context, index){
-                    return AdminSearchStudentCard(
-                      user: _filteredStudents[index],
-                      onEditPressed: () {},
-                      onDeletePressed: () {},
+                padding: EdgeInsets.all(20),
+                child: StreamBuilder<List<UserModel>>(
+                  stream: _userRepository.watchAllUsers(),
+                  builder: (context, snapshot){
+                    if(snapshot.connectionState == ConnectionState.waiting){
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                    if(snapshot.hasError){
+                      return Center(
+                        child: Text('Error loading users: ${snapshot.error}',
+                          style: GoogleFonts.inter(
+                            color: Colors.red,
+                          ),
+                        ),
+                      );
+                    }
+                    final users = snapshot.data ?? [];
+                    final query = _searchController.text.trim().toLowerCase();
+
+                    final filteredUsers = users.where((student) {
+                      if(query.isEmpty) return true;
+                      final matchesName = student.fullName.toLowerCase().contains(query);
+                      final matchesEmail = student.email.toLowerCase().contains(query);
+                      return matchesEmail || matchesName;
+                    }).toList();
+
+                    if(filteredUsers.isEmpty){
+                      return Center(
+                        child: Text(
+                          'No results found',
+                          style: GoogleFonts.inter(
+                            fontSize: 16,
+                            color: Colors.grey.shade500,
+                          ),
+                        ),
+                      );
+                    }
+
+                    return ListView.builder(
+                      itemCount: filteredUsers.length,
+                      itemBuilder: (context, index){
+                        return AdminSearchStudentCard(
+                          user: filteredUsers[index],
+                          onEditPressed: () {},
+                          onDeletePressed: () {},
+                        );
+                      },
                     );
-                  },
+
+                  }
                 ),
               ),
             ),

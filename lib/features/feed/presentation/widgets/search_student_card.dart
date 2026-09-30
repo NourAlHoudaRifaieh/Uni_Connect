@@ -17,12 +17,12 @@ class SearchStudentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final facultyText = user.faculty ?? '';
-    final yearText = user.academicYear ?? '';
-    final metadataLine =[
-      if(facultyText.isNotEmpty) facultyText,
-      if(yearText.isNotEmpty) yearText,
-    ].join('-');
+    // final facultyText = user.faculty ?? '';
+    // final yearText = user.academicYear ?? '';
+    // final metadataLine =[
+    //   if(facultyText.isNotEmpty) facultyText,
+    //   if(yearText.isNotEmpty) yearText,
+    // ].join('-');
 
     // TODO: implement build
     return Container(
@@ -59,7 +59,7 @@ class SearchStudentCard extends StatelessWidget {
                   overflow:  TextOverflow.ellipsis,
                 ),
               ),
-              const SizedBox(width:10),
+              SizedBox(width:10),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -80,6 +80,7 @@ class SearchStudentCard extends StatelessWidget {
                       maxLines: 1,
                       overflow:  TextOverflow.ellipsis,
                     ),
+                    SizedBox(height:2),
                     Text(
                       metadataLine.isNotEmpty ? metadataLine : 'No details provided',
                       // '${user.faculty} - ${user.academicYear}',
