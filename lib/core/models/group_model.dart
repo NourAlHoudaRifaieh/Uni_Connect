@@ -5,6 +5,7 @@ class GroupModel{
   final String? academicYear;
   final int? membersCount;
   final String? faculty;
+  final String? department;
   final String? major;
 
   GroupModel({
@@ -13,6 +14,7 @@ class GroupModel{
     this.academicYear,
     this.membersCount,
     this.faculty,
+    this.department,
     this.major,
   });
 
@@ -23,6 +25,7 @@ class GroupModel{
     String? academicYear,
     int? membersCount,
     String? faculty,
+    String? department,
     String? major,
 
   }) {
@@ -32,6 +35,7 @@ class GroupModel{
       academicYear: academicYear ?? this.academicYear,
       membersCount: membersCount ?? this.membersCount,
       faculty: faculty ?? this.faculty,
+      department: department ?? this.department,
       major: major ?? this.major,
     );
   }
@@ -43,6 +47,7 @@ class GroupModel{
         academicYear: json['academicYear'] ?? '',
         membersCount: json['membersCount'] ?? 0,
         faculty: json['faculty'],
+        department: json['department'],
         major: json['major'],
     );
   }
@@ -54,6 +59,7 @@ class GroupModel{
       membersCount: data['membersCount'] ?? 0,
       academicYear: data['academicYear'] ?? '',
       faculty: data['faculty'],
+      department: data['department'],
       major: data['major'],
     );
   }
@@ -63,6 +69,7 @@ class GroupModel{
       if(groupId != null) 'groupId': groupId,
       if(faculty != null) 'faculty': faculty,
       if(major != null) 'major': major,
+      if(department != null) 'department': department,
       'groupName': groupName,
       'academicYear': academicYear,
       'membersCount': membersCount,

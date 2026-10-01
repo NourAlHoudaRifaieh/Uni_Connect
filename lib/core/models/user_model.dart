@@ -4,9 +4,10 @@ class UserModel {
   final String fullName;
   final String email;
   final String role; // 'student' or 'admin'
-  // final String? faculty;
-  // final String? academicYear;
-  // final String? major;
+  final String? faculty;
+  final String? department;
+  final String? academicYear;
+  final String? major;
   final int postCount;
   final String? groupId;
 
@@ -15,9 +16,10 @@ class UserModel {
     required this.fullName,
     required this.email,
     required this.role,
-    // this.faculty,
-    // this.academicYear,
-    // this.major,
+    this.faculty,
+    this.academicYear,
+    this.department,
+    this.major,
     this.postCount=0,
     this.groupId,
   });
@@ -27,9 +29,10 @@ class UserModel {
     String? fullName,
     String? email,
     String? role,
-    // String? faculty,
-    // String? academicYear,
-    // String? major,
+    String? faculty,
+    String? academicYear,
+    String? department,
+    String? major,
     int? postCount,
   }) {
     return UserModel(
@@ -38,8 +41,9 @@ class UserModel {
       email: email ?? this.email,
       role: role ?? this.role,
       // faculty: faculty ?? this.faculty,
-      // academicYear: academicYear ?? this.academicYear,
-      // major: major ?? this.major,
+      academicYear: academicYear ?? this.academicYear,
+      department: department ?? this.department,
+      major: major ?? this.major,
       postCount: postCount ?? this.postCount,
       groupId: groupId ?? this.groupId,
     );
@@ -64,9 +68,10 @@ class UserModel {
         fullName: json['fullName'] ?? '',
         email: json['email'] ?? '',
         role: json['role'] ?? 'student',
-        // faculty:json['faculty'],
-        // academicYear:json['academicYear'],
-        // major: json['major'],
+        faculty:json['faculty'],
+        academicYear:json['academicYear'],
+        department:json['department'],
+        major: json['major'],
         groupId: json['groupId'],
         postCount:json['postCount'] ?? 0,
     );
@@ -78,9 +83,10 @@ class UserModel {
         fullName: data['fullName'] ?? '',
         email: data['email'] ?? '',
         role: data['role'] ?? 'student',
-        // faculty: data['faculty'],
-        // academicYear: data['academicYear'],
-        // major: data['major'],
+        faculty: data['faculty'],
+        academicYear: data['academicYear'],
+        department: data['department'],
+        major: data['major'],
         groupId: data['groupId'],
         postCount: data['postCount'] ?? 0,
     );
@@ -92,10 +98,11 @@ class UserModel {
       'fullName': fullName,
       'email': email,
       'role': role,
-      // if(faculty !=null) 'faculty': faculty,
-      // if(academicYear !=null) 'academicYear': academicYear,
+      if(faculty !=null) 'faculty': faculty,
+      if(academicYear !=null) 'academicYear': academicYear,
+      if(department !=null) 'department': department,
       if(groupId !=null) 'groupId': groupId,
-      // if(major !=null) 'major':major,
+      if(major !=null) 'major':major,
       'postCount': postCount,
     };
   }
