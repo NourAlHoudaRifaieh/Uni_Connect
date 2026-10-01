@@ -6,18 +6,20 @@ class UserRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  // Stream current logged-in user profile real-time
   Stream<UserModel?> watchCurrentUser() {
-    final uid = _auth.currentUser?.uid;
-    if (uid == null) return Stream.value(null);
+    final authUser = _auth.currentUser;
+    if (authUser == null || authUser.email == null) return Stream.value(null);
 
     return _firestore
         .collection('users')
-        .doc(uid)
+        .where('email', isEqualTo: authUser.email)
+        .limit(1)
         .snapshots()
-        .map((doc) => doc.exists && doc.data() != null
-        ? UserModel.fromFirestore(doc.data()!, doc.id)
-        : null);
+        .map((snapshot) {
+      if (snapshot.docs.isEmpty) return null;
+      final doc = snapshot.docs.first;
+      return UserModel.fromFirestore(doc.data(), doc.id);
+    });
   }
 
   // Fetch single user profile once by UID
@@ -47,9 +49,24 @@ class UserRepository {
 
   // Increment user's total post count dynamically when they publish a post
   Future<void> incrementUserPostCount(String uid) async {
-    await _firestore.collection('users').doc(uid).update({
+    DocumentReference docRef = _firestore.collection('users').doc(uid);
+    DocumentSnapshot docSnap = await docRef.get();
+    if(!docSnap.exists){
+      final query = await _firestore
+          .collection('users')
+          .where('userId', isEqualTo:  uid)
+          .limit(1)
+          .get();
+      if(query.docs.isNotEmpty){
+        docRef = query.docs.first.reference;
+      }
+    }
+    await docRef.update({
       'postCount': FieldValue.increment(1),
     });
+    // await _firestore.collection('users').doc(uid).update({
+    //   'postCount': FieldValue.increment(1),
+    // });
   }
 
   Future<void> decrementUserPostCount(String uid) async{

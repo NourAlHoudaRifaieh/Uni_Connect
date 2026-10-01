@@ -7,10 +7,46 @@ class AuthRepository {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  // Future<String> _generateSequentialUserId() async {
+  //   final querySnapshot = await _firestore.collection('users').get();
+  //   int maxId = 0;
+  //   for (var doc in querySnapshot.docs) {
+  //     final id = doc.id;
+  //     if (id.startsWith('user_')) {
+  //       final numberPart = int.tryParse(id.replaceFirst('user_', '')) ?? 0;
+  //       if (numberPart > maxId) {
+  //         maxId = numberPart;
+  //       }
+  //     }
+  //   }
+  //   return 'user_${maxId + 1}';
+  // }
+  //
+  // Future<String> _generateGroupId() async {
+  //   final querySnapshot = await _firestore.collection('groups').get();
+  //   int maxId = 0;
+  //   for (var doc in querySnapshot.docs) {
+  //     final id = doc.id;
+  //     if (id.startsWith('group_')) {
+  //       final numberPart = int.tryParse(id.replaceFirst('group_', '')) ?? 0;
+  //       if (numberPart > maxId) {
+  //         maxId = numberPart;
+  //       }
+  //     }
+  //   }
+  //   return 'group_${maxId + 1}';
+  // }
+
   Future<String> _generateSequentialUserId() async {
     final querySnapshot = await _firestore.collection('users').get();
     int nextId = querySnapshot.docs.length + 1;
-    return nextId.toString();
+    return 'user_$nextId';
+  }
+
+  Future<String> _generateGroupId() async {
+    final querySnapshot = await _firestore.collection('groups').get();
+    int nextId = querySnapshot.docs.length + 1;
+    return 'group_$nextId';
   }
 
   //register a new user and creates their Firestore profile document
@@ -43,8 +79,6 @@ class AuthRepository {
         'createdAt': FieldValue.serverTimestamp(),
       };
 
-      // Only include these fields when they actually have a value
-      // if (faculty != null) userData['faculty'] = faculty;
       if(department != null) userData['department'] = department;
       if (academicYear != null) userData['academicYear'] = academicYear;
       if (major != null) {
@@ -53,12 +87,41 @@ class AuthRepository {
         userData['major'] = 'Common Core';
       }
 
+      // if(role == 'student' && department != null && academicYear != null){
+      //   final groupId = await _generateGroupId();
+      //   userData['groupId'] = groupId;
+      // }
+
       if(role == 'student' && department != null && academicYear != null){
-        userData['groupId'] = '${department}_${academicYear}'.replaceAll(' ', '_');
+        final existingGroupQuery = await _firestore
+            .collection('groups')
+            .where('academicYear', isEqualTo: academicYear)
+            .where('department', isEqualTo: department)
+            .limit(1)
+            .get();
+
+        String groupId;
+
+        if (existingGroupQuery.docs.isNotEmpty) {
+          groupId = existingGroupQuery.docs.first.id;
+        } else {
+          groupId = await _generateGroupId();
+          final newGroupData = {
+            'groupId': groupId,
+            'groupName': '$department - $academicYear',
+            'academicYear': academicYear,
+            'department': department,
+            'membersCount': 0,
+          };
+          await _firestore.collection('groups').doc(groupId).set(newGroupData);
+        }
+
+        userData['groupId'] = groupId;
       }
 
+
         // await _firestore.collection('users').doc(uid).set(userData);
-        await _firestore.collection('users').doc(uid).set(userData);
+        await _firestore.collection('users').doc(sequentialId).set(userData);
 
 
         //force sign out : prevents firebase from keeping the user logged in automatically after registration
@@ -131,18 +194,56 @@ class AuthRepository {
   }
 
   //Fetch the user's role from Firestore 'admin' or 'student'
-  Future<String?> getUserRole(String uid) async{
-    try{
-      final doc = await _firestore.collection('users').doc(uid).get();
-      if(doc.exists && doc.data() != null){
-        return doc.data()!['role'] as String?;
+  // Future<String?> getUserRole(String uid) async{
+  //   try{
+  //     final doc = await _firestore.collection('users').doc(uid).get();
+  //     if(doc.exists && doc.data() != null){
+  //       return doc.data()!['role'] as String?;
+  //     }
+  //   }catch(e){
+  //     debugPrint('Enter fetching user role: $e');
+  //   }
+  //   return 'student';
+  // }
+
+  // Fetch the user's role from Firestore safely ('admin' or 'student')
+  Future<String?> getUserRole(String identifier) async {
+    try {
+      DocumentSnapshot doc = await _firestore.collection('users').doc(identifier).get();
+
+      if (!doc.exists) {
+        final query = await _firestore
+            .collection('users')
+            .where('userId', isEqualTo: identifier)
+            .limit(1)
+            .get();
+
+        if (query.docs.isNotEmpty) {
+          doc = query.docs.first;
+        } else {
+          final currentUser = _auth.currentUser;
+          if (currentUser != null && currentUser.email != null) {
+            final emailQuery = await _firestore
+                .collection('users')
+                .where('email', isEqualTo: currentUser.email)
+                .limit(1)
+                .get();
+            if (emailQuery.docs.isNotEmpty) {
+              doc = emailQuery.docs.first;
+            }
+          }
+        }
       }
-    }catch(e){
-      debugPrint('Enter fetching user role: $e');
+
+      if (doc.exists && doc.data() != null) {
+        final data = doc.data() as Map<String, dynamic>?;
+        return data?['role'] as String?;
+      }
+    } catch (e) {
+      debugPrint('Error fetching user role: $e');
     }
     return 'student';
   }
-
 
   // For password reset method
   Future<void> sendPasswordResentEmail(String email) async{

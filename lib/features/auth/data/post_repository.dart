@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:uni_connect/features/auth/data/subject_repository.dart';
 import 'package:uni_connect/features/auth/data/user_repository.dart';
 
@@ -8,6 +9,27 @@ class PostRepository {
   final _firestore = FirebaseFirestore.instance;
   final _subjectRepository = SubjectRepository();
   final _userRepository = UserRepository();
+
+  // Future<String> _generatePostId() async {
+  //   final querySnapshot = await _firestore.collection('posts').get();
+  //   int maxId = 0;
+  //   for (var doc in querySnapshot.docs) {
+  //     final id = doc.id;
+  //     if (id.startsWith('post_')) {
+  //       final numberPart = int.tryParse(id.replaceFirst('post_', '')) ?? 0;
+  //       if (numberPart > maxId) {
+  //         maxId = numberPart;
+  //       }
+  //     }
+  //   }
+  //   return 'post_${maxId + 1}';
+  // }
+
+  Future<String> _generatePostId() async {
+    final querySnapshot = await _firestore.collection('posts').get();
+    int nextId = querySnapshot.docs.length + 1;
+    return 'post_$nextId';
+  }
 
   //all posts, news first - used by Home feed
   Stream<List<PostModel>> watchAllPosts() {
@@ -37,15 +59,62 @@ class PostRepository {
             .map((doc) => PostModel.fromFirestore(doc.data(), doc.id)).toList());
   }
 
+  Stream<List<PostModel>> watchPostsByGroup(String groupId) {
+    return _firestore
+        .collection('posts')
+        .where('groupId', isEqualTo: groupId)
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+        .map((doc) => PostModel.fromFirestore(doc.data(), doc.id))
+        .toList());
+  }
+
+  Stream<List<PostModel>> watchPostsForStudentGroup(String groupId) {
+    return _firestore
+        .collection('posts')
+        .where('groupId', isEqualTo: groupId)
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+        .map((doc) => PostModel.fromFirestore(doc.data(), doc.id))
+        .toList());
+  }
+
   // Create a new Post, and bump the subject's post count at the same time
   Future<void> createPost(PostModel post) async{
-    await _firestore.collection('posts').add(post.toJson());
-    if(post.subjectId != null){
-      await _subjectRepository.incrementPostCount(post.subjectId!);
+    final newPostId = await _generatePostId();
+
+    String correctUserId = post.userId ?? '';
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if(currentUser != null && currentUser.email != null){
+      final userQuery = await _firestore
+          .collection('users')
+          .where('email', isEqualTo: currentUser.email)
+          .limit(1)
+          .get();
+      if(userQuery.docs.isNotEmpty){
+        correctUserId = userQuery.docs.first.id;
+      }
     }
-    if(post.userId != null){
-      await _userRepository.incrementUserPostCount(post.userId!);
+    final correctedPost = post.copyWith(userId: correctUserId, postId:  newPostId);
+
+    await _firestore.collection('posts').doc(newPostId).set(correctedPost.toJson());
+
+    // await _firestore.collection('posts').add(correctedPost.toJson());
+    if(correctedPost.subjectId != null && correctedPost.subjectId!.isNotEmpty){
+      await _subjectRepository.incrementPostCount(correctedPost.subjectId!);
     }
+    if(correctUserId.isNotEmpty){
+      await _userRepository.incrementUserPostCount(correctUserId);
+    }
+
+    // await _firestore.collection('posts').add(post.toJson());
+    // if(post.subjectId != null){
+    //   await _subjectRepository.incrementPostCount(post.subjectId!);
+    // }
+    // if(post.userId != null){
+    //   await _userRepository.incrementUserPostCount(post.userId!);
+    // }
   }
 
   //toggle like/unlike for a specific user, safely even with concurrent taps
