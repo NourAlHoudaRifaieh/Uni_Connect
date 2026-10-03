@@ -38,9 +38,11 @@ class _CreateSubjectScreenState extends State<CreateSubjectScreen> {
   final SubjectRepository _subjectRepository = SubjectRepository();
   final GroupRepository _groupRepository = GroupRepository();
 
-  String? selectedGroupId;
-  GroupModel? selectedGroup;
+  // String? selectedGroupId;
+  // GroupModel? selectedGroup;
   String? selectedYear;
+  final Set<String> selectedGroupIds = {};
+  List<GroupModel> _latestYearGroups = [];
   bool isLoading = false;
 
   @override
@@ -55,37 +57,53 @@ class _CreateSubjectScreenState extends State<CreateSubjectScreen> {
     super.dispose();
   }
 
-  List<String> get _availableAcademicYears {
-    if (selectedGroup == null) return kAcademicYears;
-    final name = selectedGroup!.groupName.toLowerCase();
+  // List<String> get _availableAcademicYears {
+  //   if (selectedGroup == null) return kAcademicYears;
+  //   final name = selectedGroup!.groupName.toLowerCase();
+  //
+  //   if (name.contains('general preparation')) {
+  //     return ['Year 1'];
+  //   } else if (name.contains('economic science')) {
+  //     return ['Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5'];
+  //   } else {
+  //     return ['Year 2', 'Year 3', 'Year 4', 'Year 5'];
+  //   }
+  // }
 
-    if (name.contains('general preparation')) {
-      return ['Year 1'];
-    } else if (name.contains('economic science')) {
-      return ['Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5'];
-    } else {
-      return ['Year 2', 'Year 3', 'Year 4', 'Year 5'];
-    }
-  }
-
-  Future <void> _onCreateSubject() async{
-    final currentGroupId = selectedGroupId;
+  Future <void> _onCreateSubject(List <GroupModel> yearGroups) async{
+    // final currentGroupId = selectedGroupId;
     if(_formKey.currentState !=null && _formKey.currentState!.validate()){
-      if(currentGroupId == null){
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Please select a group')),
-        );
-        return;
-      }
-      setState(() {
-        isLoading= true;
-      });
+      // if(currentGroupId == null){
+      //   ScaffoldMessenger.of(context).showSnackBar(
+      //     SnackBar(content: Text('Please select a group')),
+      //   );
+      //   return;
+      // }
+      // setState(() {
+      //   isLoading= true;
+      // });
       if(selectedYear == null){
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Please select an academic year')),
         );
         return;
       }
+
+      //Keep the order of the list so the first checked specialization is the main one
+      final ids = yearGroups
+        .map((g) => g.groupId)
+        .whereType<String>()
+        .where(selectedGroupIds.contains)
+        .toList();
+
+      if(ids.isEmpty){
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(
+            'Please select at least one specialization'
+          ))
+        );
+      }
+
       setState(() {
         isLoading= true;
       });
@@ -98,9 +116,17 @@ class _CreateSubjectScreenState extends State<CreateSubjectScreen> {
             subjectCode: '',
           subjectName: _subjectNameController.text.trim(),
           academicYear: selectedYear,
-          groupId: currentGroupId,
-          postCount: 0
+          groupId: ids.first,
+          postCount: 0,
+          sharedGroupIds: ids.skip(1).toList(),
         );
+        final dup = await _subjectRepository.duplicateError(newSubject);
+        if(dup != null){
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(dup), backgroundColor: Colors.red,)
+          );
+        }
+
         await _subjectRepository.createSubject(newSubject);
         if(mounted){
           Navigator.pop(context, true);
@@ -108,7 +134,7 @@ class _CreateSubjectScreenState extends State<CreateSubjectScreen> {
       }catch(e){
         if(mounted){
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error creating subject: $e')),
+            SnackBar(content: Text('Error creating subject: ${e.toString().replaceFirst('Exception:', '')}')),
           );
         }
       }finally{
@@ -170,74 +196,74 @@ class _CreateSubjectScreenState extends State<CreateSubjectScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Text(
-                        'Select Group / Major',
-                        style: GoogleFonts.inter(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: const Color(0xFF2F3A4A),
-                        ),
-                      ),
-                      SizedBox(height:5),
-                      StreamBuilder<List<GroupModel>>(
-                        stream: _groupRepository.watchAllGroups(),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState == ConnectionState.waiting) {
-                            return Center(child: CircularProgressIndicator());
-                          }
-                          final groups = snapshot.data ?? [];
-                          return DropdownButtonFormField<String>(
-                            value: selectedGroupId,
-                            hint: Text('Select group'),
-                            isExpanded: true,
-                            items: groups.map((group) {
-                              return DropdownMenuItem<String>(
-                                value: group.groupId,
-                                // child: Text('${group.groupName} (${group.academicYear ?? ""}) - ${group.membersCount ?? 0} members'),
-                                // child: Text('${group.groupName}'),
-                                child: Text('${group.groupName} (${group.academicYear ?? ""})'),
-                              );
-                            }).toList(),
-                            onChanged: (value) {
-                              setState(() {
-                                selectedGroupId = value;
-                                selectedGroup = groups.firstWhere(
-                                      (g) => g.groupId == value,
-                                  orElse: () => GroupModel(groupName: ''),
-                                );
-                                final name = selectedGroup?.groupName.toLowerCase() ?? '';
-                                if (name.contains('general preparation')) {
-                                  selectedYear = 'Year 1';
-                                } else if (_availableAcademicYears.length == 1) {
-                                  selectedYear = _availableAcademicYears.first;
-                                } else if (selectedYear != null && !_availableAcademicYears.contains(selectedYear)) {
-                                  selectedYear = null;
-                                }
-                              });
-                            },
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                            ),
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 20),
-                      CustomFormField(
-                        label: 'Subject Name',
-                        hint: 'eg: Database Systems',
-                        controller: _subjectNameController,
-                        validator: (value) => (value == null || value.trim().isEmpty) ? 'Please enter a subject name' : null,
-                      ),
-                      SizedBox(height:20),
+                      // Text(
+                      //   'Select Group / Major',
+                      //   style: GoogleFonts.inter(
+                      //     fontSize: 16,
+                      //     fontWeight: FontWeight.w600,
+                      //     color: const Color(0xFF2F3A4A),
+                      //   ),
+                      // ),
+                      // SizedBox(height:5),
+                      // StreamBuilder<List<GroupModel>>(
+                      //   stream: _groupRepository.watchAllGroups(),
+                      //   builder: (context, snapshot) {
+                      //     if (snapshot.connectionState == ConnectionState.waiting) {
+                      //       return Center(child: CircularProgressIndicator());
+                      //     }
+                      //     final groups = snapshot.data ?? [];
+                      //     return DropdownButtonFormField<String>(
+                      //       value: selectedGroupId,
+                      //       hint: Text('Select group'),
+                      //       isExpanded: true,
+                      //       items: groups.map((group) {
+                      //         return DropdownMenuItem<String>(
+                      //           value: group.groupId,
+                      //           // child: Text('${group.groupName} (${group.academicYear ?? ""}) - ${group.membersCount ?? 0} members'),
+                      //           // child: Text('${group.groupName}'),
+                      //           child: Text('${group.groupName} (${group.academicYear ?? ""})'),
+                      //         );
+                      //       }).toList(),
+                      //       onChanged: (value) {
+                      //         setState(() {
+                      //           selectedGroupId = value;
+                      //           selectedGroup = groups.firstWhere(
+                      //                 (g) => g.groupId == value,
+                      //             orElse: () => GroupModel(groupName: ''),
+                      //           );
+                      //           final name = selectedGroup?.groupName.toLowerCase() ?? '';
+                      //           if (name.contains('general preparation')) {
+                      //             selectedYear = 'Year 1';
+                      //           } else if (_availableAcademicYears.length == 1) {
+                      //             selectedYear = _availableAcademicYears.first;
+                      //           } else if (selectedYear != null && !_availableAcademicYears.contains(selectedYear)) {
+                      //             selectedYear = null;
+                      //           }
+                      //         });
+                      //       },
+                      //       decoration: InputDecoration(
+                      //         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      //         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                      //       ),
+                      //     );
+                      //   },
+                      // ),
+                      // const SizedBox(height: 20),
                       // CustomFormField(
-                      //   label: 'Subject Code',
-                      //   hint: 'eg: DB602',
-                      //   controller: _subjectCodeController,
-                      //   validator: (value) => (value == null || value.trim().isEmpty) ? 'Please enter a subject code' : null,
+                      //   label: 'Subject Name',
+                      //   hint: 'eg: Database Systems',
+                      //   controller: _subjectNameController,
+                      //   validator: (value) => (value == null || value.trim().isEmpty) ? 'Please enter a subject name' : null,
                       // ),
                       // SizedBox(height:20),
-                      const SizedBox(height: 10),
+                      // // CustomFormField(
+                      // //   label: 'Subject Code',
+                      // //   hint: 'eg: DB602',
+                      // //   controller: _subjectCodeController,
+                      // //   validator: (value) => (value == null || value.trim().isEmpty) ? 'Please enter a subject code' : null,
+                      // // ),
+                      // // SizedBox(height:20),
+                      // const SizedBox(height: 10),
                       Text(
                         'Academic Year',
                         style: GoogleFonts.inter(
@@ -256,6 +282,7 @@ class _CreateSubjectScreenState extends State<CreateSubjectScreen> {
                             onTap: (){
                               setState(() {
                                 selectedYear = year;
+                                selectedGroupIds.clear();
                               });
                             },
                             child: Container(
@@ -284,6 +311,113 @@ class _CreateSubjectScreenState extends State<CreateSubjectScreen> {
                           );
                         }).toList(),
                       ),
+                      SizedBox(height:20),
+                      Text(
+                        'Specializations',
+                        style: GoogleFonts.inter(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                          color: Color(0xFF2F3A4A),
+                        ),
+                      ),
+                      SizedBox(height:4),
+                      Text(
+                        'Tick one specialization, or several if the subject is common between them.',
+                        style: GoogleFonts.inter(
+                          fontSize: 12,
+                          color:Colors.grey.shade600,
+                        ),
+                      ),
+                      SizedBox(height:8),
+                      if(selectedYear == null)
+                          Text(
+                            'Select a year first',
+                            style: GoogleFonts.inter(
+                              color:Colors.grey.shade500,
+                            ),
+                          )
+                      else
+                        StreamBuilder<List<GroupModel>>(
+                        stream: _groupRepository.watchAllGroups(),
+                          builder: (context, snapshot){
+                            final yearGroups = (snapshot.data ?? [])
+                                .where((g) => g.academicYear == selectedYear)
+                                .toList()
+                                ..sort((a, b) => a.displayName.compareTo(b.displayName));
+                            _latestYearGroups = yearGroups;
+                            if(snapshot.connectionState == ConnectionState.waiting && yearGroups.isEmpty){
+                              return Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            }
+                            if(yearGroups.isEmpty){
+                              return Text(
+                                'No groups exist for $selectedYear yet. Create them first from Manage Group.',
+                                style: GoogleFonts.inter(
+                                  color:Colors.grey.shade600,
+                                ),
+                              );
+                            }
+                            final ids = yearGroups.map((g) => g.groupId).whereType<String>().toList();
+                            final allSelected = ids.isNotEmpty && ids.every(selectedGroupIds.contains);
+                            return Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(14),
+                                border: Border.all(
+                                  color: Colors.grey.shade300,
+                                )
+                              ),
+                              child: Column(
+                                children: [
+                                  CheckboxListTile(
+                                      value: allSelected,
+                                      onChanged: (v) {
+                                        setState(() {
+                                          if(v == true){
+                                            selectedGroupIds.addAll(ids);
+                                          }else{
+                                            selectedGroupIds.removeAll(ids);
+                                          }
+                                        });
+                                      },
+                                      title: Text(
+                                        'All Specialization of $selectedYear',
+                                        style: GoogleFonts.inter(
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    controlAffinity:ListTileControlAffinity.leading,
+                                  ),
+                                  Divider(height:1),
+                                  ...yearGroups.map((g) => CheckboxListTile(
+                                      value: selectedGroupIds.contains(g.groupId),
+                                      onChanged: (v){
+                                        setState(() {
+                                          if(v == true){
+                                            selectedGroupIds.add(g.groupId!);
+                                          }else{
+                                            selectedGroupIds.remove(g.groupId);
+                                          }
+                                        });
+                                      },
+                                      //Year shown : ' Marketing - Year 2'
+                                      title: Text(g.displayName),
+                                    controlAffinity: ListTileControlAffinity.leading,
+                                  )),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                      SizedBox(height:20),
+                      CustomFormField(
+                          label: 'Subject Name',
+                          hint: 'eg: Database Systems',
+                          controller: _subjectNameController,
+                          validator: (value){
+                             return value == null || value.trim().isEmpty ? ' Please enter a subject name': null;
+                          },
+                      ),
                     ],
                   ),
                 ),
@@ -297,7 +431,9 @@ class _CreateSubjectScreenState extends State<CreateSubjectScreen> {
                   SizedBox(height:20),
                   CustomElevatedButton(
                     text: 'Create Subject',
-                    onPressed: _onCreateSubject,
+                    onPressed:(){
+                      _onCreateSubject(_latestYearGroups);
+                    },
                   ),
                 ],
               ),

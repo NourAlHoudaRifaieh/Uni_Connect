@@ -3,9 +3,23 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:uni_connect/core/models/group_model.dart';
 import 'package:uni_connect/core/widgets/custom_form_field.dart';
 import 'package:uni_connect/features/auth/data/group_repository.dart';
-
-import '../../../../core/mock/mock_data.dart';
 import '../../../../core/widgets/custom_elevated_button.dart';
+
+const List<String> kYear1Options = ['Economic Science', 'General Preparation'];
+
+const List<String> kYear2to5Options = [
+  'Business Computer',
+  'Marketing',
+  'Finance and Financial Establishments',
+  'Accounting and Auditing',
+  'Economic Science',
+  'Management',
+];
+
+List<String> groupOptionsForYear(String? year) {
+  if (year == null) return const [];
+  return year == 'Year 1' ? kYear1Options : kYear2to5Options;
+}
 
 const List<String> kAcademicYears = [
   'Year 1',
@@ -17,7 +31,12 @@ const List<String> kAcademicYears = [
 
 
 class CreateGroupScreen extends StatefulWidget {
-  CreateGroupScreen({Key? key}) : super(key: key);
+
+  final String? initialYear;
+  const CreateGroupScreen({
+    super.key,
+    this.initialYear,
+  });
 
   @override
   _CreateGroupScreenState createState() {
@@ -28,19 +47,31 @@ class CreateGroupScreen extends StatefulWidget {
 class _CreateGroupScreenState extends State<CreateGroupScreen> {
 
   final _formKey = GlobalKey<FormState>();
-  TextEditingController _groupNameController = TextEditingController();
+  // TextEditingController _groupNameController = TextEditingController();
 
   String? selectedYear;
+  String? selectedOption;
   bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
+    selectedYear = widget.initialYear;
+  }
+
+  //specialization already created for year  matches major, department
+  bool _alreadyCreated(List<GroupModel> groups, String year, String option){
+    final opt = option.toLowerCase();
+    return groups.any((g){
+      if(g.academicYear != year) return false;
+      final key = (g.major ?? g.department ?? '').toLowerCase();
+      return key == opt || g.displayName.toLowerCase().startsWith(opt);
+    });
   }
 
   @override
   void dispose() {
-    _groupNameController.dispose();
+    // _groupNameController.dispose();
     super.dispose();
   }
 
@@ -56,13 +87,36 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
         isLoading = true;
       });
       try{
-        final newGroup = GroupModel(
-          groupName: _groupNameController.text.trim(),
-          membersCount: 0,
-          academicYear: selectedYear,
-        );
+        //Economic Science is its own department no major, everything else to Business Administration
+        // This matches how students register, So they linked to the right group automatically,
+        final bool isEco = selectedOption == 'Economic Science';
+        final department = isEco ? 'Economic Science' : 'Business Administration';
+        final String? major = isEco ? null : selectedOption;
 
         final groupRepository = GroupRepository();
+        final duplicate = await groupRepository.groupExists(
+            academicYear: selectedYear!,
+            department: department,
+            major: major,
+        );
+        if(duplicate){
+          if(mounted){
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(
+                'This group already exists for $selectedYear'
+              )),
+            );
+          }
+          return;
+        }
+        final newGroup = GroupModel(
+          groupName: '$selectedOption',
+          membersCount: 0,
+          academicYear: selectedYear,
+          department: department,
+          major: major
+        );
+
         await groupRepository.createGroup(newGroup);
 
         if(mounted){
@@ -133,13 +187,13 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      CustomFormField(
-                        label: 'Group Name',
-                        hint: 'eg: Business Administration',
-                        controller: _groupNameController,
-                        validator: (value) => (value == null || value.trim().isEmpty) ? 'Please enter a group name' : null,
-                      ),
-                      SizedBox(height:20),
+                      // CustomFormField(
+                      //   label: 'Group Name',
+                      //   hint: 'eg: Business Administration',
+                      //   controller: _groupNameController,
+                      //   validator: (value) => (value == null || value.trim().isEmpty) ? 'Please enter a group name' : null,
+                      // ),
+                      // SizedBox(height:20),
                       Text(
                         'Academic Year',
                         style: GoogleFonts.inter(
@@ -158,11 +212,12 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                             onTap: (){
                               setState(() {
                                 selectedYear = year;
+                                selectedOption = null;
                               });
                             },
                             child: Container(
                               width: (MediaQuery.of(context).size.width - 24 * 2 - 10) / 2,
-                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              padding: EdgeInsets.symmetric(vertical: 14),
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
                                 color: selected ?  Color(0xFF2563EB) : Color(0xFFF3F4F6),
@@ -186,6 +241,70 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                         }).toList(),
                       ),
                       SizedBox(height:50),
+                      if(selectedYear != null)
+                        StreamBuilder<List<GroupModel>>(
+                            stream: GroupRepository().watchAllGroups(),
+                            builder: (context, snap){
+                              final groups = snap.data ?? [];
+                              //options that wre already created for this year disappear
+                              final free = groupOptionsForYear(selectedYear).where((o) => !_alreadyCreated(groups, selectedYear!, o)).toList();
+                              if(selectedOption != null && !free.contains(selectedOption)){
+                                selectedOption = null;
+                              }
+
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    selectedYear == 'Year 1' ? 'Group' : 'Major',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      color: Color(0xFF2F3A4A),
+                                    ),
+                                  ),
+                                  SizedBox(height:10),
+                                  if(free.isEmpty)
+                                    Container(
+                                      width: double.infinity,
+                                      padding: EdgeInsets.all(14),
+                                      decoration: BoxDecoration(
+                                        color:  Color(0xFFF3F4F6),
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Text(
+                                        'Every group for $selectedYear is already created.',
+                                        style: GoogleFonts.inter(
+                                          color:Colors.grey.shade700,
+                                        ),
+                                      ),
+                                    )
+                                  else
+                                    DropdownButtonFormField<String>(
+                                        key:ValueKey('$selectedYear-${free.length}'),
+                                        initialValue: selectedOption,
+                                        isExpanded: true,
+                                        hint: Text('Select'),
+                                        items: free
+                                          .map((o) => DropdownMenuItem(value: o, child: Text(o)))
+                                          .toList(),
+                                      onChanged: (v) => setState(() {
+                                          selectedOption = v;
+                                        }),
+                                      decoration: InputDecoration(
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(15)
+                                        ),
+                                        contentPadding:  EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                                      ),
+
+                                    ),
+                                ]
+                              );
+                            }
+
+                        ),
+                      SizedBox(height: 30),
                       Container(
                         width: double.infinity,
                         padding: const EdgeInsets.all(14),
