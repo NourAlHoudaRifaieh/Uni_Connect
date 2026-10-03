@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:uni_connect/features/feed/presentation/student/post_details_screen.dart';
@@ -36,6 +38,11 @@ class _AdminPostsScreenState extends State<AdminPostsScreen> {
     return categorySet.toList();
   }
 
+  static const int _pageSize = 20;
+  int _visibleCount = _pageSize;
+  List<PostModel> _allPosts = [];
+  StreamSubscription<List<PostModel>>? _sub;
+
   List <PostModel> get posts => MockData.posts;
   List <PostModel> get _filteredPosts{
     final query = _searchController.text.trim().toLowerCase();
@@ -71,7 +78,10 @@ class _AdminPostsScreenState extends State<AdminPostsScreen> {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    final displayedPosts = _filteredPosts;
+    final filtered = _filteredPosts;
+    final isFiltering = _searchController.text.trim().isNotEmpty || selectedCategory != 'All';
+    final displayedPosts = isFiltering ? filtered : filtered.take(_visibleCount).toList();
+    final hasMore = !isFiltering && filtered.length > _visibleCount;
     return Scaffold(
       backgroundColor: widget.isStandalone
           ? Colors.white
@@ -124,6 +134,18 @@ class _AdminPostsScreenState extends State<AdminPostsScreen> {
                 ),
               ),
             ],
+            Padding(
+              padding: EdgeInsets.fromLTRB(20, 12, 20, 4),
+              child: TextField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  hintText: 'Search all posts...',
+                  prefixIcon: Icon(Icons.search),
+                  contentPadding: EdgeInsets.symmetric(vertical: 0),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+                ),
+              ),
+            ),
             CategorySelector(
               categories: categories,
               selectedCategory: selectedCategory,
@@ -136,65 +158,75 @@ class _AdminPostsScreenState extends State<AdminPostsScreen> {
             SizedBox(height:10),
             Expanded(
               child: displayedPosts.isEmpty
-                  ? Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      width:70,
-                      height:70,
-                      decoration: BoxDecoration(
-                        color: Color(0xFFF3F4F6),
-                        borderRadius: BorderRadius.circular(20),
+                ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        width:70,
+                        height:70,
+                        decoration: BoxDecoration(
+                          color: Color(0xFFF3F4F6),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child:  Icon(Icons.article_outlined , size:36, color: Color(0xFF9CA3AF)),
                       ),
-                      child:  Icon(Icons.article_outlined , size:36, color: Color(0xFF9CA3AF)),
-                    ),
-                    SizedBox(height:16),
-                    Text(
-                      _searchController.text.trim().isNotEmpty
-                          ? 'No results found for "${_searchController.text.trim()}"'
-                          : (selectedCategory == 'All' ? 'No posts found' : 'No posts in $selectedCategory'),
-                      style: GoogleFonts.inter(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF6B7280),
+                      SizedBox(height:16),
+                      Text(
+                        _searchController.text.trim().isNotEmpty
+                            ? 'No results found for "${_searchController.text.trim()}"'
+                            : (selectedCategory == 'All' ? 'No posts found' : 'No posts in $selectedCategory'),
+                        style: GoogleFonts.inter(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF6B7280),
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              )
-                  : ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                itemCount: displayedPosts.length,
-                itemBuilder: (context, index) {
-                  final post = displayedPosts[index];
-                  return PostCard(
-                    post: post,
-                    // onTap: () {
-                    //   setState(() {
-                    //   });
-                    //   // will open post detail screen later
-                    // },
-                    onTap: () async{
-                      await Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => PostDetailsScreen(post: post))
+                    ],
+                  ),
+                  )
+                : ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  itemCount: displayedPosts.length + (hasMore ? 1 :0),
+                  itemBuilder: (context, index) {
+                    if(index == displayedPosts.length){
+                      return TextButton(
+                        onPressed: (){
+                          setState(() {
+                            _visibleCount += _pageSize;
+                          });
+                        },
+                        child: Text('Show more posts'),
                       );
-                      if(mounted){
+                    }
+                    final post = displayedPosts[index];
+                    return PostCard(
+                      post: post,
+                      // onTap: () {
+                      //   setState(() {
+                      //   });
+                      //   // will open post detail screen later
+                      // },
+                      onTap: () async{
+                        await Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => PostDetailsScreen(post: post))
+                        );
+                        if(mounted){
+                          setState(() {
+
+                          });
+                        }
+                      },
+                      onLikeTap: (){
                         setState(() {
 
                         });
-                      }
-                    },
-                    onLikeTap: (){
-                      setState(() {
-
-                      });
-                    },
-                    onCommentTap: (){},
-                  );
-                },
-              ),
+                      },
+                      onCommentTap: (){},
+                    );
+                  },
+                ),
             ),
           ],
         ),

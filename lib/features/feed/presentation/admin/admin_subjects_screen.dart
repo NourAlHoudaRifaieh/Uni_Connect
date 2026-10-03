@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:uni_connect/core/models/subject_model.dart';
 import 'package:uni_connect/features/auth/data/subject_repository.dart';
 import 'package:uni_connect/features/feed/presentation/admin/create_subject_screen.dart';
+import 'package:uni_connect/features/feed/presentation/student/subject_details_screen.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/academic_year_selector.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/delete_subject_dialog.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/edit_subject_dialog.dart';
@@ -160,13 +161,18 @@ class _AdminSubjectsScreenState extends State<AdminSubjectsScreen> {
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
                             itemCount: filteredSubjects.length,
-                            separatorBuilder: (context,
-                                index) => const SizedBox(height: 12),
+                            separatorBuilder: (context, index) => SizedBox(height: 12),
                             itemBuilder: (context, index) {
                               final subject = filteredSubjects[index];
                               return SubjectCard(
                                 subject: subject,
                                 academicYear: _selectedYear,
+                                onTap: (){
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => SubjectDetailsScreen(subject: subject))
+                                  );
+                                },
                                 onEditPressed: () {
                                   showDialog(
                                       context: context,
@@ -212,12 +218,25 @@ class _AdminSubjectsScreenState extends State<AdminSubjectsScreen> {
                                         return DeleteSubjectDialog(
                                           subject: subject,
                                           onDeleteConfirmed: () async{
-                                            if(subject.subjectId != null){
-                                              await _subjectRepository.deleteSubject(subject.subjectId!);
+                                            final id = subject.subjectId;
+                                            if (id == null) return;
+                                            //students of the same year exist
+                                            final blocker = await _subjectRepository.subjectDeletionBlocker(subject);
+                                            if(blocker != null){
                                               if(mounted){
-                                                setState(() {
-                                                });
+                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                  SnackBar(
+                                                    content: Text(blocker),
+                                                    backgroundColor:  Colors.red,
+                                                  ),
+                                                );
                                               }
+                                              return;
+                                            }
+                                            await _subjectRepository.deleteSubject(id);
+                                            if(mounted){
+                                              setState(() {
+                                              });
                                             }
                                           },
                                         );

@@ -7,18 +7,28 @@ class SubjectCard extends StatelessWidget {
   final String? academicYear;
   final VoidCallback? onEditPressed;
   final VoidCallback? onDeletePressed;
+  final VoidCallback? onTap;
 
-   SubjectCard({
+  SubjectCard({
     super.key,
     this.subject,
     this.academicYear,
     this.onEditPressed,
     this.onDeletePressed,
+    this.onTap,
   });
   // final List<SubjectModel> subjects = MockData.subjects;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context){
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: _card(context),
+    );
+  }
+
+  Widget _card(BuildContext context) {
     // TODO: implement build
     return Container(
       padding: EdgeInsets.all(20),
