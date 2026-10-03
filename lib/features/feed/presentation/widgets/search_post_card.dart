@@ -81,13 +81,13 @@ class SearchPostCard extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height:10),
-            Text(post.title,
-              style: GoogleFonts.inter(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15
-              ),
-            ),
+            // SizedBox(height:10),
+            // Text(post.title,
+            //   style: GoogleFonts.inter(
+            //       fontWeight: FontWeight.bold,
+            //       fontSize: 15
+            //   ),
+            // ),
             SizedBox(height:5),
             Text(post.description,
               maxLines: 3,

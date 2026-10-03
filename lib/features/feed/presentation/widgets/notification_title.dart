@@ -24,18 +24,18 @@ class NotificationTile extends StatelessWidget {
           children: [
             // Static Avatar or Static Announcement Icon
             // if (notification.initials != null)
-              CircleAvatar(
-                radius: 20,
-                backgroundColor: const Color(0xFFDCEBFF),
-                child: Text(
-                  notification.initials,
-                  style: GoogleFonts.inter(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 13,
-                    color: const Color(0xFF4361EE),
-                  ),
-                ),
-              ),
+            //   CircleAvatar(
+            //     radius: 20,
+            //     backgroundColor: const Color(0xFFDCEBFF),
+            //     child: Text(
+            //       notification.initials,
+            //       style: GoogleFonts.inter(
+            //         fontWeight: FontWeight.bold,
+            //         fontSize: 13,
+            //         color: const Color(0xFF4361EE),
+            //       ),
+            //     ),
+            //   ),
             SizedBox(width: 14),
             Expanded(
               child: Column(

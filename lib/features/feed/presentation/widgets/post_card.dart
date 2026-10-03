@@ -180,14 +180,14 @@ class PostCard extends StatelessWidget{
                 // ),
               ],
             ),
-            const SizedBox(height:10),
-            Text(
-              post.title,
-              style: GoogleFonts.inter(
-                fontWeight: FontWeight.bold,
-                fontSize:15,
-              ),
-            ),
+            // const SizedBox(height:10),
+            // Text(
+            //   post.title,
+            //   style: GoogleFonts.inter(
+            //     fontWeight: FontWeight.bold,
+            //     fontSize:15,
+            //   ),
+            // ),
             const SizedBox(height:4),
             Text(
               post.description,

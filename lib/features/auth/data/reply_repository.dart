@@ -1,9 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../../core/models/reply_model.dart';
+import '../../../core/utils/sequential_id_service.dart';
 
 class ReplyRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final SequentialIdService _ids = SequentialIdService();
+
   Stream <List<ReplyModel>> watchRepliesForPost(String postId){
     return _firestore
         .collection('posts')
@@ -21,11 +24,12 @@ class ReplyRepository {
     required ReplyModel reply,
   }) async {
     final postRef = _firestore.collection('posts').doc(postId);
-    final replyRef = postRef.collection('replies').doc();
+    final replyId = await _ids.nextId('replies', 'reply_');
+    final replyRef = postRef.collection('replies').doc(replyId);
     final batch = _firestore.batch();
 
     //Add reply document to sub-collection
-    batch.set(replyRef, reply.toJson());
+    batch.set(replyRef, {...reply.toJson(), 'replyId': replyId});
     //increment comment count on the post parent document
     batch.update(postRef,{
       'comments': FieldValue.increment(1),

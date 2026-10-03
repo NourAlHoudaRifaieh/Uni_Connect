@@ -276,32 +276,32 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                   ),
                                 ),
                                 SizedBox(width:7),
-                                Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'New Post: ${post.title}',
-                                          style: GoogleFonts.inter(
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.w600,
-                                            color: Color(0xFF333333),
-                                            height: 1.3,
-                                          ),
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                        SizedBox(height: 4),
-                                        Text(
-                                          '3 min ago',
-                                          style: GoogleFonts.inter(
-                                            fontSize: 12,
-                                            color: Color(0xFF94A3B8),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                ),
+                                // Expanded(
+                                //     child: Column(
+                                //       crossAxisAlignment: CrossAxisAlignment.start,
+                                //       children: [
+                                //         Text(
+                                //           'New Post: ${post.title}',
+                                //           style: GoogleFonts.inter(
+                                //             fontSize: 13,
+                                //             fontWeight: FontWeight.w600,
+                                //             color: Color(0xFF333333),
+                                //             height: 1.3,
+                                //           ),
+                                //           maxLines: 2,
+                                //           overflow: TextOverflow.ellipsis,
+                                //         ),
+                                //         SizedBox(height: 4),
+                                //         Text(
+                                //           '3 min ago',
+                                //           style: GoogleFonts.inter(
+                                //             fontSize: 12,
+                                //             color: Color(0xFF94A3B8),
+                                //           ),
+                                //         ),
+                                //       ],
+                                //     ),
+                                // ),
                                 if(!isLast) const Divider(),
                               ],
                             ),

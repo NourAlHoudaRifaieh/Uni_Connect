@@ -352,15 +352,15 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                           const SizedBox(height: 15),
 
                           // Post Title
-                          Text(
-                            post.title,
-                            style: GoogleFonts.inter(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: const Color(0xFF0F172A),
-                            ),
-                          ),
-                          const SizedBox(height: 15),
+                          // Text(
+                          //   post.title,
+                          //   style: GoogleFonts.inter(
+                          //     fontSize: 18,
+                          //     fontWeight: FontWeight.bold,
+                          //     color: const Color(0xFF0F172A),
+                          //   ),
+                          // ),
+                          // const SizedBox(height: 15),
 
                           // Author Info Row
                           Row(

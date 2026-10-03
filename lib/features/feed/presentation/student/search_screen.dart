@@ -71,13 +71,13 @@ class SearchScreenState extends State<SearchScreen>{
     if (query.isEmpty) return posts;
     
     return posts.where((post){
-      final matchesTitle = post.title.toLowerCase().contains(query);
+      // final matchesTitle = post.title.toLowerCase().contains(query);
       final matchesDescription = post.description.toLowerCase().contains(query);
       final matchesSubject = post.subjectCode?.toLowerCase().contains(query) ?? false;
       final matchesCategory = post.categoryName?.toLowerCase().contains(query) ?? false;
       final matchesAuthor = post.authorName.toLowerCase().contains(query);
 
-      return matchesTitle || matchesDescription || matchesSubject || matchesCategory || matchesAuthor;
+      return matchesDescription || matchesSubject || matchesCategory || matchesAuthor;
     }).toList();
   }
 

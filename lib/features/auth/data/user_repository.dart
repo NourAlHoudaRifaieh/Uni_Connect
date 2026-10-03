@@ -6,6 +6,28 @@ class UserRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  static String? _cachedDocId;
+  static String? _cachedForUid;
+
+  static String? get cachedDocId =>
+      _cachedForUid == FirebaseAuth.instance.currentUser?.uid ? _cachedDocId : null;
+
+
+  Future<String> currentDocId() async {
+    final authUser = _auth.currentUser;
+    if (authUser == null || authUser.email == null) return '';
+    if (_cachedForUid == authUser.uid && _cachedDocId != null) return _cachedDocId!;
+    final q = await _firestore
+        .collection('users')
+        .where('email', isEqualTo: authUser.email)
+        .limit(1)
+        .get();
+    if (q.docs.isEmpty) return '';
+    _cachedForUid = authUser.uid;
+    _cachedDocId = q.docs.first.id;
+    return _cachedDocId!;
+  }
+
   Stream<UserModel?> watchCurrentUser() {
     final authUser = _auth.currentUser;
     if (authUser == null || authUser.email == null) return Stream.value(null);
@@ -20,6 +42,19 @@ class UserRepository {
       final doc = snapshot.docs.first;
       return UserModel.fromFirestore(doc.data(), doc.id);
     });
+  }
+
+  Future<UserModel?> getCurrentUserModel() async {
+    final authUser = _auth.currentUser;
+    if (authUser == null || authUser.email == null) return null;
+    final query = await _firestore
+        .collection('users')
+        .where('email', isEqualTo: authUser.email)
+        .limit(1)
+        .get();
+    if (query.docs.isEmpty) return null;
+    final doc = query.docs.first;
+    return UserModel.fromFirestore(doc.data(), doc.id);
   }
 
   // Fetch single user profile once by UID
@@ -44,7 +79,12 @@ class UserRepository {
     await _firestore
         .collection('users')
         .doc(user.userId)
-        .update(user.toJson());
+        .update({
+          'fullName': user.fullName,
+          if (user.department != null) 'department': user.department,
+          if (user.major != null) 'major': user.major,
+          if (user.academicYear != null) 'academicYear': user.academicYear,
+        });
   }
 
   // Increment user's total post count dynamically when they publish a post
@@ -77,6 +117,13 @@ class UserRepository {
 
   // Delete user document from Firestore (Admin action)
   Future<void> deleteUser(String uid) async {
+    final doc = await _firestore.collection('users').doc(uid).get();
+    final groupId = doc.data()?['groupId'] as String?;
     await _firestore.collection('users').doc(uid).delete();
+    // keep the group's memberCount accurate
+    if (groupId != null && groupId.isNotEmpty) {
+      await _firestore.collection('groups').doc(groupId).set(
+          {'membersCount': FieldValue.increment(-1)}, SetOptions(merge: true));
+    }
   }
 }

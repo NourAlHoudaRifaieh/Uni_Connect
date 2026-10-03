@@ -150,7 +150,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         final newPost = PostModel(
           postId: 'post_${DateTime.now().millisecondsSinceEpoch}',
           userId: currentUser.uid,
-          title: _titleController.text.trim(),
+          // title: _titleController.text.trim(),
           description: _descriptionController.text.trim(),
           authorName: authorName,
           subjectCode: selectedSubject?.subjectCode,
@@ -312,14 +312,14 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                         }).toList(),
                       ),
                       SizedBox(height:20),
-                      CustomFormField(
-                        label:'Title',
-                        hint: 'What is your question or topic',
-                        controller: _titleController,
-                        maxLines: 1,
-                        validator: (value) => (value == null || value.trim().isEmpty) ? 'Please enter a title' : null,
-                      ),
-                      SizedBox(height:20),
+                      // CustomFormField(
+                      //   label:'Title',
+                      //   hint: 'What is your question or topic',
+                      //   controller: _titleController,
+                      //   maxLines: 1,
+                      //   validator: (value) => (value == null || value.trim().isEmpty) ? 'Please enter a title' : null,
+                      // ),
+                      // SizedBox(height:20),
                       CustomFormField(
                         label: 'Description',
                         maxLines: 5,

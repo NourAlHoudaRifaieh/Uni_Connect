@@ -46,7 +46,7 @@ class _HomeScreenState extends State <HomeScreen>{
     return posts.where((post){
       final matchesCategory = selectedCategory == 'All' || post.categoryName?.trim().toLowerCase() == selectedCategory.trim().toLowerCase();
       final matchesSearch = query.isEmpty ||
-          post.title.toLowerCase().contains(query) ||
+          // post.title.toLowerCase().contains(query) ||
           post.description.toLowerCase().contains(query) ||
           (post.subjectCode?.toLowerCase().contains(query) ?? false)||
           (post.categoryName?.toLowerCase().contains(query) ?? false)||
