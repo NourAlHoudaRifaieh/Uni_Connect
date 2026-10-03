@@ -3,10 +3,15 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:uni_connect/core/models/group_model.dart';
 import 'package:uni_connect/core/widgets/custom_elevated_button.dart';
 import 'package:uni_connect/features/auth/data/group_repository.dart';
+import 'package:uni_connect/features/auth/data/post_repository.dart';
+import 'package:uni_connect/features/auth/data/user_repository.dart';
+import 'package:uni_connect/features/feed/presentation/widgets/academic_year_selector.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/delete_group_dialog.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/edit_group_dialog.dart';
 import '../../../../core/mock/mock_data.dart';
+import '../../../../core/models/post_model.dart' show PostModel;
 import '../../../../core/models/subject_model.dart';
+import '../../../../core/models/user_model.dart';
 import '../widgets/group_card.dart';
 import 'create_group_screen.dart';
 
@@ -26,6 +31,7 @@ class AdminGroupsScreen extends StatefulWidget {
 
 class _AdminGroupsScreenState extends State<AdminGroupsScreen> {
  final GroupRepository _groupRepository = GroupRepository();
+ String _selectedYear = 'Year 1';
 
   @override
   Widget build(BuildContext context) {
@@ -89,6 +95,15 @@ class _AdminGroupsScreenState extends State<AdminGroupsScreen> {
                   child:Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      AcademicYearSelector(
+                          selectedYear: _selectedYear,
+                          onYearSelected: (year){
+                            setState(() {
+                              _selectedYear = year;
+                            });
+                          }
+                      ),
+                      SizedBox(height:20),
                       CustomElevatedButton(
                           text: 'Create New Group',
                           onPressed: () async{
@@ -120,7 +135,22 @@ class _AdminGroupsScreenState extends State<AdminGroupsScreen> {
                                 child: Text('Error: ${snapshot.error}'),
                               );
                             }
-                            final groups = snapshot.data ?? [];
+                            final allGroups = snapshot.data ?? [];
+                            // only the groups of the selected year
+                            final groups = allGroups.where((g) => g.academicYear == _selectedYear).toList()
+                                ..sort((a, b) => a.displayName.compareTo(b.displayName));
+                            if(groups.isEmpty){
+                              return Padding(
+                                padding: EdgeInsets.symmetric(vertical: 40),
+                                child: Center(
+                                  child: Text('No groups for $_selectedYear yet',
+                                    style: GoogleFonts.inter(
+                                      color:Colors.grey.shade500,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }
                             if(groups.isEmpty){
                               return Center(
                                 child: Padding(
@@ -129,59 +159,146 @@ class _AdminGroupsScreenState extends State<AdminGroupsScreen> {
                                 ),
                               );
                             }
-                            return Column(
-                              children: groups.map((group){
-                                return Padding(
-                                  padding: EdgeInsets.all(10),
-                                  child: GroupCard(
-                                      group: group,
-                                      academicYear: group.academicYear,
-                                      onEditPressed: (){
-                                        showDialog(
-                                            context: context,
-                                            builder: (context){
-                                              return EditGroupDialog(
-                                                  group: group,
-                                                  onUpdateConfirmed: (updatedName, updatedYear) async{
-                                                    if(group.groupId != null){
-                                                      GroupModel updatedGroup = group.copyWith(
-                                                        groupName: updatedName,
-                                                        academicYear: updatedYear,
-                                                      );
-                                                      await _groupRepository.updateGroup(updatedGroup);
-                                                      if(mounted){
-                                                        setState(() {
-                                                        });
-                                                      }
-                                                    }
-                                                  }
-                                              );
-                                            }
-                                        );
-                                    },
-                                      onDeletePressed: (){
-                                        showDialog(
-                                          context: context,
-                                          builder: (context) {
-                                            return DeleteGroupDialog(
-                                              group: group,
-                                              onDeleteConfirmed: () async{
-                                                if(group.groupId != null){
-                                                  await _groupRepository.deleteGroup(group.groupId!);
-                                                  if(mounted){
-                                                    setState(() {
-                                                    });
-                                                  }
-                                                }
-                                              },
+
+                            return  StreamBuilder<List<UserModel>>(
+                                stream: UserRepository().watchAllUsers(),
+                                builder: (context, userSnap){
+                                  final users = userSnap.data ?? [];
+                                  return StreamBuilder<List<PostModel>>(
+                                      stream: PostRepository().watchAllPosts(),
+                                      builder: (context, postSnap){
+                                        final posts = postSnap.data ?? [];
+                                        return Column(
+                                          children: groups.map((rawGroup){
+                                            final group = rawGroup.copyWith(
+                                              membersCount: users.where((u) => u.role != 'admin' && u.groupId == rawGroup.groupId).length,
+                                              postCount: posts.where((p) => p.groupId == rawGroup.groupId).length,
                                             );
-                                          },
+                                            return Column(
+                                              children: groups.map((group){
+                                                return Padding(
+                                                  padding: EdgeInsets.all(10),
+                                                  child: GroupCard(
+                                                      group: group,
+                                                      academicYear: group.academicYear,
+                                                      onEditPressed: (){
+                                                        showDialog(
+                                                            context: context,
+                                                            builder: (context){
+                                                              return EditGroupDialog(
+                                                                  group: group,
+                                                                  onUpdateConfirmed: (updatedName, updatedYear) async{
+                                                                    if(group.groupId != null){
+                                                                      GroupModel updatedGroup = group.copyWith(
+                                                                        groupName: updatedName,
+                                                                        academicYear: updatedYear,
+                                                                      );
+                                                                      await _groupRepository.updateGroup(updatedGroup);
+                                                                      if(mounted){
+                                                                        setState(() {
+                                                                        });
+                                                                      }
+                                                                    }
+                                                                  }
+                                                              );
+                                                            }
+                                                        );
+                                                      },
+                                                      onDeletePressed: (){
+                                                        showDialog(
+                                                          context: context,
+                                                          builder: (context) {
+                                                            return DeleteGroupDialog(
+                                                              group: group,
+                                                              onDeleteConfirmed: () async{
+                                                                final id = group.groupId;
+                                                                if(id == null) return;
+                                                                // the group still has subjects and students
+                                                                final blocker = await _groupRepository.groupDeletionBlocker(group);
+                                                                if(blocker != null){
+                                                                  if(mounted){
+                                                                    ScaffoldMessenger.of(context).showSnackBar(
+                                                                      SnackBar(
+                                                                        content: Text(blocker),
+                                                                        backgroundColor: Colors.red,
+                                                                      ),
+                                                                    );
+                                                                  }
+                                                                  return ;
+                                                                }
+                                                                await _groupRepository.deleteGroup(id);
+                                                                if(mounted){
+                                                                  setState(() {
+                                                                  });
+                                                                }
+                                                              },
+                                                            );
+                                                          },
+                                                        );
+                                                      }
+                                                  ),
+                                                );
+                                              }).toList(),
+                                            );
+                                          }).toList(),
                                         );
                                       }
-                                  ),
-                                );
-                              }).toList(),
+                                  );
+                                }
                             );
+                            // return Column(
+                            //   children: groups.map((group){
+                            //     return Padding(
+                            //       padding: EdgeInsets.all(10),
+                            //       child: GroupCard(
+                            //           group: group,
+                            //           academicYear: group.academicYear,
+                            //           onEditPressed: (){
+                            //             showDialog(
+                            //                 context: context,
+                            //                 builder: (context){
+                            //                   return EditGroupDialog(
+                            //                       group: group,
+                            //                       onUpdateConfirmed: (updatedName, updatedYear) async{
+                            //                         if(group.groupId != null){
+                            //                           GroupModel updatedGroup = group.copyWith(
+                            //                             groupName: updatedName,
+                            //                             academicYear: updatedYear,
+                            //                           );
+                            //                           await _groupRepository.updateGroup(updatedGroup);
+                            //                           if(mounted){
+                            //                             setState(() {
+                            //                             });
+                            //                           }
+                            //                         }
+                            //                       }
+                            //                   );
+                            //                 }
+                            //             );
+                            //         },
+                            //           onDeletePressed: (){
+                            //             showDialog(
+                            //               context: context,
+                            //               builder: (context) {
+                            //                 return DeleteGroupDialog(
+                            //                   group: group,
+                            //                   onDeleteConfirmed: () async{
+                            //                     if(group.groupId != null){
+                            //                       await _groupRepository.deleteGroup(group.groupId!);
+                            //                       if(mounted){
+                            //                         setState(() {
+                            //                         });
+                            //                       }
+                            //                     }
+                            //                   },
+                            //                 );
+                            //               },
+                            //             );
+                            //           }
+                            //       ),
+                            //     );
+                            //   }).toList(),
+                            // );
                           }
                       ),
                     ],

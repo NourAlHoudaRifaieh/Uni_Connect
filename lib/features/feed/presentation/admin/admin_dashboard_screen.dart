@@ -48,7 +48,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               StreamBuilder<List<UserModel>>(
                   stream: _userRepository.watchAllUsers(),
                   builder: (context, userSnap){
-                    final userCount = userSnap.data?.length ?? 0;
+                    final allUsers = userSnap.data ?? [];
+                    // Total Students "students only" admin excluded
+                    final userCount = allUsers.where((u) => u.role != "admin").length;
                     return StreamBuilder<List<SubjectModel>>(
                       stream: _subjectRepository.watchAllSubjects(),
                       builder: (context, subjectSnap){
@@ -211,107 +213,107 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     );
                   }
               ),
-              SizedBox(height:15),
-              Text(
-                'Recent Activity',
-                style: GoogleFonts.inter(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-              SizedBox(height:15),
-              // Recent Activity Container
-              StreamBuilder<List<PostModel>>(
-                stream: _postRepository.watchAllPosts(),
-                builder: (context, snapshot){
-                  final recentPosts = (snapshot.data ?? []).take(3).toList();
-                  if(recentPosts.isEmpty){
-                    return Container(
-                      padding: EdgeInsets.all(15),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: Colors.grey.shade200,
-                        ),
-                      ),
-                      child: Center(
-                        child: Text('No recent activity recorded yet.'),
-                      ),
-                    );
-                  }
-                  return Container(
-                    padding: const EdgeInsets.all(15),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: Colors.grey.shade200),
-                      boxShadow: [
-                        BoxShadow(
-                          color:Colors.black.withOpacity(0.03),
-                          blurRadius: 10,
-                          offset:Offset(0,8),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children:List.generate(recentPosts.length, (index) {
-                        final post = recentPosts[index];
-                        final isLast = index == recentPosts.length -1;
-
-                        return Column(
-                          children: [
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  margin: const EdgeInsets.only(top: 6),
-                                  width: 8,
-                                  height: 8,
-                                  decoration: const BoxDecoration(
-                                    color: Color(0xFF1D61FF),
-                                    shape: BoxShape.circle,
-                                  ),
-                                ),
-                                SizedBox(width:7),
-                                // Expanded(
-                                //     child: Column(
-                                //       crossAxisAlignment: CrossAxisAlignment.start,
-                                //       children: [
-                                //         Text(
-                                //           'New Post: ${post.title}',
-                                //           style: GoogleFonts.inter(
-                                //             fontSize: 13,
-                                //             fontWeight: FontWeight.w600,
-                                //             color: Color(0xFF333333),
-                                //             height: 1.3,
-                                //           ),
-                                //           maxLines: 2,
-                                //           overflow: TextOverflow.ellipsis,
-                                //         ),
-                                //         SizedBox(height: 4),
-                                //         Text(
-                                //           '3 min ago',
-                                //           style: GoogleFonts.inter(
-                                //             fontSize: 12,
-                                //             color: Color(0xFF94A3B8),
-                                //           ),
-                                //         ),
-                                //       ],
-                                //     ),
-                                // ),
-                                if(!isLast) const Divider(),
-                              ],
-                            ),
-                          ],
-                        );
-                      }),
-                    ),
-                  );
-                }
-              ),
+              // SizedBox(height:15),
+              // Text(
+              //   'Recent Activity',
+              //   style: GoogleFonts.inter(
+              //     fontSize: 18,
+              //     fontWeight: FontWeight.bold,
+              //     color: Colors.black,
+              //   ),
+              // ),
+              // SizedBox(height:15),
+              // // Recent Activity Container
+              // StreamBuilder<List<PostModel>>(
+              //   stream: _postRepository.watchAllPosts(),
+              //   builder: (context, snapshot){
+              //     final recentPosts = (snapshot.data ?? []).take(3).toList();
+              //     if(recentPosts.isEmpty){
+              //       return Container(
+              //         padding: EdgeInsets.all(15),
+              //         decoration: BoxDecoration(
+              //           color: Colors.white,
+              //           borderRadius: BorderRadius.circular(20),
+              //           border: Border.all(
+              //             color: Colors.grey.shade200,
+              //           ),
+              //         ),
+              //         child: Center(
+              //           child: Text('No recent activity recorded yet.'),
+              //         ),
+              //       );
+              //     }
+              //     return Container(
+              //       padding: const EdgeInsets.all(15),
+              //       decoration: BoxDecoration(
+              //         color: Colors.white,
+              //         borderRadius: BorderRadius.circular(20),
+              //         border: Border.all(color: Colors.grey.shade200),
+              //         boxShadow: [
+              //           BoxShadow(
+              //             color:Colors.black.withOpacity(0.03),
+              //             blurRadius: 10,
+              //             offset:Offset(0,8),
+              //           ),
+              //         ],
+              //       ),
+              //       child: Column(
+              //         crossAxisAlignment: CrossAxisAlignment.start,
+              //         children:List.generate(recentPosts.length, (index) {
+              //           final post = recentPosts[index];
+              //           final isLast = index == recentPosts.length -1;
+              //
+              //           return Column(
+              //             children: [
+              //               Row(
+              //                 crossAxisAlignment: CrossAxisAlignment.start,
+              //                 children: [
+              //                   Container(
+              //                     margin: const EdgeInsets.only(top: 6),
+              //                     width: 8,
+              //                     height: 8,
+              //                     decoration: const BoxDecoration(
+              //                       color: Color(0xFF1D61FF),
+              //                       shape: BoxShape.circle,
+              //                     ),
+              //                   ),
+              //                   SizedBox(width:7),
+              //                   // Expanded(
+              //                   //     child: Column(
+              //                   //       crossAxisAlignment: CrossAxisAlignment.start,
+              //                   //       children: [
+              //                   //         Text(
+              //                   //           'New Post: ${post.title}',
+              //                   //           style: GoogleFonts.inter(
+              //                   //             fontSize: 13,
+              //                   //             fontWeight: FontWeight.w600,
+              //                   //             color: Color(0xFF333333),
+              //                   //             height: 1.3,
+              //                   //           ),
+              //                   //           maxLines: 2,
+              //                   //           overflow: TextOverflow.ellipsis,
+              //                   //         ),
+              //                   //         SizedBox(height: 4),
+              //                   //         Text(
+              //                   //           '3 min ago',
+              //                   //           style: GoogleFonts.inter(
+              //                   //             fontSize: 12,
+              //                   //             color: Color(0xFF94A3B8),
+              //                   //           ),
+              //                   //         ),
+              //                   //       ],
+              //                   //     ),
+              //                   // ),
+              //                   if(!isLast) const Divider(),
+              //                 ],
+              //               ),
+              //             ],
+              //           );
+              //         }),
+              //       ),
+              //     );
+              //   }
+              // ),
             ],
           ),
         ),
