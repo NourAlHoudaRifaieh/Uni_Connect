@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:uni_connect/core/models/subject_model.dart';
 
-import '../../../../core/mock/mock_data.dart';
-
 class SubjectCard extends StatelessWidget {
   final SubjectModel? subject;
   final String? academicYear;

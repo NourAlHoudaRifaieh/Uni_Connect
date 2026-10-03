@@ -10,6 +10,7 @@ class UserModel {
   final String? major;
   final int postCount;
   final String? groupId;
+  final List<String> extraSubjectIds;
 
   UserModel({
     required this.userId,
@@ -22,6 +23,7 @@ class UserModel {
     this.major,
     this.postCount=0,
     this.groupId,
+    this.extraSubjectIds = const [],
   });
 
   UserModel copyWith({
@@ -34,6 +36,7 @@ class UserModel {
     String? department,
     String? major,
     int? postCount,
+    List<String>? extraSubjectIds,
   }) {
     return UserModel(
       userId: userId ?? this.userId,
@@ -45,7 +48,8 @@ class UserModel {
       department: department ?? this.department,
       major: major ?? this.major,
       postCount: postCount ?? this.postCount,
-      groupId: groupId ?? this.groupId,
+      groupId: groupId,
+      extraSubjectIds: extraSubjectIds ?? this.extraSubjectIds,
     );
   }
 
@@ -74,6 +78,7 @@ class UserModel {
         major: json['major'],
         groupId: json['groupId'],
         postCount:json['postCount'] ?? 0,
+        extraSubjectIds: List<String>.from(json['extraSubjectIds'] ?? const []),
     );
   }
 
@@ -89,6 +94,7 @@ class UserModel {
         major: data['major'],
         groupId: data['groupId'],
         postCount: data['postCount'] ?? 0,
+       extraSubjectIds: List<String>.from(data['extraSubjectIds'] ?? const []),
     );
   }
 

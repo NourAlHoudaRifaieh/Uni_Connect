@@ -1,6 +1,6 @@
 
 
-import '../mock/mock_data.dart';
+// import '../mock/mock_data.dart';
 
 class NotificationModel {
   final String notificationId;
@@ -19,22 +19,22 @@ class NotificationModel {
     required this.userId,
   });
 
-  String get initials {
-    final user = MockData.users.firstWhere(
-          (u) => u.userId == userId,
-      orElse: () => null as dynamic,
-    );
-
-    if (user != null && user.fullName.isNotEmpty) {
-      final names = user.fullName.trim().split(' ');
-      if (names.length >= 2) {
-        return '${names[0][0]}${names[1][0]}'.toUpperCase();
-      } else if (names.isNotEmpty && names[0].isNotEmpty) {
-        return names[0][0].toUpperCase();
-      }
-    }
-    return '';
-  }
+  // String get initials {
+  //   // final user = MockData.users.firstWhere(
+  //         (u) => u.userId == userId,
+  //     orElse: () => null as dynamic,
+  //   );
+  //
+  //   if (user != null && user.fullName.isNotEmpty) {
+  //     final names = user.fullName.trim().split(' ');
+  //     if (names.length >= 2) {
+  //       return '${names[0][0]}${names[1][0]}'.toUpperCase();
+  //     } else if (names.isNotEmpty && names[0].isNotEmpty) {
+  //       return names[0][0].toUpperCase();
+  //     }
+  //   }
+  //   return '';
+  // }
 
   String get timeAgo {
     final difference = DateTime.now().difference(createdAt);

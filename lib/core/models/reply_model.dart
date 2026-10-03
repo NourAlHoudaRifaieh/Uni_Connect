@@ -7,6 +7,8 @@ class ReplyModel{
   final String authorName;
   final String content;
   final DateTime createdAt;
+  final bool isEdited;
+  final String authorRole;
 
   ReplyModel({
     required this.replyId,
@@ -15,6 +17,8 @@ class ReplyModel{
     required this.authorName,
     required this.content,
     required this.createdAt,
+    this.isEdited = false,
+    this.authorRole = 'student',
   });
 
   String get formattedAuthorName {
@@ -56,6 +60,8 @@ class ReplyModel{
       userId: json['userId'] ?? '',
       authorName: json['authorName'] ?? '',
       content: json['content'] ?? '',
+      isEdited: json['isEdited']  == true,
+      authorRole: json['authorRole'] ?? 'student',
       createdAt: json['createdAt'] != null
           ? (json['createdAt'] is DateTime
             ? json['createdAt']
@@ -84,6 +90,7 @@ class ReplyModel{
       'authorName': authorName,
       'content': content,
       'createdAt': FieldValue.serverTimestamp(),
+      'isEdited': false,
     };
   }
 
