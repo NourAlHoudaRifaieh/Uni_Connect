@@ -93,73 +93,69 @@ class SubjectRequestRepository {
     }catch(_){
       return null;
     }
+  }
 
-    Stream<List<Map<String, dynamic>>> watchPending() {
-      return _firestore
-          .collection('subjectRequests')
-          .where('status', isEqualTo: 'pending')
-          .snapshots()
-          .map((s) => s.docs.map((d) => {...d.data(), 'id': d.id}).toList());
-    }
+  Stream<List<Map<String, dynamic>>> watchPending() {
+    return _firestore
+        .collection('subjectRequests')
+        .where('status', isEqualTo: 'pending')
+        .snapshots()
+        .map((s) => s.docs.map((d) => {...d.data(), 'id': d.id}).toList());
+  }
 
-    Stream<List<Map<String, dynamic>>> watchForUser(String userId) {
-      return _firestore
-          .collection('subjectRequests')
-          .where('userId', isEqualTo: userId)
-          .snapshots()
-          .map((s) => s.docs.map((d) => {...d.data(), 'id': d.id}).toList());
+  Stream<List<Map<String, dynamic>>> watchForUser(String userId) {
+    return _firestore
+        .collection('subjectRequests')
+        .where('userId', isEqualTo: userId)
+        .snapshots()
+        .map((s) => s.docs.map((d) => {...d.data(), 'id': d.id}).toList());
+  }
+
+  //Admin accepts: the subject and its posts now appear for that student
+  Future<String?> accept (Map<String, dynamic> request) async{
+    final userRef = _firestore.collection('users').doc(request['userId']);
+    final userDoc = await userRef.get();
+    if(!userDoc.exists) return 'User no longer exists.';
+    final user = UserModel.fromFirestore(userDoc.data()!, userDoc.id);
+
+    //for year 4 and year 5 never get a subject from another year
+    if(isLockedYear(user.academicYear) || isLockedYear(request['subjectYear'] as String?)){
+      await _firestore.collection('subjectRequests').doc(request['id']).update({'status': 'rejected'});
+      return 'Rejected automatically: Year 4/5 restriction.';
     }
-    
-    //Admin accepts: the subject and its posts now appear for that student
-    Future<String?> accept (Map<String, dynamic> request) async{
-      final userRef = _firestore.collection('users').doc(request['userId']);
-      final userDoc = await userRef.get();
-      if(!userDoc.exists) return 'User no longer exists.';
-      final user = UserModel.fromFirestore(userDoc.data()!, userDoc.id);
-      
-      //for year 4 and year 5 never get a subject from another year
-      if(isLockedYear(user.academicYear) || isLockedYear(request['subjectYear'] as String?)){
-        await _firestore.collection('subjectRequests').doc(request['id']).update({'status': 'rejected'});
-        return 'Rejected automatically: Year 4/5 restriction.';
-      }
-      await userRef.update({
-        'extraSubjectIds': FieldValue.arrayUnion([request['subjectId']]),
-      });
-      await _firestore
+    await userRef.update({
+      'extraSubjectIds': FieldValue.arrayUnion([request['subjectId']]),
+    });
+    await _firestore
         .collection('subjectRequests')
         .doc(request['id'])
         .update({
-          'status': 'accepted',
-          'decidedAt': FieldValue.serverTimestamp()
-        });
-      await _notifications.send(
-        toUserDocId: request['userId'],
-        content: 'Your request for "${request['subjectName']}" was accepted.',
-        senderName: 'Admin',
-        type: 'request_accepted',
-      );
-      return null;
-    }
-
-    Future <void> reject (Map<String, dynamic> request) async{
-      await _firestore
-          .collection('subjectRequests')
-          .doc(request['id'])
-          .update({
-            'status': 'rejected',
-            'decidedAt': FieldValue.serverTimestamp(),
-          });
-      await _notifications.send(
-        toUserDocId: request['userId'],
-        content: 'Your request for "${request['subjectName']}" was rejected.',
-        senderName: 'Admin',
-        type: 'request_rejected',
-      );
-    }
+      'status': 'accepted',
+      'decidedAt': FieldValue.serverTimestamp()
+    });
+    await _notifications.send(
+      toUserDocId: request['userId'],
+      content: 'Your request for "${request['subjectName']}" was accepted.',
+      senderName: 'Admin',
+      type: 'request_accepted',
+    );
     return null;
-
-    
   }
-  
-  
+
+  Future <void> reject (Map<String, dynamic> request) async{
+    await _firestore
+        .collection('subjectRequests')
+        .doc(request['id'])
+        .update({
+      'status': 'rejected',
+      'decidedAt': FieldValue.serverTimestamp(),
+    });
+    await _notifications.send(
+      toUserDocId: request['userId'],
+      content: 'Your request for "${request['subjectName']}" was rejected.',
+      senderName: 'Admin',
+      type: 'request_rejected',
+    );
+  }
+
 }
