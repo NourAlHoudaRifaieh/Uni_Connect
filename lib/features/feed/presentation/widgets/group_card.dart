@@ -12,6 +12,7 @@ class GroupCard extends StatelessWidget {
   final String? academicYear;
   final VoidCallback? onEditPressed;
   final VoidCallback? onDeletePressed;
+  final bool showAdminBadge;
 
   const GroupCard({
     super.key,
@@ -21,6 +22,7 @@ class GroupCard extends StatelessWidget {
     this.academicYear,
     this.onEditPressed,
     this.onDeletePressed,
+    this.showAdminBadge = false,
   });
 
   @override
@@ -51,7 +53,8 @@ class GroupCard extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  hasYear ? '${group.groupName} - $displayYear' : group.groupName,
+                  group.displayName,
+                  // hasYear ? '${group.groupName} - $displayYear' : group.groupName,
                   style: GoogleFonts.inter(
                     fontWeight: FontWeight.bold,
                     fontSize: 15,
@@ -59,6 +62,23 @@ class GroupCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
+              if(showAdminBadge)
+                Container(
+                  margin: EdgeInsets.only(right:8),
+                   padding: EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: Color(0xFF2563EB).withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    'Admin',
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF2563EB)
+                    ),
+                  ),
+                ),
               PopupMenuButton<String>(
                 style: IconButton.styleFrom(
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -83,12 +103,12 @@ class GroupCard extends StatelessWidget {
                     value: 'edit',
                     child: Row(
                       children: [
-                        const Icon(Icons.edit_outlined, color: Color(0xFF2563EB), size: 15),
-                        const SizedBox(width: 8),
+                        Icon(Icons.edit_outlined, color: Color(0xFF2563EB), size: 15),
+                        SizedBox(width: 8),
                         Text(
                           'Edit',
                           style: GoogleFonts.inter(
-                            color: const Color(0xFF2563EB),
+                            color: Color(0xFF2563EB),
                             fontSize: 15,
                             fontWeight: FontWeight.w600,
                           ),
@@ -100,8 +120,8 @@ class GroupCard extends StatelessWidget {
                     value: 'delete',
                     child: Row(
                       children: [
-                        const Icon(Icons.delete_outline, color: Colors.redAccent, size: 15),
-                        const SizedBox(width: 8),
+                        Icon(Icons.delete_outline, color: Colors.redAccent, size: 15),
+                        SizedBox(width: 8),
                         Text(
                           'Delete',
                           style: GoogleFonts.inter(
@@ -114,7 +134,7 @@ class GroupCard extends StatelessWidget {
                     ),
                   ),
                 ],
-                child: const Icon(Icons.more_vert, size: 20, color: Colors.grey),
+                child: Icon(Icons.more_vert, size: 20, color: Colors.grey),
               ),
             ],
           ),

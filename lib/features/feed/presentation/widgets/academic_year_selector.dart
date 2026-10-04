@@ -33,39 +33,39 @@ class AcademicYearSelector extends StatelessWidget {
       height: 38,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: EdgeInsets.symmetric(horizontal: 16),
         itemCount: years.length,
         itemBuilder: (context, index) {
           final String year = years[index];
           final bool isSelected = year == selectedYear;
 
           return Padding(
-            padding: const EdgeInsets.only(right: 10),
+            padding: EdgeInsets.only(right: 10),
             child: Material(
               color: Colors.transparent,
               child: InkWell(
                 onTap: () => onYearSelected(year),
                 borderRadius: BorderRadius.circular(24),
                 child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 180),
-                  padding: const EdgeInsets.symmetric(horizontal: 18),
+                  duration:  Duration(milliseconds: 180),
+                  padding: EdgeInsets.symmetric(horizontal: 18),
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                     color: isSelected
-                        ? const Color(0xFF1D61FF)
+                        ?  Color(0xFF1D61FF)
                         : Colors.white,
                     borderRadius: BorderRadius.circular(24),
                     border: Border.all(
                       color: isSelected
-                          ? const Color(0xFF1D61FF)
-                          : const Color(0xFFE2E8F0),
+                          ?  Color(0xFF1D61FF)
+                          :  Color(0xFFE2E8F0),
                       width: 1.2,
                     ),
                   ),
                   child: Text(
                     year,
                     style: GoogleFonts.inter(
-                      color: isSelected ? Colors.white : const Color(0xFF334155),
+                      color: isSelected ? Colors.white : Color(0xFF334155),
                       fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
                       fontSize: 13,
                     ),

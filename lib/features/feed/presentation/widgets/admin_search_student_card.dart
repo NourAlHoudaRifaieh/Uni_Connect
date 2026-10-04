@@ -23,8 +23,8 @@ class AdminSearchStudentCard extends StatelessWidget {
   Widget build(BuildContext context) {
     // TODO: implement build
     return Container(
-      margin: const EdgeInsets.only(bottom: 14),
-      padding: const EdgeInsets.all(14),
+      margin: EdgeInsets.only(bottom: 14),
+      padding: EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
@@ -56,7 +56,7 @@ class AdminSearchStudentCard extends StatelessWidget {
                   overflow:  TextOverflow.ellipsis,
                 ),
               ),
-              const SizedBox(width:10),
+              SizedBox(width:10),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -145,7 +145,7 @@ class AdminSearchStudentCard extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15),
                 ),
-                offset: const Offset(-5, 30),
+                offset:  Offset(-5, 30),
                 onSelected: (value) {
                   if (value == 'edit' && onEditPressed != null) {
                     onEditPressed!();
@@ -158,12 +158,12 @@ class AdminSearchStudentCard extends StatelessWidget {
                     value: 'edit',
                     child: Row(
                       children: [
-                        const Icon(Icons.edit_outlined, color: Color(0xFF2563EB), size: 15),
-                        const SizedBox(width: 8),
+                        Icon(Icons.edit_outlined, color: Color(0xFF2563EB), size: 15),
+                        SizedBox(width: 8),
                         Text(
                           'Edit',
                           style: GoogleFonts.inter(
-                            color: const Color(0xFF2563EB),
+                            color: Color(0xFF2563EB),
                             fontSize: 15,
                             fontWeight: FontWeight.w600,
                           ),
@@ -175,8 +175,8 @@ class AdminSearchStudentCard extends StatelessWidget {
                     value: 'delete',
                     child: Row(
                       children: [
-                        const Icon(Icons.delete_outline, color: Colors.redAccent, size: 15),
-                        const SizedBox(width: 8),
+                        Icon(Icons.delete_outline, color: Colors.redAccent, size: 15),
+                        SizedBox(width: 8),
                         Text(
                           'Delete',
                           style: GoogleFonts.inter(
@@ -189,7 +189,7 @@ class AdminSearchStudentCard extends StatelessWidget {
                     ),
                   ),
                 ],
-                child: const Icon(Icons.more_vert, size: 20, color: Colors.grey),
+                child: Icon(Icons.more_vert, size: 20, color: Colors.grey),
               ),
             ],
           ),

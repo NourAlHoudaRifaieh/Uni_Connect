@@ -108,12 +108,12 @@ class SubjectCard extends StatelessWidget {
                 value: 'edit',
                 child: Row(
                   children: [
-                    const Icon(Icons.edit_outlined, color: Color(0xFF2563EB), size: 15),
-                    const SizedBox(width: 8),
+                    Icon(Icons.edit_outlined, color: Color(0xFF2563EB), size: 15),
+                    SizedBox(width: 8),
                     Text(
                       'Edit',
                       style: GoogleFonts.inter(
-                        color: const Color(0xFF2563EB),
+                        color: Color(0xFF2563EB),
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
                       ),
@@ -125,8 +125,8 @@ class SubjectCard extends StatelessWidget {
                 value: 'delete',
                 child: Row(
                   children: [
-                    const Icon(Icons.delete_outline, color: Colors.redAccent, size: 15),
-                    const SizedBox(width: 8),
+                    Icon(Icons.delete_outline, color: Colors.redAccent, size: 15),
+                    SizedBox(width: 8),
                     Text(
                       'Delete',
                       style: GoogleFonts.inter(
@@ -139,7 +139,7 @@ class SubjectCard extends StatelessWidget {
                 ),
               ),
             ],
-            child: const Icon(Icons.more_vert, size: 20, color: Colors.grey),
+            child: Icon(Icons.more_vert, size: 20, color: Colors.grey),
           ),
         ],
       ),
