@@ -1,6 +1,4 @@
-
-
-// import '../mock/mock_data.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class NotificationModel {
   final String notificationId;
@@ -9,6 +7,8 @@ class NotificationModel {
   final bool isRead;
   final String userId;
   // final String? initials;
+  final String senderName;
+  final String type;
 
   NotificationModel({
     required this.notificationId,
@@ -17,24 +17,16 @@ class NotificationModel {
     this.isRead = false,
     // this.initials,
     required this.userId,
+    this.senderName = '',
+    this.type = 'general',
   });
 
-  // String get initials {
-  //   // final user = MockData.users.firstWhere(
-  //         (u) => u.userId == userId,
-  //     orElse: () => null as dynamic,
-  //   );
-  //
-  //   if (user != null && user.fullName.isNotEmpty) {
-  //     final names = user.fullName.trim().split(' ');
-  //     if (names.length >= 2) {
-  //       return '${names[0][0]}${names[1][0]}'.toUpperCase();
-  //     } else if (names.isNotEmpty && names[0].isNotEmpty) {
-  //       return names[0][0].toUpperCase();
-  //     }
-  //   }
-  //   return '';
-  // }
+  String get initials {
+    final parts = senderName.trim().split(RegExp(r'\s+'));
+    if (senderName.trim().isEmpty) return 'UC';
+    if (parts.length >= 2) return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
+    return parts[0][0].toUpperCase();
+  }
 
   String get timeAgo {
     final difference = DateTime.now().difference(createdAt);
@@ -55,12 +47,28 @@ class NotificationModel {
       isRead: json['isRead'] ?? false,
       // initials: json['initials'],
       userId: json['userId'] ?? '',
+      senderName: json['senderName'] ?? '',
+      type: json['type'] ?? 'general',
       createdAt: json['createdAt'] is DateTime
           ? json['createdAt']
           : (json['createdAt'] != null
           ? DateTime.tryParse(json['createdAt'].toString()) ?? DateTime.now()
           : DateTime.now()
       ),
+    );
+  }
+
+  factory NotificationModel.fromFirestore(Map<String, dynamic> data, String id){
+    return NotificationModel(
+        notificationId: id,
+        content: data['content'] ?? '',
+        isRead: data['isRead'] ?? false,
+        userId: data['userId'] ?? 'false',
+        senderName: data['senderName'] ?? 'false',
+        type: data['type'] ?? 'general',
+        createdAt: data['createdAt'] is Timestamp
+          ? (data['createdAt'] as Timestamp).toDate()
+          : DateTime.now(),
     );
   }
 
@@ -72,6 +80,8 @@ class NotificationModel {
       'isRead': isRead,
       // 'initials': initials,
       'userId': userId,
+      'senderName': senderName,
+      'type': type,
     };
   }
 
@@ -82,6 +92,8 @@ class NotificationModel {
     bool? isRead,
     // String? initials,
     String? userId,
+    String? senderName,
+    String? type,
   }) {
     return NotificationModel(
       notificationId: notificationId ?? this.notificationId,
@@ -90,6 +102,8 @@ class NotificationModel {
       isRead: isRead ?? this.isRead,
       // initials: initials ?? this.initials,
       userId:  userId ?? this.userId,
+      senderName:  senderName ?? this.senderName,
+      type:  type ?? this.type,
     );
   }
 }
