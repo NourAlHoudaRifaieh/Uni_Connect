@@ -62,7 +62,7 @@ class SearchScreenState extends State<SearchScreen>{
         }
       });
     }catch(e){
-      print('Error loading groups: $e');
+      // print('Error loading groups: $e');
     }
   }
 
@@ -103,6 +103,25 @@ class SearchScreenState extends State<SearchScreen>{
     }).toList();
   }
 
+  Stream<List<PostModel>> _postsInMySpecialty() {
+    return _userRepository.watchCurrentUser().asyncExpand((user) {
+      final groupId = user?.groupId;
+      return _postRepository.watchAllPosts().map((posts) {
+        if (groupId == null || groupId.isEmpty) return posts;
+        return posts.where((p) => p.groupId == groupId).toList();
+      });
+    });
+  }
+
+  Stream<List<UserModel>> _studentsInMySpecialty() {
+    return _userRepository.watchCurrentUser().asyncExpand((user) {
+      final groupId = user?.groupId;
+      return _userRepository.watchAllUsers().map((students) {
+        if (groupId == null || groupId.isEmpty) return students;
+        return students.where((s) => s.groupId == groupId).toList();
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -194,7 +213,7 @@ class SearchScreenState extends State<SearchScreen>{
             Expanded(
                 child: _selectedIndex ==0
                 ? StreamBuilder<List<PostModel>>(
-                    stream: _postRepository.watchAllPosts(),
+                    stream: _postsInMySpecialty(),
                     builder: (context, snapshot){
                       if( snapshot.connectionState == ConnectionState.waiting){
                         return Center(
@@ -235,7 +254,7 @@ class SearchScreenState extends State<SearchScreen>{
                     }
                   )
                 : StreamBuilder<List<UserModel>>(
-                    stream: _userRepository.watchAllUsers(),
+                    stream:_studentsInMySpecialty(),
                     builder: (context, snapshot){
 
                       // print("Connection State: ${snapshot.connectionState}");

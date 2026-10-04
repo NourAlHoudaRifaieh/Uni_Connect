@@ -12,6 +12,7 @@ import 'package:uni_connect/features/feed/presentation/student/post_details_scre
 import 'package:uni_connect/features/feed/presentation/student/profile_screen.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/category_selector.dart';
 import '../../../../core/models/user_model.dart';
+import '../../../auth/data/subject_request_repository.dart';
 import '../widgets/post_card.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -46,13 +47,26 @@ class _HomeScreenState extends State <HomeScreen>{
     return posts.where((post){
       final matchesCategory = selectedCategory == 'All' || post.categoryName?.trim().toLowerCase() == selectedCategory.trim().toLowerCase();
       final matchesSearch = query.isEmpty ||
-          // post.title.toLowerCase().contains(query) ||
           post.description.toLowerCase().contains(query) ||
           (post.subjectCode?.toLowerCase().contains(query) ?? false)||
           (post.categoryName?.toLowerCase().contains(query) ?? false)||
           post.authorName.toLowerCase().contains(query);
       return matchesCategory && matchesSearch;
     }).toList();
+  }
+
+  Stream<List<PostModel>> _postsInMySpecialty() {
+    return _userRepository.watchCurrentUser().asyncExpand((user) {
+      final groupId = user?.groupId;
+      return _postRepository.watchAllPosts().map((posts) {
+        if (groupId == null || groupId.isEmpty) return posts;
+        final locked = isLockedYear(user?.academicYear);
+        final extra = locked ? const <String>[] : (user?.extraSubjectIds ?? const <String>[]);
+        return posts.where((p) =>
+        p.groupId == groupId ||
+            (p.subjectId != null && extra.contains(p.subjectId))).toList();
+      });
+    });
   }
 
   @override
@@ -78,7 +92,7 @@ class _HomeScreenState extends State <HomeScreen>{
       backgroundColor: Colors.white,
       body: SafeArea(
         child: StreamBuilder<List<PostModel>>(
-            stream: _postRepository.watchAllPosts(),
+            stream: _postsInMySpecialty(),
             builder: (context, postSnapshot){
               if(!postSnapshot.hasData && postSnapshot.connectionState == ConnectionState.waiting){
                 return Center(
@@ -145,7 +159,7 @@ class _HomeScreenState extends State <HomeScreen>{
                                         )
                                       else
                                         Text(
-                                          'Business Administration, Master 2',
+                                          'Business Administration,',
                                           style: GoogleFonts.inter(fontSize: 14, color: Colors.grey),
                                         ),
                                     ],
@@ -161,68 +175,42 @@ class _HomeScreenState extends State <HomeScreen>{
                               // ),
                             ),
                             //Notification Bell
-                            GestureDetector(
-                              onTap: (){
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (context)=> NotificationScreen()),
-                                );
-                              },
-                              child: Stack(
-                                clipBehavior: Clip.none,
-                                children: [
-                                  Container(
-                                    width:40,
-                                    height:40,
-                                    decoration:BoxDecoration(
-                                      color: Color(0xFFF3F4F6),
-                                      borderRadius: BorderRadius.circular(20),
-                                      border: Border.all( color: Color(0xFFF3F4F6)),
-                                    ),
-                                    child: Icon(Icons.notifications_none, color: Colors.black54, size:25),
-                                  ),
-                                  Positioned(
-                                    top:-8,
-                                    right: -4,
-                                    child: Container(
-                                        padding: const EdgeInsets.all(4),
-                                        decoration: BoxDecoration(
-                                            color: Colors.red,
-                                            shape: BoxShape.circle
-                                        ),
-                                        child: Text('3', style:GoogleFonts.inter(color:Colors.white, fontSize:15))
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            // Stack(
-                            //   clipBehavior: Clip.none,
-                            //   children: [
-                            //     Container(
-                            //       width:40,
-                            //       height:40,
-                            //       decoration:BoxDecoration(
-                            //         color: Color(0xFFF3F4F6),
-                            //         borderRadius: BorderRadius.circular(20),
-                            //         border: Border.all( color: Color(0xFFF3F4F6)),
-                            //       ),
-                            //       child: Icon(Icons.notifications_none, color: Colors.black54, size:25),
-                            //     ),
-                            //     Positioned(
-                            //       top:-8,
-                            //       right: -4,
-                            //       child: Container(
-                            //         padding: const EdgeInsets.all(4),
-                            //         decoration: BoxDecoration(
-                            //           color: Colors.red,
-                            //           shape: BoxShape.circle
+                            // GestureDetector(
+                            //   onTap: (){
+                            //     Navigator.push(
+                            //       context,
+                            //       MaterialPageRoute(builder: (context)=> NotificationScreen()),
+                            //     );
+                            //   },
+                            //   child: Stack(
+                            //     clipBehavior: Clip.none,
+                            //     children: [
+                            //       Container(
+                            //         width:40,
+                            //         height:40,
+                            //         decoration:BoxDecoration(
+                            //           color: Color(0xFFF3F4F6),
+                            //           borderRadius: BorderRadius.circular(20),
+                            //           border: Border.all( color: Color(0xFFF3F4F6)),
                             //         ),
-                            //         child: Text('3', style:GoogleFonts.inter(color:Colors.white, fontSize:15))
+                            //         child: Icon(Icons.notifications_none, color: Colors.black54, size:25),
                             //       ),
-                            //     ),
-                            //   ],
+                            //       Positioned(
+                            //         top:-8,
+                            //         right: -4,
+                            //         child: Container(
+                            //             padding: EdgeInsets.all(4),
+                            //             decoration: BoxDecoration(
+                            //                 color: Colors.red,
+                            //                 shape: BoxShape.circle
+                            //             ),
+                            //             child: Text('3', style:GoogleFonts.inter(color:Colors.white, fontSize:15))
+                            //         ),
+                            //       ),
+                            //     ],
+                            //   ),
                             // ),
+
                             SizedBox(width:10),
                             //User Avatar
                             GestureDetector(
@@ -247,11 +235,6 @@ class _HomeScreenState extends State <HomeScreen>{
                                   );
                                 }
                               ),
-                              // child: CircleAvatar(
-                              //     radius:20,
-                              //     backgroundColor:Color(0xFF1D61FF),
-                              //     child: Text('NR', style: GoogleFonts.inter(color: Colors.white, fontWeight: FontWeight.bold))
-                              // ),
                             ),
                           ],
                         ),

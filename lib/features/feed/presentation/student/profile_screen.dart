@@ -48,7 +48,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           // Fallback data based on Firebase Auth if stream is loading or empty
           final userModel = snapshot.data;
           final email = currentUser?.email ?? 'user@example.com';
-          final fullName = userModel?.fullName?.isNotEmpty == true
+          final fullName = userModel?.fullName.isNotEmpty == true
               ? userModel!.fullName!
               : _getNameFromEmail(email);
 
@@ -61,7 +61,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           //     : (academicYear.isNotEmpty
           //       ? academicYear
           //       : (userModel?.major ?? 'Business Administration, Master 2')));
-          final postCount = userModel?.postCount?.toString() ?? '0';
+          final postCount = userModel?.postCount.toString() ?? '0';
 
           final initials = userModel?.authorInitials.isNotEmpty == true
               ? userModel!.authorInitials
@@ -215,7 +215,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         : Future.value(null),
                                       builder: (context, groupSnapshot){
                                         final group = groupSnapshot.data;
-                                        final academicYearText = group?.academicYear ?? 'Master 2';
+                                        final academicYearText = group?.academicYear ?? '';
                                         return Container(
                                           padding: EdgeInsets.symmetric(
                                             horizontal: 18,
@@ -416,7 +416,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         );
                       }
                       final allPosts = postSnapshot.data ?? [];
-                      final userPosts = allPosts.where((post) => post.userId == currentUser?.uid).toList();
+                      final userPosts = allPosts.where((post) => (userModel != null && post.userId == userModel.userId) || post.userId == currentUser?.uid).toList();
                       if(userPosts.isEmpty){
                         return Padding(
                           padding: EdgeInsets.symmetric(vertical: 30),

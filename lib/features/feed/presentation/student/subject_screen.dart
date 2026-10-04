@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:uni_connect/features/auth/data/group_repository.dart';
 import 'package:uni_connect/features/auth/data/subject_repository.dart';
+import 'package:uni_connect/features/auth/data/subject_request_repository.dart';
 import 'package:uni_connect/features/auth/data/user_repository.dart';
 import 'package:uni_connect/features/feed/presentation/student/subject_details_screen.dart';
 import '../../../../core/mock/mock_data.dart';
@@ -12,6 +13,23 @@ import '../../../../core/models/user_model.dart';
 
 class SubjectScreen extends StatelessWidget {
   const SubjectScreen({super.key});
+
+  // only the subjects of the students own speacially group and their academic year are shown
+  Stream<List<SubjectModel>> _mySubjects({
+    required SubjectRepository subjectRepository,
+    required UserRepository userRepository,
+  }){
+    return userRepository.watchCurrentUser().asyncExpand((user){
+      final groupId = user?.groupId;
+      return subjectRepository.watchAllSubjects().map((subjects){
+        if(groupId == null || groupId.isEmpty) return subjects;
+        final locked = isLockedYear(user?.academicYear);
+        final extra = locked ? <String>[] : (user?.extraSubjectIds ?? <String>[]);
+        return subjects.where((s) =>
+        s.belongsToGroup(groupId) || extra.contains(s.subjectId)).toList();
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +43,10 @@ class SubjectScreen extends StatelessWidget {
       backgroundColor: Colors.white,
       body: SafeArea(
         child: StreamBuilder<List<SubjectModel>>(
-          stream: _subjectRepository.watchAllSubjects(),
+          stream: _mySubjects(
+              subjectRepository: _subjectRepository,
+              userRepository: _userRepository
+          ),
           builder: (context, snapshot){
             if(!snapshot.hasData && snapshot.connectionState == ConnectionState.waiting){
               return Center(
@@ -45,8 +66,8 @@ class SubjectScreen extends StatelessWidget {
                         : Future.value(null),
                       builder: (context, groupSnapshot){
                         final group = groupSnapshot.data;
-                        final faculty = group?.faculty ?? 'Business Administration';
-                        final academicYear = group?.academicYear ?? 'Master 2';
+                        final faculty = group?.faculty ?? '';
+                        final academicYear = group?.academicYear ?? '';
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -94,135 +115,135 @@ class SubjectScreen extends StatelessWidget {
                                   children: [
                                     subjects.isEmpty
                                         ? Center(
-                                      child: Padding(
-                                        padding: EdgeInsets.symmetric(vertical:40),
-                                        child: Text(
-                                          'No subjects enrolled yet.',
-                                          style: GoogleFonts.inter(
-                                            fontSize: 14,
-                                            color: Colors.grey.shade500,
-                                          ),
-                                        ),
-                                      ),
-                                    )
-                                        : GridView.builder(
-                                      shrinkWrap: true,
-                                      physics: NeverScrollableScrollPhysics(),
-                                      itemCount: subjects.length,
-                                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                          crossAxisCount: 2,
-                                          mainAxisSpacing: 14,
-                                          crossAxisSpacing: 14,
-                                          childAspectRatio: 1.1
-                                      ),
-                                      itemBuilder: (context , index){
-                                        SubjectModel subject = subjects[index];
-                                        return GestureDetector(
-                                          onTap: (){
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(builder: (context)=> SubjectDetailsScreen(subject:subject)),
-                                            );
-                                          },
-                                          child: Container(
-                                            padding: EdgeInsets.all(14),
-                                            decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              borderRadius: BorderRadius.circular(20),
-                                              border: Border.all(color: Colors.grey.shade200),
+                                            child: Padding(
+                                              padding: EdgeInsets.symmetric(vertical:40),
+                                              child: Text(
+                                                'No subjects enrolled yet.',
+                                                style: GoogleFonts.inter(
+                                                  fontSize: 14,
+                                                  color: Colors.grey.shade500,
+                                                ),
+                                              ),
                                             ),
-                                            child:  Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                Container(
-                                                  width: 40,
-                                                  height: 40,
-                                                  decoration: BoxDecoration(
-                                                    color: Color(0xFF1D61FF).withOpacity(0.12),
-                                                    borderRadius: BorderRadius.circular(10),
-                                                  ),
-                                                  child: Icon(Icons.menu_book, color: Color(0xFF1D61FF), size:20),
+                                          )
+                                        : GridView.builder(
+                                          shrinkWrap: true,
+                                          physics: NeverScrollableScrollPhysics(),
+                                          itemCount: subjects.length,
+                                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                              crossAxisCount: 2,
+                                              mainAxisSpacing: 14,
+                                              crossAxisSpacing: 14,
+                                              childAspectRatio: 1.1
+                                          ),
+                                          itemBuilder: (context , index){
+                                            SubjectModel subject = subjects[index];
+                                            return GestureDetector(
+                                              onTap: (){
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(builder: (context)=> SubjectDetailsScreen(subject:subject)),
+                                                );
+                                              },
+                                              child: Container(
+                                                padding: EdgeInsets.all(14),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                  borderRadius: BorderRadius.circular(20),
+                                                  border: Border.all(color: Colors.grey.shade200),
                                                 ),
-                                                SizedBox(height:10),
-                                                Text(
-                                                  subject.subjectCode ?? '',
-                                                  style: GoogleFonts.inter(
-                                                      fontSize: 11,
-                                                      color: Colors.grey.shade500
-                                                  ),
-                                                ),
-                                                SizedBox(height:2),
-                                                Text(
-                                                  subject.subjectName ?? '',
-                                                  style: GoogleFonts.inter(
-                                                      fontSize: 14, fontWeight: FontWeight.bold
-                                                  ),
-                                                ),
-                                                Spacer(),
-                                                Row(
+                                                child:  Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
                                                   children: [
                                                     Container(
-                                                      width:6,
-                                                      height:6,
+                                                      width: 40,
+                                                      height: 40,
                                                       decoration: BoxDecoration(
-                                                        color: Color(0xFF1D61FF),
-                                                        shape: BoxShape.circle,
+                                                        color: Color(0xFF1D61FF).withOpacity(0.12),
+                                                        borderRadius: BorderRadius.circular(10),
+                                                      ),
+                                                      child: Icon(Icons.menu_book, color: Color(0xFF1D61FF), size:20),
+                                                    ),
+                                                    SizedBox(height:10),
+                                                    Text(
+                                                      subject.subjectCode ?? '',
+                                                      style: GoogleFonts.inter(
+                                                          fontSize: 11,
+                                                          color: Colors.grey.shade500
                                                       ),
                                                     ),
-                                                    SizedBox(width:6),
+                                                    SizedBox(height:2),
                                                     Text(
-                                                        '${subject.postCount ?? 0} posts',
-                                                        style: GoogleFonts.inter(fontSize: 11, color: Colors.grey.shade500)
+                                                      subject.subjectName ?? '',
+                                                      style: GoogleFonts.inter(
+                                                          fontSize: 14, fontWeight: FontWeight.bold
+                                                      ),
+                                                    ),
+                                                    Spacer(),
+                                                    Row(
+                                                      children: [
+                                                        Container(
+                                                          width:6,
+                                                          height:6,
+                                                          decoration: BoxDecoration(
+                                                            color: Color(0xFF1D61FF),
+                                                            shape: BoxShape.circle,
+                                                          ),
+                                                        ),
+                                                        SizedBox(width:6),
+                                                        Text(
+                                                            '${subject.postCount ?? 0} posts',
+                                                            style: GoogleFonts.inter(fontSize: 11, color: Colors.grey.shade500)
+                                                        ),
+                                                      ],
                                                     ),
                                                   ],
                                                 ),
-                                              ],
+                                              ),
+                                            );
+                                          },
+                                        ),
+
+                                        SizedBox(height:20),
+                                        Container(
+                                          width: double.infinity,
+                                          padding: const EdgeInsets.all(14),
+                                          decoration: BoxDecoration(
+                                            color:  Color(0xFFEFF6FF),
+                                            borderRadius: BorderRadius.circular(20),
+                                            border: Border.all(
+                                              color: Color(0xFF2563EB),
+                                              width:1,
                                             ),
                                           ),
-                                        );
-                                      },
-                                    ),
-
-                                    SizedBox(height:20),
-                                    Container(
-                                      width: double.infinity,
-                                      padding: const EdgeInsets.all(14),
-                                      decoration: BoxDecoration(
-                                        color:  Color(0xFFEFF6FF),
-                                        borderRadius: BorderRadius.circular(20),
-                                        border: Border.all(
-                                          color: Color(0xFF2563EB),
-                                          width:1,
-                                        ),
-                                      ),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Row(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
-                                              Icon(Icons.apartment, color: Color(0xFF2563EB),size:20),
-                                              SizedBox(width:10),
+                                              Row(
+                                                children: [
+                                                  Icon(Icons.apartment, color: Color(0xFF2563EB),size:20),
+                                                  SizedBox(width:10),
+                                                  Text(
+                                                    'Academic Group',
+                                                    style: GoogleFonts.inter(
+                                                      color: Color(0xFF2563EB),
+                                                      fontWeight: FontWeight.bold,
+                                                      fontSize: 14,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
                                               Text(
-                                                'Academic Group',
+                                                '$faculty, $academicYear',
                                                 style: GoogleFonts.inter(
                                                   color: Color(0xFF2563EB),
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 14,
+                                                  fontSize: 13,
+                                                  fontWeight: FontWeight.w500,
                                                 ),
                                               ),
                                             ],
                                           ),
-                                          Text(
-                                            '$faculty, $academicYear',
-                                            style: GoogleFonts.inter(
-                                              color: Color(0xFF2563EB),
-                                              fontSize: 13,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
+                                        ),
                                   ],
                                 ),
                               ),
