@@ -1,8 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:uni_connect/core/mock/mock_data.dart';
+import 'package:uni_connect/core/models/group_model.dart';
 import 'package:uni_connect/core/models/post_model.dart';
+import 'package:uni_connect/core/models/user_model.dart';
 import 'package:uni_connect/core/widgets/custom_elevated_button.dart';
 import 'package:uni_connect/core/widgets/custom_form_field.dart';
 import 'package:uni_connect/features/auth/data/group_repository.dart';
@@ -11,9 +11,6 @@ import 'package:uni_connect/features/auth/data/user_repository.dart';
 import 'package:uni_connect/features/feed/presentation/student/post_details_screen.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/search_post_card.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/search_student_card.dart';
-
-import '../../../../core/models/group_model.dart';
-import '../../../../core/models/user_model.dart';
 
 class SearchScreen extends StatefulWidget{
   SearchScreen({super.key,});

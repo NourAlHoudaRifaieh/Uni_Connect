@@ -1,20 +1,17 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:uni_connect/core/mock/mock_data.dart';
 import 'package:uni_connect/core/models/post_model.dart';
+import 'package:uni_connect/core/models/user_model.dart';
 import 'package:uni_connect/core/widgets/custom_form_field.dart';
 import 'package:uni_connect/features/auth/data/group_repository.dart';
 import 'package:uni_connect/features/auth/data/post_repository.dart';
+import 'package:uni_connect/features/auth/data/subject_request_repository.dart';
 import 'package:uni_connect/features/auth/data/user_repository.dart';
-import 'package:uni_connect/features/feed/presentation/student/create_post_screen.dart';
-import 'package:uni_connect/features/feed/presentation/student/notification_screen.dart';
 import 'package:uni_connect/features/feed/presentation/student/post_details_screen.dart';
 import 'package:uni_connect/features/feed/presentation/student/profile_screen.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/category_selector.dart';
-import '../../../../core/models/user_model.dart';
-import '../../../auth/data/subject_request_repository.dart';
-import '../widgets/post_card.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:uni_connect/features/feed/presentation/widgets/post_card.dart';
 
 class HomeScreen extends StatefulWidget{
   const HomeScreen({super.key});
@@ -123,15 +120,6 @@ class _HomeScreenState extends State <HomeScreen>{
                                 stream: _userRepository.watchCurrentUser(),
                                 builder: (context, userSnapshot){
                                   final userModel = userSnapshot.data;
-                                  // final faculty = userModel?.faculty ?? '';
-                                  // final academicYear = userModel?.academicYear ?? '';
-                                  // final departmentText = faculty.isNotEmpty && academicYear.isNotEmpty
-                                  //     ? '$faculty, $academicYear'
-                                  //     : (faculty.isNotEmpty
-                                  //       ? faculty
-                                  //       : (academicYear.isNotEmpty
-                                  //         ? academicYear
-                                  //         : (userModel?.major ?? 'Business Administration')));
                                   return  Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
@@ -296,20 +284,6 @@ class _HomeScreenState extends State <HomeScreen>{
                         itemCount: displayedPosts.length,
                         itemBuilder: (context, index) {
                           final post = displayedPosts[index];
-                          // return PostCard(
-                          //   post: post,
-                          //   onTap: () {
-                          //     setState(() {
-                          //     });
-                          //     // will open post detail screen later
-                          //   },
-                          //   onLikeTap: (){
-                          //     setState(() {
-                          //
-                          //     });
-                          //   },
-                          //   onCommentTap: (){},
-                          // );
                           return PostCard(
                             post: post,
                             // onTap: () {

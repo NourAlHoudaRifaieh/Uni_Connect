@@ -1,15 +1,13 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:uni_connect/core/models/group_model.dart';
+import 'package:uni_connect/core/models/subject_model.dart';
+import 'package:uni_connect/core/models/user_model.dart';
 import 'package:uni_connect/features/auth/data/group_repository.dart';
 import 'package:uni_connect/features/auth/data/subject_repository.dart';
 import 'package:uni_connect/features/auth/data/subject_request_repository.dart';
 import 'package:uni_connect/features/auth/data/user_repository.dart';
 import 'package:uni_connect/features/feed/presentation/student/subject_details_screen.dart';
-import '../../../../core/mock/mock_data.dart';
-import '../../../../core/models/group_model.dart';
-import '../../../../core/models/subject_model.dart';
-import '../../../../core/models/user_model.dart';
 
 class SubjectScreen extends StatelessWidget {
   const SubjectScreen({super.key});

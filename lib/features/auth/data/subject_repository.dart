@@ -7,12 +7,12 @@ import 'package:uni_connect/core/utils/sequential_id_service.dart';
 class SubjectRepository {
   final _firestore = FirebaseFirestore.instance;
   final SequentialIdService _ids = SequentialIdService();
-  // String _generateSubjectId(String subjectName) {
-  //   String cleanName = subjectName.trim().replaceAll(' ', '').toUpperCase();
-  //   String prefix = cleanName.length >= 3 ? cleanName.substring(0, 3) : cleanName.padRight(3, 'X');
-  //   int randomNum = Random().nextInt(900) + 100;
-  //   return '$prefix$randomNum';
-  // }
+  String _generateSubjectId(String subjectName) {
+    String cleanName = subjectName.trim().replaceAll(' ', '').toUpperCase();
+    String prefix = cleanName.length >= 3 ? cleanName.substring(0, 3) : cleanName.padRight(3, 'X');
+    int randomNum = Random().nextInt(900) + 100;
+    return '$prefix$randomNum';
+  }
 
   // students: watch subjects for their specific academic year
   // Stream means the UI updates automatically if admin adds/edits/deletes a subject
@@ -65,15 +65,15 @@ class SubjectRepository {
   Future<void> createSubject(SubjectModel subject) async {
     final dup = await duplicateError(subject);
     if(dup != null) throw Exception(dup);
+    final generatedCode = _generateSubjectId(subject.subjectName ?? 'SUB');
 
     // subject_1, subject_2
     final sequentialSubjectId = await _ids.nextId('subjects', 'subject_');
-    final sequentialSubjectCode = await _ids.nextId('subject_codes', 'subCode_');
     final docRef = _firestore.collection('subjects').doc(sequentialSubjectId);
 
     final subjectData = subject.toJson();
     subjectData['subjectId'] = sequentialSubjectId; // subj_1
-    subjectData['subjectCode'] = sequentialSubjectCode; // INF387
+    subjectData['subjectCode'] = generatedCode; // INF387
 
     await docRef.set(subjectData);
   }

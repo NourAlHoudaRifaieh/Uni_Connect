@@ -3,16 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uni_connect/core/models/group_model.dart';
+import 'package:uni_connect/core/models/post_model.dart';
+import 'package:uni_connect/core/models/user_model.dart';
+import 'package:uni_connect/features/auth/data/auth_repository.dart';
 import 'package:uni_connect/features/auth/data/group_repository.dart';
 import 'package:uni_connect/features/auth/data/post_repository.dart';
 import 'package:uni_connect/features/auth/data/user_repository.dart';
 import 'package:uni_connect/features/feed/presentation/student/post_details_screen.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/post_card.dart';
-
-import '../../../../core/models/group_model.dart';
-import '../../../../core/models/post_model.dart';
-import '../../../../core/models/user_model.dart';
-import '../../../auth/data/auth_repository.dart';
 
 class ProfileScreen extends StatefulWidget {
   ProfileScreen({Key? key}) : super(key: key);
@@ -51,16 +50,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           final fullName = userModel?.fullName.isNotEmpty == true
               ? userModel!.fullName!
               : _getNameFromEmail(email);
-
-          // final faculty = userModel?.faculty ?? '';
-          // final academicYear = userModel?.academicYear ?? '';
-          // final departmentText = faculty.isNotEmpty && academicYear.isNotEmpty
-          //   ? '$faculty, $academicYear'
-          //   : (faculty.isNotEmpty
-          //     ? faculty
-          //     : (academicYear.isNotEmpty
-          //       ? academicYear
-          //       : (userModel?.major ?? 'Business Administration, Master 2')));
           final postCount = userModel?.postCount.toString() ?? '0';
 
           final initials = userModel?.authorInitials.isNotEmpty == true
@@ -236,24 +225,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         );
                                       }
                                   ),
-                                  // Container(
-                                  //   padding: EdgeInsets.symmetric(
-                                  //     horizontal: 18,
-                                  //     vertical: 3,
-                                  //   ),
-                                  //   decoration: BoxDecoration(
-                                  //     color: Colors.white.withOpacity(0.25),
-                                  //     borderRadius:   BorderRadius.circular(12),
-                                  //   ),
-                                  //   child: Text(
-                                  //     academicYear,
-                                  //     style: GoogleFonts.inter(
-                                  //       color: Colors.white,
-                                  //       fontSize: 11,
-                                  //       fontWeight: FontWeight.w600,
-                                  //     ),
-                                  //   ),
-                                  // ),
                                 ],
                               ),
                             ],
@@ -287,25 +258,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 );
                               },
                           ),
-                          // Row(
-                          //   children: [
-                          //     Icon(
-                          //       Icons.business_sharp,
-                          //       color: Colors.white.withOpacity(0.8),
-                          //       size: 18,
-                          //     ),
-                          //     SizedBox(width:8),
-                          //     Text(
-                          //       faculty,
-                          //       // user?.faculty ?? 'Business Administration',
-                          //       style: GoogleFonts.inter(
-                          //         color: Colors.white.withOpacity(0.9),
-                          //         fontWeight: FontWeight.w500,
-                          //         fontSize: 13,
-                          //       ),
-                          //     ),
-                          //   ],
-                          // ),
                         ],
                       ),
                     ),
@@ -329,7 +281,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            // _buildStatItem("14", 'Posts'),
                             _buildStatItem(postCount, 'Posts'),
                             Container(
                               height: 30,
@@ -345,7 +296,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 SizedBox(height: 50),
                 Container(
-                  // padding: EdgeInsets.symmetric(horizontal: 20),
                   margin: EdgeInsets.symmetric(horizontal: 20),
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -389,17 +339,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           color: Color(0xFF1E293B),
                         ),
                       ),
-                      // TextButton(
-                      //   onPressed: (){},
-                      //   child: Text(
-                      //     'See all',
-                      //     style: GoogleFonts.inter(
-                      //       fontSize: 13,
-                      //       fontWeight: FontWeight.w600,
-                      //       color: Color(0xFF2563EB),
-                      //     ),
-                      //   ),
-                      // ),
                     ],
                   ),
                 ),

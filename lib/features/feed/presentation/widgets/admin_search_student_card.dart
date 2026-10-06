@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:uni_connect/core/models/group_model.dart';
+import 'package:uni_connect/core/models/user_model.dart';
 import 'package:uni_connect/features/auth/data/group_repository.dart';
-
-import '../../../../core/models/group_model.dart';
-import '../../../../core/models/user_model.dart';
 
 class AdminSearchStudentCard extends StatelessWidget {
 
