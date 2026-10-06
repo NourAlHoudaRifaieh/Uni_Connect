@@ -1,6 +1,5 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:uni_connect/core/models/group_model.dart';
 import 'package:uni_connect/core/models/post_model.dart';
 import 'package:uni_connect/core/models/subject_model.dart';
 import 'package:uni_connect/core/models/user_model.dart';
@@ -10,12 +9,12 @@ import 'package:uni_connect/features/auth/data/subject_repository.dart';
 import 'package:uni_connect/features/auth/data/user_repository.dart';
 import 'package:uni_connect/features/feed/presentation/admin/admin_groups_screen.dart';
 import 'package:uni_connect/features/feed/presentation/admin/admin_posts_screen.dart';
+import 'package:uni_connect/features/feed/presentation/admin/admin_subjects_request_screen.dart';
 import 'package:uni_connect/features/feed/presentation/admin/admin_subjects_screen.dart';
 import 'package:uni_connect/features/feed/presentation/student/create_post_screen.dart';
+import 'package:uni_connect/features/feed/presentation/student/profile_screen.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/dashboard_manage_stat_card.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/dashboard_stat_card.dart';
-
-import '../../../../core/models/group_model.dart';
 
 class AdminDashboardScreen extends StatefulWidget {
   AdminDashboardScreen({Key? key}) : super(key: key);
@@ -188,6 +187,38 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                           });
                                         }
                                       },
+                                    ),
+                                    DashboardManageStatCard(
+                                      icon: Icons.swap_horiz_outlined,
+                                      title: 'Subject Requests',
+                                      subTitle: 'Accept / Reject',
+                                      onTap: (){
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(builder: (context) => AdminSubjectRequestScreen(isStandalone: true)),
+                                        );
+                                        if(mounted){
+                                          setState(() {
+
+                                          });
+                                        }
+                                      },
+                                    ),
+                                    DashboardManageStatCard(
+                                        title: 'My Profile',
+                                        icon: Icons.person_outline,
+                                        subTitle: 'Edit your info',
+                                        onTap: (){
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(builder: (context)=> ProfileScreen()),
+                                          );
+                                          if(mounted){
+                                            setState(() {
+
+                                            });
+                                          }
+                                        },
                                     ),
                                     DashboardManageStatCard(
                                       icon: Icons.add_outlined,
