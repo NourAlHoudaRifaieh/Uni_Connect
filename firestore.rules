@@ -1,0 +1,95 @@
+rules_version = '2';
+
+// UniConnect Firestore rules.
+// Admin = an account whose email ends with @admin.ul.edu.lb (same rule the app
+// uses at registration). Everything an admin-only screen does is enforced here
+// too, not only in the UI.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return signedIn() && request.auth.token.email.matches('.*@admin[.]ul[.]edu[.]lb');
+    }
+
+    // true when only the listed fields changed in this write
+    function onlyChanges(fields) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(fields);
+    }
+
+    // users/{id} document that belongs to the signed-in account
+    function isUserDocOwner(userDocId) {
+      return signedIn() &&
+        get(/databases/$(database)/documents/users/$(userDocId)).data.email == request.auth.token.email;
+    }
+
+    match /users/{userId} {
+      allow read: if signedIn();
+      // registration writes the profile while the new account is signed in
+      allow create: if signedIn() && request.resource.data.email == request.auth.token.email;
+      // owner edits own profile, admin edits anyone; counters may be bumped by any signed-in user
+      allow update: if isAdmin()
+        || resource.data.email == request.auth.token.email
+        || onlyChanges(['postCount']);
+      allow delete: if isAdmin();
+    }
+
+    match /groups/{groupId} {
+      allow read: if signedIn();
+      allow create: if signedIn();                 // auto-created at registration
+      allow update: if isAdmin() || onlyChanges(['membersCount', 'postCount']);
+      allow delete: if isAdmin();
+    }
+
+    match /subjects/{subjectId} {
+      allow read: if signedIn();
+      allow create, delete: if isAdmin();
+      allow update: if isAdmin() || onlyChanges(['postCount']);
+    }
+
+    match /posts/{postId} {
+      allow read: if signedIn();
+      allow create: if signedIn();
+      // author or admin can edit/delete; anyone signed in may like / bump the comment counter
+      allow update: if isAdmin()
+        || isUserDocOwner(resource.data.userId)
+        || onlyChanges(['likedBy', 'likes', 'comments']);
+      allow delete: if isAdmin() || isUserDocOwner(resource.data.userId);
+
+      match /replies/{replyId} {
+        allow read: if signedIn();
+        // replies store the author's user number (user_N)
+        allow create: if signedIn() && isUserDocOwner(request.resource.data.userId);
+        // only the author edits (shows "(Edited)"); author or admin deletes
+        allow update: if signedIn() && (isUserDocOwner(resource.data.userId) || resource.data.userId == request.auth.uid);
+        allow delete: if isAdmin() || isUserDocOwner(resource.data.userId) || resource.data.userId == request.auth.uid;
+      }
+    }
+
+    // "See Another Subject" requests
+    match /subjectRequests/{requestId} {
+      allow create: if signedIn();
+      allow read: if signedIn();
+      allow update: if isAdmin();
+      // the student may clear his own request from his page
+      allow delete: if isAdmin() || isUserDocOwner(resource.data.userId);
+    }
+
+    match /notifications/{notificationId} {
+      allow create: if signedIn();
+      allow read: if signedIn();
+      // a user may only flip isRead on his own notifications
+      allow update: if isAdmin() || (isUserDocOwner(resource.data.userId) && onlyChanges(['isRead']));
+      allow delete: if isAdmin() || isUserDocOwner(resource.data.userId);
+    }
+
+    // Monotonic counters that hand out the sequential ids (user_1, group_1,
+    // subject_1, post_1...). A deleted record never frees up its number.
+    match /counters/{counterId} {
+      allow read, write: if signedIn();
+    }
+  }
+}

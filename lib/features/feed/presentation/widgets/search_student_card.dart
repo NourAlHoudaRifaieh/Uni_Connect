@@ -1,11 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:uni_connect/core/models/group_model.dart';
 import 'package:uni_connect/features/auth/data/group_repository.dart';
 import 'package:uni_connect/features/auth/data/user_repository.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/search_post_card.dart';
 
-import '../../../../core/models/group_model.dart';
 import '../../../../core/models/user_model.dart';
 
 class SearchStudentCard extends StatelessWidget {
@@ -110,7 +110,7 @@ class SearchStudentCard extends StatelessWidget {
                             }
                             final details = [
                               if(group.faculty != null && group.faculty!.isNotEmpty) group.faculty!,
-                              if(group.groupName.isNotEmpty) group.groupName,
+                              if(group.groupName.isNotEmpty) group.displayName,
                               if(group.academicYear != null) group.academicYear!,
                             ].join(' - ');
                             return Text(

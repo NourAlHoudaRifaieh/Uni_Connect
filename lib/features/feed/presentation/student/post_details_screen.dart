@@ -1,15 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:uni_connect/core/models/post_model.dart';
+import 'package:uni_connect/core/models/reply_model.dart';
+import 'package:uni_connect/core/models/subject_model.dart';
 import 'package:uni_connect/features/auth/data/post_repository.dart';
 import 'package:uni_connect/features/auth/data/reply_repository.dart';
 import 'package:uni_connect/features/auth/data/subject_repository.dart';
 import 'package:uni_connect/features/auth/data/user_repository.dart';
 import 'package:uni_connect/features/feed/widgets/comment_card.dart';
-import '../../../../core/mock/mock_data.dart';
-import '../../../../core/models/post_model.dart';
-import '../../../../core/models/reply_model.dart';
-import '../../../../core/models/subject_model.dart';
 
 class PostDetailsScreen extends StatefulWidget {
   final PostModel post;
@@ -30,25 +29,8 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
   final SubjectRepository _subjectRepository = SubjectRepository();
   final UserRepository _userRepository = UserRepository();
 
-  // late List<ReplyModel> _replies;
-  // late bool _isLiked;
-  // late int _likeCount;
-
   //Whoever's currently logged in
   String get _currentUserId => FirebaseAuth.instance.currentUser?.uid ?? '';
-
-  // void _toggleLike() async{
-  //   if(widget.post.postId == null || _currentUserId.isEmpty) return;
-  //   await _postRepository.toggleLike(widget.post.postId!, _currentUserId);
-  // }
-  // void _toggleLike() async {
-  //   if (widget.post.postId == null || _currentUserId.isEmpty) return;
-  //
-  //   final currentUser = FirebaseAuth.instance.currentUser;
-  //   final username = currentUser?.displayName ?? currentUser?.email?.split('@').first ?? 'User';
-  //
-  //   await _postRepository.toggleLike(widget.post.postId!, _currentUserId, username);
-  // }
 
   void _toggleLike() async {
     if (widget.post.postId == null || _currentUserId.isEmpty) return;
@@ -56,7 +38,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
     final currentUser = FirebaseAuth.instance.currentUser;
     if(currentUser == null) return;
 
-    final userModel = await _userRepository.getUserById(currentUser.uid);
+    final userModel = await _userRepository.getCurrentUserModel();
     final userName = userModel?.fullName.trim().isNotEmpty == true
       ? userModel!.fullName.trim()
       : (currentUser.displayName != null && currentUser.displayName!.trim().isNotEmpty
@@ -81,103 +63,40 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
     }
     // if(text.isEmpty || widget.post.postId == null) return;
 
-    final currentUser = FirebaseAuth.instance.currentUser;
-    // final authorName = currentUser?.displayName ?? currentUser?.email?.split('@').first ?? 'User';
-    final authorName = (currentUser?.displayName != null && currentUser!.displayName!.isNotEmpty)
-        ? currentUser.displayName!
-        : (currentUser?.email != null ? currentUser!.email!.split('@').first : 'User');
-    final newReply = ReplyModel(
-        replyId: 'reply_${DateTime.now().millisecondsSinceEpoch}',
+    try{
+      final me = await _userRepository.getCurrentUserModel();
+      if(me == null){
+        throw Exception('Your user profile was not found');
+      }
+      var fullName = me.fullName.trim();
+      if(fullName.isEmpty){
+        final email = FirebaseAuth.instance.currentUser?.email ?? '';
+        fullName = email.split('@').first
+          .replaceAll(RegExp(r'[._-]'), ' ')
+          .split(' ')
+          .where((w) => w.isNotEmpty)
+          .map((w) => w[0].toUpperCase() + w.substring(1))
+          .join(' ');
+      }
+      final newReply = ReplyModel(
+        replyId: '',
         postId: widget.post.postId!,
         userId: _currentUserId,
-        authorName: authorName,
+        authorName: fullName,
         content: text,
         createdAt: DateTime.now(),
-    );
-
-    //Save reply to Firestore & increment comment count
-    await _replyRepository.addReply(postId: widget.post.postId!, reply: newReply);
-
-    _commentController.clear();
-    FocusScope.of(context).unfocus();
+      );
+      //Save reply to Firestore & increment comment count
+      await _replyRepository.addReply(postId: widget.post.postId!, reply: newReply);
+    }catch(e){
+      if(mounted){
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not send reply: $e'), backgroundColor: Colors.red),
+        );
+      }
+    }
+    return;
   }
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   // Load initial replies filtered by current postId
-  //   _replies = MockData.replies
-  //       .where((reply) => reply.postId == widget.post.postId)
-  //       .toList();
-  //   //Inilize like state from post widgt
-  //   _isLiked = widget.post.isLikedBy(_currentUserId);
-  //   _likeCount = widget.post.likes;
-  // }
-  //
-  // void _toggleLike(){
-  //   if(widget.post.postId == null || _currentUserId.isEmpty) return;
-  //
-  //   //Update central state first
-  //   MockData.toggleLike(widget.post.postId!, _currentUserId);
-  //
-  //   setState(() {
-  //     _isLiked = !_isLiked;
-  //     if(_isLiked){
-  //       _likeCount++ ;
-  //     }else{
-  //       _likeCount--;
-  //     }
-  //   });
-  // }
-  //
-  // SubjectModel? _getSubject(String? subjectId) {
-  //   if (subjectId == null || subjectId.isEmpty) return null;
-  //   try {
-  //     return MockData.subjects.firstWhere(
-  //           (subject) => subject.subjectId == subjectId,
-  //     );
-  //   } catch (_) {
-  //     return null;
-  //   }
-  // }
-  //
-  // void _addComment() {
-  //   final text = _commentController.text.trim();
-  //   if (text.isEmpty) return;
-  //   // get current logged-in user details
-  //   final currentUser = FirebaseAuth.instance.currentUser;
-  //   final authorName = currentUser?.displayName ?? currentUser?.email?.split('@').first ?? 'User';
-  //
-  //   final newReply = ReplyModel(
-  //     replyId: 'reply_${DateTime.now().millisecondsSinceEpoch}',
-  //     postId: widget.post.postId ?? '',
-  //     authorName: authorName,
-  //     content: text,
-  //     createdAt: DateTime.now(),
-  //     userId: _currentUserId,
-  //   );
-  //   //Save reply to MockData
-  //   MockData.addReply(newReply);
-  //   //Update the post comment counter inside MockData feed list
-  //   if(widget.post.postId != null){
-  //     try{
-  //       final postIndex = MockData.posts.indexWhere((p) => p.postId == widget.post.postId);
-  //       if(postIndex != -1){
-  //         final currentPost = MockData.posts[postIndex];
-  //         MockData.posts[postIndex] = currentPost.copyWith(
-  //           comments: currentPost.comments + 1,
-  //         );
-  //       }
-  //     }catch(_){
-  //
-  //     }
-  //   }
-  //
-  //   setState(() {
-  //     _replies.add(newReply);
-  //     _commentController.clear();
-  //   });
-  // }
 
   @override
   void dispose() {
@@ -196,7 +115,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
       ? currentUserName.trim().split(' ').map((e) => e[0]).take(2).join().toUpperCase()
       : 'U';
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: Color(0xFFF8FAFC),
       body: SafeArea(
         child: Column(
           children: [
@@ -208,7 +127,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                     // Header Container
                     Container(
                       color: Colors.white,
-                      padding: const EdgeInsets.all(20),
+                      padding: EdgeInsets.all(20),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -217,7 +136,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                const Icon(
+                                Icon(
                                   Icons.chevron_left,
                                   color: Color(0xFF2563EB),
                                   size: 20,
@@ -225,14 +144,14 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                 Text(
                                   'Back',
                                   style: GoogleFonts.inter(
-                                    color: const Color(0xFF2563EB),
+                                    color: Color(0xFF2563EB),
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                          const SizedBox(height: 15),
+                          SizedBox(height: 15),
                           StreamBuilder<List<SubjectModel>>(
                             stream: _subjectRepository.watchAllSubjects(),
                             builder: (context, subjectSnapshot){
@@ -250,18 +169,18 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                 children: [
                                   if (post.categoryName != null) ...[
                                     Container(
-                                      padding: const EdgeInsets.symmetric(
+                                      padding:EdgeInsets.symmetric(
                                         horizontal: 10,
                                         vertical: 4,
                                       ),
                                       decoration: BoxDecoration(
-                                        color: const Color(0xFF1D61FF).withOpacity(0.15),
+                                        color: Color(0xFF1D61FF).withOpacity(0.15),
                                         borderRadius: BorderRadius.circular(20),
                                       ),
                                       child: Text(
                                         post.categoryName!,
                                         style: GoogleFonts.inter(
-                                          color: const Color(0xFF1D61FF),
+                                          color: Color(0xFF1D61FF),
                                           fontWeight: FontWeight.bold,
                                           fontSize: 13,
                                         ),
@@ -269,18 +188,18 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
-                                    const SizedBox(width: 8),
+                                    SizedBox(width: 8),
                                   ],
                                   if (subject != null) ...[
                                     Container(
                                       width: 6,
                                       height: 6,
-                                      decoration: const BoxDecoration(
+                                      decoration: BoxDecoration(
                                         color: Color(0xFF1D61FF),
                                         shape: BoxShape.circle,
                                       ),
                                     ),
-                                    const SizedBox(width: 6),
+                                    SizedBox(width: 6),
                                     Flexible(
                                       child: Text(
                                         subject.subjectName,
@@ -298,76 +217,13 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                               );
                             }
                           ),
-                          // Badges Row
-                          // Row(
-                          //   children: [
-                          //     if (post.categoryName != null) ...[
-                          //       Container(
-                          //         padding: const EdgeInsets.symmetric(
-                          //           horizontal: 10,
-                          //           vertical: 4,
-                          //         ),
-                          //         decoration: BoxDecoration(
-                          //           color: const Color(0xFF1D61FF).withOpacity(0.15),
-                          //           borderRadius: BorderRadius.circular(20),
-                          //         ),
-                          //         child: Text(
-                          //           post.categoryName!,
-                          //           style: GoogleFonts.inter(
-                          //             color: const Color(0xFF1D61FF),
-                          //             fontWeight: FontWeight.bold,
-                          //             fontSize: 13,
-                          //           ),
-                          //           maxLines: 1,
-                          //           overflow: TextOverflow.ellipsis,
-                          //         ),
-                          //       ),
-                          //       const SizedBox(width: 8),
-                          //     ],
-                          //     if (subject != null) ...[
-                          //       Container(
-                          //         width: 6,
-                          //         height: 6,
-                          //         decoration: const BoxDecoration(
-                          //           color: Color(0xFF1D61FF),
-                          //           shape: BoxShape.circle,
-                          //         ),
-                          //       ),
-                          //       const SizedBox(width: 6),
-                          //       Flexible(
-                          //         child: Text(
-                          //           subject.subjectName,
-                          //           maxLines: 1,
-                          //           overflow: TextOverflow.ellipsis,
-                          //           style: GoogleFonts.inter(
-                          //             color: Colors.black,
-                          //             fontWeight: FontWeight.bold,
-                          //             fontSize: 13,
-                          //           ),
-                          //         ),
-                          //       ),
-                          //     ],
-                          //   ],
-                          // ),
-                          const SizedBox(height: 15),
-
-                          // Post Title
-                          // Text(
-                          //   post.title,
-                          //   style: GoogleFonts.inter(
-                          //     fontSize: 18,
-                          //     fontWeight: FontWeight.bold,
-                          //     color: const Color(0xFF0F172A),
-                          //   ),
-                          // ),
-                          // const SizedBox(height: 15),
-
+                          SizedBox(height: 15),
                           // Author Info Row
                           Row(
                             children: [
                               CircleAvatar(
                                 radius: 18,
-                                backgroundColor: const Color(0xFF1D61FF),
+                                backgroundColor: Color(0xFF1D61FF),
                                 child: Text(
                                   post.authorInitials,
                                   style: GoogleFonts.inter(
@@ -377,7 +233,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                   ),
                                 ),
                               ),
-                              const SizedBox(width: 10),
+                              SizedBox(width: 10),
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -399,6 +255,15 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                             color: Colors.grey.shade600,
                                           ),
                                         ),
+                                        if(post.isEdited)
+                                          Text(
+                                            ' (Edited)',
+                                            style: GoogleFonts.inter(
+                                              fontSize: 12,
+                                              fontStyle: FontStyle.italic,
+                                              color:Colors.grey.shade500,
+                                            ),
+                                          ),
                                         if (post.subjectCode != null &&
                                             post.subjectCode!.isNotEmpty) ...[
                                           Text(
@@ -430,7 +295,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                     Container(
                       height: 1.5,
                       width: double.infinity,
-                      color: const Color(0xFFF1F5F9),
+                      color: Color(0xFFF1F5F9),
                     ),
                     SizedBox(height: 10),
 
@@ -441,7 +306,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                           : Stream.value(post),
                         builder: (context, postSnapshot){
                           final currentPost = postSnapshot.data ?? post;
-                          final isLiked = currentPost.isLikedBy(_currentUserId);
+                          final isLiked = currentPost.isLikedBy(UserRepository.cachedDocId ?? _currentUserId) || currentPost.isLikedBy(_currentUserId);
                           final likeCount = currentPost.likes;
 
                           return Container(
@@ -638,7 +503,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                             crossAxisAlignment:  CrossAxisAlignment.start,
                             children: [
                               Padding(
-                                padding: const EdgeInsets.symmetric(
+                                padding: EdgeInsets.symmetric(
                                   horizontal: 20,
                                   vertical: 8,
                                 ),
@@ -647,15 +512,15 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                   style: GoogleFonts.inter(
                                     fontSize: 14,
                                     fontWeight: FontWeight.bold,
-                                    color: const Color(0xFF475569),
+                                    color: Color(0xFF475569),
                                   ),
                                 ),
                               ),
                               ListView.separated(
                                 shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
+                                physics: NeverScrollableScrollPhysics(),
                                 itemCount: replies.length,
-                                separatorBuilder: (_, __) => const SizedBox(height: 10),
+                                separatorBuilder: (_, __) => SizedBox(height: 10),
                                 itemBuilder: (context, index) {
                                   return CommentCard(reply: replies[index]);
                                 },
@@ -664,113 +529,17 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                           );
                         },
                     ),
-                    // Padding(
-                    //   padding: const EdgeInsets.symmetric(
-                    //     horizontal: 20,
-                    //     vertical: 8,
-                    //   ),
-                    //   child: Text(
-                    //     'Comments (${_replies.length})',
-                    //     style: GoogleFonts.inter(
-                    //       fontSize: 14,
-                    //       fontWeight: FontWeight.bold,
-                    //       color: const Color(0xFF475569),
-                    //     ),
-                    //   ),
-                    // ),
-
-                    // Comments List
-                    // ListView.separated(
-                    //   shrinkWrap: true,
-                    //   physics: const NeverScrollableScrollPhysics(),
-                    //   itemCount: _replies.length,
-                    //   separatorBuilder: (_, __) => const SizedBox(height: 10),
-                    //   itemBuilder: (context, index) {
-                    //     return CommentCard(reply: _replies[index]);
-                    //   },
-                    // ),
                     SizedBox(height: 20),
                   ],
                 ),
               ),
             ),
-
-            // Fixed Comment Input Bar
-            // Container(
-            //   padding: EdgeInsets.symmetric(
-            //     horizontal: 16,
-            //     vertical: 10,
-            //   ),
-            //   decoration: BoxDecoration(
-            //     color: Colors.white,
-            //     border: Border(
-            //       top: BorderSide(color: Color(0xFFE2E8F0)),
-            //     ),
-            //   ),
-            //   child: Row(
-            //     children: [
-            //       CircleAvatar(
-            //         radius: 16,
-            //         backgroundColor: Color(0xFF1D61FF),
-            //         child: Text(
-            //           currentInitials,
-            //           style: TextStyle(
-            //             color: Colors.white,
-            //             fontWeight: FontWeight.bold,
-            //             fontSize: 12,
-            //           ),
-            //         ),
-            //       ),
-            //       SizedBox(width: 10),
-            //       Expanded(
-            //         child: Container(
-            //           padding: const EdgeInsets.symmetric(horizontal: 14),
-            //           decoration: BoxDecoration(
-            //             color: const Color(0xFFF1F5F9),
-            //             borderRadius: BorderRadius.circular(24),
-            //           ),
-            //           child: Row(
-            //             children: [
-            //               Expanded(
-            //                 child: TextField(
-            //                   controller: _commentController,
-            //                   textInputAction: TextInputAction.send,
-            //                   onSubmitted: (_) => _addComment(),
-            //                   decoration: InputDecoration(
-            //                     hintText: 'Add a comment...',
-            //                     hintStyle: GoogleFonts.inter(
-            //                       fontSize: 13,
-            //                       color: Colors.grey.shade500,
-            //                     ),
-            //                     border: InputBorder.none,
-            //                     isDense: true,
-            //                     contentPadding: const EdgeInsets.symmetric(
-            //                       vertical: 10,
-            //                     ),
-            //                   ),
-            //                 ),
-            //               ),
-            //               GestureDetector(
-            //                 onTap: _addComment,
-            //                 child: const Icon(
-            //                   Icons.send_rounded,
-            //                   size: 18,
-            //                   color: Color(0xFF2563EB),
-            //                 ),
-            //               ),
-            //             ],
-            //           ),
-            //         ),
-            //       ),
-            //     ],
-            //   ),
-            // ),
             Container(
-              padding: const EdgeInsets.symmetric(
+              padding: EdgeInsets.symmetric(
                 horizontal: 16,
                 vertical: 10,
               ),
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border(
                   top: BorderSide(color: Color(0xFFE2E8F0)),
@@ -780,7 +549,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                 children: [
                   CircleAvatar(
                     radius: 16,
-                    backgroundColor: const Color(0xFF1D61FF),
+                    backgroundColor: Color(0xFF1D61FF),
                     child: Text(
                       currentInitials,
                       style: GoogleFonts.inter(
@@ -790,7 +559,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12),
                   Expanded(
                     child: TextField(
                       controller: _commentController,
@@ -802,21 +571,21 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                           borderSide: BorderSide.none,
                         ),
                         filled: true,
-                        fillColor: const Color(0xFFF1F5F9),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        fillColor: Color(0xFFF1F5F9),
+                        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8),
                   GestureDetector(
                     onTap: _addComment,
                     child: Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: const BoxDecoration(
+                      padding: EdgeInsets.all(10),
+                      decoration: BoxDecoration(
                         color: Color(0xFF1D61FF),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.send,
                         color: Colors.white,
                         size: 16,

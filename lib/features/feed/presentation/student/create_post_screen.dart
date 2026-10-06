@@ -1,16 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:uni_connect/core/mock/mock_data.dart';
 import 'package:uni_connect/core/models/post_model.dart';
 import 'package:uni_connect/core/models/subject_model.dart';
+import 'package:uni_connect/core/services/ai_category_service.dart';
 import 'package:uni_connect/core/widgets/custom_elevated_button.dart';
 import 'package:uni_connect/core/widgets/custom_form_field.dart';
 import 'package:uni_connect/features/auth/data/post_repository.dart';
 import 'package:uni_connect/features/auth/data/subject_repository.dart';
 import 'package:uni_connect/features/auth/data/user_repository.dart';
-
-import '../../../../core/models/user_model.dart';
 
 class CreatePostScreen extends StatefulWidget {
   CreatePostScreen({Key? key}) : super(key: key);
@@ -24,12 +22,14 @@ class CreatePostScreen extends StatefulWidget {
 class _CreatePostScreenState extends State<CreatePostScreen> {
 
   final _formKey = GlobalKey<FormState>();
-  TextEditingController _titleController = TextEditingController();
   TextEditingController _descriptionController = TextEditingController();
 
   final PostRepository _postRepository = PostRepository();
   final UserRepository _userRepository = UserRepository();
   final SubjectRepository _subjectRepository = SubjectRepository();
+
+  // Sends the post description to the Python/Gemini backend to get a category
+  final AiCategoryService _aiCategoryService = AiCategoryService();
 
   List<SubjectModel> subjects = [];
   SubjectModel? selectedSubject;
@@ -43,12 +43,17 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
 
   void _loadSubjects() async {
     try{
-      final loadedSubjects = await _subjectRepository.getSubjects();
+      //Only show subjects that belong to the student's own specialy.
+      final userModel = await _userRepository.getCurrentUserModel();
+      final groupId = userModel?.groupId;
+      final allSubjects = await _subjectRepository.getSubjects();
+      final loadedSubjects = (groupId == null || groupId.isEmpty)
+        ? allSubjects
+        : allSubjects.where((s) => s.groupId == groupId).toList();
+      if(mounted) return;
       setState(() {
         subjects = loadedSubjects;
-        if(subjects.isNotEmpty){
-          selectedSubject = subjects.first;
-        }
+        selectedSubject = subjects.isNotEmpty ? subjects.first : null;
       });
     }catch(e){
       if (mounted) {
@@ -59,75 +64,11 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     }
   }
 
-  // Future <void> _publishPost() async {
-  //   if(_formKey.currentState !=null && _formKey.currentState!.validate()){
-  //     if(selectedSubject == null){
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(content: Text('Please select a subject')),
-  //       );
-  //       return;
-  //     }
-  //     final currentUser = FirebaseAuth.instance.currentUser;
-  //     if(currentUser == null ) return;
-  //
-  //     setState(() {
-  //       _isLoading = true;
-  //     });
-  //
-  //     try{
-  //       UserModel? userModel = await _userRepository.getUserById(currentUser.uid);
-  //       String authorName = userModel?.fullName ?? currentUser.displayName ?? 'User';
-  //
-  //       final newPost = PostModel(
-  //         postId: 'post_${DateTime.now().millisecondsSinceEpoch}',
-  //         userId: currentUser.uid,
-  //         title: _titleController.text.trim(),
-  //         description: _descriptionController.text.trim(),
-  //         authorName: authorName,
-  //         subjectCode: selectedSubject?.subjectCode,
-  //         subjectId: selectedSubject?.subjectId,
-  //         categoryName: 'General',
-  //         createdAt: DateTime.now(),
-  //         comments: 0,
-  //         likedBy: [],
-  //       );
-  //
-  //       await _postRepository.createPost(newPost);
-  //       await _userRepository.incrementUserPostCount(currentUser.uid);
-  //
-  //       if(mounted){
-  //         Navigator.pop(context, true);
-  //       }
-  //     }catch(e){
-  //       if(mounted){
-  //         setState(() {
-  //           _isLoading = false;
-  //         });
-  //       }
-  //     }
-  //     // final newPost = PostModel(
-  //     //   postId: 'post_${DateTime.now().millisecondsSinceEpoch}',
-  //     //   title: _titleController.text.trim(),
-  //     //   description: _descriptionController.text.trim(),
-  //     //   authorName: 'Nour Al Houda',
-  //     //   subjectCode: selectedSubject?.subjectCode,
-  //     //   subjectId: selectedSubject?.subjectId,
-  //     //   categoryName: 'General',
-  //     //   createdAt: DateTime.now(),
-  //     //   comments: 0,
-  //     //   likedBy: [],
-  //     // );
-  //
-  //     // MockData.addPost(newPost);
-  //     // Navigator.pop(context,true);
-  //   }
-  // }
-
   Future<void> _publishPost() async {
     if (_formKey.currentState != null && _formKey.currentState!.validate()) {
       if (selectedSubject == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please select a subject')),
+          SnackBar(content: Text('Please select a subject')),
         );
         return;
       }
@@ -140,22 +81,25 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       });
 
       try {
-        String authorName = 'User';
-        if (currentUser.email != null && currentUser.email!.isNotEmpty) {
-          String emailPrefix = currentUser.email!.split('@').first;
-          List<String> parts = emailPrefix.split(RegExp(r'[._-]'));
-          authorName = parts.map((p) => p.isNotEmpty ? '${p[0].toUpperCase()}${p.substring(1)}' : '').join(' ');
-        }
+        final userModel = await _userRepository.getCurrentUserModel();
+        final authorName = (userModel != null && userModel.fullName.isNotEmpty)
+          ? userModel.fullName
+          : _nameFromEmail(currentUser.email);
+        final description =_descriptionController.text.trim();
+
+        //AI categorization: the Python/Gemini backend decides the category from the description
+        final aiResult = await _aiCategoryService.categorizeDetailed(description);
+        final category = aiResult.category;
 
         final newPost = PostModel(
           postId: 'post_${DateTime.now().millisecondsSinceEpoch}',
           userId: currentUser.uid,
           // title: _titleController.text.trim(),
-          description: _descriptionController.text.trim(),
+          description: description,
           authorName: authorName,
           subjectCode: selectedSubject?.subjectCode,
           subjectId: selectedSubject?.subjectId,
-          categoryName: 'General',
+          categoryName: category,
           createdAt: DateTime.now(),
           comments: 0,
           likedBy: [],
@@ -164,6 +108,12 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         await _postRepository.createPost(newPost);
 
         if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(aiResult.label),
+              backgroundColor: aiResult.usedLlm ? Colors.green : Colors.orange,
+            ),
+          );
           Navigator.pop(context, true);
         }
       } catch (e) {
@@ -182,9 +132,20 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     }
   }
 
+  //Turns name@st.ul.edu.lb into name eg: nour.rifaieh@st.ul.edu.lb into "Nour Rifaieh"
+  String _nameFromEmail(String? email){
+    if(email == null || email.isEmpty) return 'User';
+    final prefix = email.split('@').first;
+    return prefix
+      .split(RegExp(r'[._-]'))
+      .where((p) => p.isNotEmpty)
+      .map((p) => '${p[0].toUpperCase()}${p.substring(1)}')
+      .join(' ');
+  }
+
+
   @override
   void dispose() {
-    _titleController.dispose();
     _descriptionController.dispose();
     super.dispose();
   }

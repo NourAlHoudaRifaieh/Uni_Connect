@@ -1,6 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:uni_connect/core/models/reply_model.dart';
+import 'package:uni_connect/features/auth/data/user_repository.dart';
 
 class CommentCard extends StatelessWidget {
 
@@ -15,6 +17,8 @@ class CommentCard extends StatelessWidget {
   Widget build(BuildContext context) {
     // TODO: implement build
 
+    final me = UserRepository.cachedDocId;
+    final isMine = reply.userId.isNotEmpty && (reply.userId == me || reply.userId == FirebaseAuth.instance.currentUser?.uid);
     final authorName = reply.authorName.isNotEmpty ? reply.authorName : 'Anonymous';
 
     return Container(
@@ -56,6 +60,23 @@ class CommentCard extends StatelessWidget {
                       // color: Color(0xFF1D61FF)
                     ),
                   ),
+                  if(reply.authorRole == 'admin')
+                    Container(
+                      margin: EdgeInsets.only(left:6),
+                      padding: EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                      decoration: BoxDecoration(
+                        color:Color(0xFF2563EB).withValues(alpha:0.12),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        'Admin',
+                        style: GoogleFonts.inter(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color:Color(0xFF2563EB),
+                        ),
+                      ),
+                    ),
                 ],
               ),
               Text(
