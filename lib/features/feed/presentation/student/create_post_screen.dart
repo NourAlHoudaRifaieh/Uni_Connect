@@ -50,7 +50,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       final loadedSubjects = (groupId == null || groupId.isEmpty)
         ? allSubjects
         : allSubjects.where((s) => s.groupId == groupId).toList();
-      if(mounted) return;
+      if(!mounted) return;
       setState(() {
         subjects = loadedSubjects;
         selectedSubject = subjects.isNotEmpty ? subjects.first : null;
@@ -58,7 +58,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     }catch(e){
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to publish post: $e')),
+          SnackBar(content: Text('Failed to load subjects: $e')),
         );
       }
     }
@@ -92,13 +92,13 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         final category = aiResult.category;
 
         final newPost = PostModel(
-          postId: 'post_${DateTime.now().millisecondsSinceEpoch}',
+          // postId: 'post_${DateTime.now().millisecondsSinceEpoch}',
           userId: currentUser.uid,
-          // title: _titleController.text.trim(),
           description: description,
           authorName: authorName,
           subjectCode: selectedSubject?.subjectCode,
           subjectId: selectedSubject?.subjectId,
+          groupId: userModel?.groupId ?? selectedSubject?.groupId,
           categoryName: category,
           createdAt: DateTime.now(),
           comments: 0,
@@ -288,7 +288,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                         controller: _descriptionController,
                         validator: (value) => (value == null || value.trim().isEmpty) ? 'Please enter a description' : null,
                       ),
-                      SizedBox(height:20),
+                      SizedBox(height:30),
                       Container(
                         width: double.infinity,
                         padding: const EdgeInsets.all(14),
