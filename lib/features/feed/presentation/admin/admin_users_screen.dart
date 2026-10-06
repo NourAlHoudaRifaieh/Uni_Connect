@@ -44,19 +44,6 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
     super.dispose();
   }
 
-  // List<UserModel> get _filteredStudents {
-  //   final query = _searchController.text.trim().toLowerCase();
-  //   if (query.isEmpty) return students;
-  //   return students.where((student) {
-  //     final matchesName = student.fullName.toLowerCase().contains(query);
-  //     final matchesEmail = student.email.toLowerCase().contains(query);
-  //     final matchesFaculty = student.faculty?.toLowerCase().contains(query) ?? false;
-  //     final matchesMajor = student.major?.toLowerCase().contains(query) ?? false;
-  //
-  //     return matchesName || matchesEmail || matchesFaculty || matchesMajor;
-  //   }).toList();
-  // }
-
   @override
   Widget build(BuildContext context) {
     // TODO: implement build

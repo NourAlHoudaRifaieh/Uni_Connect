@@ -2,12 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:uni_connect/core/models/post_model.dart';
+import 'package:uni_connect/core/widgets/custom_form_field.dart';
+import 'package:uni_connect/features/auth/data/post_repository.dart';
 import 'package:uni_connect/features/feed/presentation/student/post_details_screen.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/category_selector.dart';
-
-import '../../../../core/mock/mock_data.dart';
-import '../../../../core/models/post_model.dart';
-import '../widgets/post_card.dart';
+import 'package:uni_connect/features/feed/presentation/widgets/post_card.dart';
 
 class AdminPostsScreen extends StatefulWidget {
 
@@ -25,6 +25,7 @@ class AdminPostsScreen extends StatefulWidget {
 
 class _AdminPostsScreenState extends State<AdminPostsScreen> {
 
+  final _formKey = GlobalKey<FormState>();
   final TextEditingController _searchController = TextEditingController();
   String selectedCategory = 'All';
 
@@ -43,14 +44,13 @@ class _AdminPostsScreenState extends State<AdminPostsScreen> {
   List<PostModel> _allPosts = [];
   StreamSubscription<List<PostModel>>? _sub;
 
-  List <PostModel> get posts => MockData.posts;
+  List <PostModel> get posts => _allPosts;
   List <PostModel> get _filteredPosts{
     final query = _searchController.text.trim().toLowerCase();
 
     return posts.where((post){
       final matchesCategory = selectedCategory == 'All' || post.categoryName?.trim().toLowerCase() == selectedCategory.trim().toLowerCase();
       final matchesSearch = query.isEmpty ||
-          // post.title.toLowerCase().contains(query) ||
           post.description.toLowerCase().contains(query) ||
           (post.subjectCode?.toLowerCase().contains(query) ?? false)||
           (post.categoryName?.toLowerCase().contains(query) ?? false)||
@@ -62,6 +62,13 @@ class _AdminPostsScreenState extends State<AdminPostsScreen> {
   @override
   void initState() {
     super.initState();
+    _sub = PostRepository().watchAllPosts().listen((data){
+      if(mounted){
+        setState(() {
+          _allPosts = data;
+        });
+      }
+    });
     _searchController.addListener((){
       setState(() {
 
@@ -71,6 +78,7 @@ class _AdminPostsScreenState extends State<AdminPostsScreen> {
 
   @override
   void dispose() {
+    _sub?.cancel();
     _searchController.dispose();
     super.dispose();
   }
@@ -134,18 +142,48 @@ class _AdminPostsScreenState extends State<AdminPostsScreen> {
                 ),
               ),
             ],
-            Padding(
-              padding: EdgeInsets.fromLTRB(20, 12, 20, 4),
-              child: TextField(
-                controller: _searchController,
-                decoration: InputDecoration(
-                  hintText: 'Search all posts...',
-                  prefixIcon: Icon(Icons.search),
-                  contentPadding: EdgeInsets.symmetric(vertical: 0),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+            Container(
+              padding: EdgeInsets.fromLTRB(20, 5, 20, 10),
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: Color(0xFFF1F5F9),
+                    width:1.5,
+                  ),
+                ),
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.03),
+                    blurRadius: 10,
+                    offset:Offset(0,8),
+                  ),
+                ],
+              ),
+              child: Form(
+                key: _formKey,
+                child: CustomFormField(
+                  hint: 'Search all posts...' ,
+                  controller: _searchController,
+                  prefixIcon: Icon(Icons.search,
+                      color: Color(0xFFB5B5C3)
+                  ),
+                  validator: (value) => value!.isEmpty ? 'Cannot be empty' : null,
                 ),
               ),
             ),
+            // Padding(
+            //   padding: EdgeInsets.fromLTRB(20, 12, 20, 4),
+            //   child: TextField(
+            //     controller: _searchController,
+            //     decoration: InputDecoration(
+            //       hintText: 'Search all posts...',
+            //       prefixIcon: Icon(Icons.search),
+            //       contentPadding: EdgeInsets.symmetric(vertical: 0),
+            //       border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+            //     ),
+            //   ),
+            // ),
             CategorySelector(
               categories: categories,
               selectedCategory: selectedCategory,
@@ -186,7 +224,7 @@ class _AdminPostsScreenState extends State<AdminPostsScreen> {
                   ),
                   )
                 : ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  padding: EdgeInsets.symmetric(horizontal: 20),
                   itemCount: displayedPosts.length + (hasMore ? 1 :0),
                   itemBuilder: (context, index) {
                     if(index == displayedPosts.length){
@@ -202,11 +240,6 @@ class _AdminPostsScreenState extends State<AdminPostsScreen> {
                     final post = displayedPosts[index];
                     return PostCard(
                       post: post,
-                      // onTap: () {
-                      //   setState(() {
-                      //   });
-                      //   // will open post detail screen later
-                      // },
                       onTap: () async{
                         await Navigator.push(
                             context,
@@ -217,11 +250,6 @@ class _AdminPostsScreenState extends State<AdminPostsScreen> {
 
                           });
                         }
-                      },
-                      onLikeTap: (){
-                        setState(() {
-
-                        });
                       },
                       onCommentTap: (){},
                     );
