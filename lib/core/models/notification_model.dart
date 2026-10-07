@@ -63,8 +63,8 @@ class NotificationModel {
         notificationId: id,
         content: data['content'] ?? '',
         isRead: data['isRead'] ?? false,
-        userId: data['userId'] ?? 'false',
-        senderName: data['senderName'] ?? 'false',
+        userId: data['userId'] ?? '',
+        senderName: data['senderName'] ?? '',
         type: data['type'] ?? 'general',
         createdAt: data['createdAt'] is Timestamp
           ? (data['createdAt'] as Timestamp).toDate()

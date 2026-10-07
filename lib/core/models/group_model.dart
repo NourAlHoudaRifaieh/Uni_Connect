@@ -20,7 +20,7 @@ class GroupModel{
     this.postCount=0,
   });
 
-  String get displayName {
+  String get baseName {
     var base = groupName.trim();
     final trailingYear = RegExp(r'\s*[-\u2013(]*\s*year\s*\d+\s*\)?\s*$', caseSensitive: false);
     while (base.isNotEmpty && trailingYear.hasMatch(base)) {
@@ -28,10 +28,14 @@ class GroupModel{
       if (next.isEmpty) break;
       base = next;
     }
+    return base;
+  }
+
+  String get displayName {
+    var base = groupName.trim();
     final y = (academicYear ?? '').trim();
     if (y.isEmpty) return base;
-    final alreadyOnlyYear = base.toLowerCase() == y.toLowerCase();
-    return alreadyOnlyYear ? base : '$base - $y';
+    return base.toLowerCase() == y.toLowerCase() ? base : '$base - $y';
   }
 
   // Add copyWith to duplicate existing instances with updated fields

@@ -1,10 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:uni_connect/core/models/post_model.dart';
 import 'package:uni_connect/core/utils/sequential_id_service.dart';
 import 'package:uni_connect/features/auth/data/subject_repository.dart';
 import 'package:uni_connect/features/auth/data/user_repository.dart';
-
-import '../../../core/models/post_model.dart';
 
 class PostRepository {
   final _firestore = FirebaseFirestore.instance;

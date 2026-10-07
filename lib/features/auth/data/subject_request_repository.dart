@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:uni_connect/core/models/subject_model.dart';
+import 'package:uni_connect/core/models/user_model.dart';
 import 'package:uni_connect/features/auth/data/group_repository.dart';
 import 'package:uni_connect/features/auth/data/notification_repository.dart';
-import '../../../core/models/subject_model.dart';
-import '../../../core/models/user_model.dart';
 
 /// Year helpers shared by the request flow and the validations.
 int? yearNumber(String? year) {
@@ -59,7 +59,13 @@ class SubjectRequestRepository {
     final subjectGroup = subject.groupId.isNotEmpty
       ? await GroupRepository().getGroupById(subject.groupId)
       : null;
-    
+
+    //Business Administration , Economic Science subjects are never mixed
+    final subDept = subjectGroup?.department;
+    if(user.department != null && subDept != null && user.department != subDept){
+      return '${user.department} students cannot request $subDept subjects.';
+    }
+
     final userGroup = (user.groupId != null && user.groupId!.isNotEmpty)
       ? await GroupRepository().getGroupById(user.groupId!)
       : null;
@@ -90,9 +96,24 @@ class SubjectRequestRepository {
           type: 'subject_request',
         );
       }
-    }catch(_){
-      return null;
+    }catch(_){}
+    return null;
+  }
+
+  Future<void> clear(String requestId) async {
+    await _firestore.collection('subjectRequests').doc(requestId).delete();
+  }
+
+  Future<void> clearDecided(String userId) async {
+    final snap = await _firestore
+        .collection('subjectRequests')
+        .where('userId', isEqualTo: userId)
+        .get();
+    final batch = _firestore.batch();
+    for (final d in snap.docs) {
+      if (d.data()['status'] != 'pending') batch.delete(d.reference);
     }
+    await batch.commit();
   }
 
   Stream<List<Map<String, dynamic>>> watchPending() {

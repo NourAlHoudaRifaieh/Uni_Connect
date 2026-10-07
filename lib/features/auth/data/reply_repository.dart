@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:uni_connect/core/models/reply_model.dart';
+import 'package:uni_connect/core/utils/sequential_id_service.dart';
 
-import '../../../core/models/reply_model.dart';
-import '../../../core/utils/sequential_id_service.dart';
 
 class ReplyRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -29,12 +29,19 @@ class ReplyRepository {
     final batch = _firestore.batch();
 
     //Add reply document to sub-collection
-    batch.set(replyRef, {...reply.toJson(), 'replyId': replyId});
-    //increment comment count on the post parent document
-    batch.update(postRef,{
-      'comments': FieldValue.increment(1),
-    });
-    await batch.commit();
+    //role of the author so admin replies can show an admin badge
+    String role = 'student';
+    try{
+      final u = await _firestore.collection('users').doc(reply.userId).get();
+      role = (u.data()?['role'] ?? 'student').toString();
+    }catch(_){
+      batch.set(replyRef, {...reply.toJson(), 'replyId': replyId, 'authorRole': role});
+      batch.update(postRef,{
+        'comments': FieldValue.increment(1),
+      });
+      await batch.commit();
+    }
+
   }
 
   //Delete a reply & decrement the post's comment count

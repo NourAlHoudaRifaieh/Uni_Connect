@@ -7,6 +7,7 @@ import 'package:uni_connect/core/utils/sequential_id_service.dart';
 class SubjectRepository {
   final _firestore = FirebaseFirestore.instance;
   final SequentialIdService _ids = SequentialIdService();
+
   String _generateSubjectId(String subjectName) {
     String cleanName = subjectName.trim().replaceAll(' ', '').toUpperCase();
     String prefix = cleanName.length >= 3 ? cleanName.substring(0, 3) : cleanName.padRight(3, 'X');
