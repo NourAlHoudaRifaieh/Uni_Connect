@@ -202,45 +202,45 @@ class SubjectScreen extends StatelessWidget {
                                         ),
 
                                         SizedBox(height:20),
-                                        Container(
-                                          width: double.infinity,
-                                          padding: const EdgeInsets.all(14),
-                                          decoration: BoxDecoration(
-                                            color:  Color(0xFFEFF6FF),
-                                            borderRadius: BorderRadius.circular(20),
-                                            border: Border.all(
-                                              color: Color(0xFF2563EB),
-                                              width:1,
-                                            ),
-                                          ),
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  Icon(Icons.apartment, color: Color(0xFF2563EB),size:20),
-                                                  SizedBox(width:10),
-                                                  Text(
-                                                    'Academic Group',
-                                                    style: GoogleFonts.inter(
-                                                      color: Color(0xFF2563EB),
-                                                      fontWeight: FontWeight.bold,
-                                                      fontSize: 14,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              Text(
-                                                '$faculty, $academicYear',
-                                                style: GoogleFonts.inter(
-                                                  color: Color(0xFF2563EB),
-                                                  fontSize: 13,
-                                                  fontWeight: FontWeight.w500,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
+                                        // Container(
+                                        //   width: double.infinity,
+                                        //   padding: const EdgeInsets.all(14),
+                                        //   decoration: BoxDecoration(
+                                        //     color:  Color(0xFFEFF6FF),
+                                        //     borderRadius: BorderRadius.circular(20),
+                                        //     border: Border.all(
+                                        //       color: Color(0xFF2563EB),
+                                        //       width:1,
+                                        //     ),
+                                        //   ),
+                                        //   child: Column(
+                                        //     crossAxisAlignment: CrossAxisAlignment.start,
+                                        //     children: [
+                                        //       Row(
+                                        //         children: [
+                                        //           Icon(Icons.apartment, color: Color(0xFF2563EB),size:20),
+                                        //           SizedBox(width:10),
+                                        //           Text(
+                                        //             'Academic Group',
+                                        //             style: GoogleFonts.inter(
+                                        //               color: Color(0xFF2563EB),
+                                        //               fontWeight: FontWeight.bold,
+                                        //               fontSize: 14,
+                                        //             ),
+                                        //           ),
+                                        //         ],
+                                        //       ),
+                                        //       Text(
+                                        //         '$faculty, $academicYear',
+                                        //         style: GoogleFonts.inter(
+                                        //           color: Color(0xFF2563EB),
+                                        //           fontSize: 13,
+                                        //           fontWeight: FontWeight.w500,
+                                        //         ),
+                                        //       ),
+                                        //     ],
+                                        //   ),
+                                        // ),
                                   ],
                                 ),
                               ),

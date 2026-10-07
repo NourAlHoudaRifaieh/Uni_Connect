@@ -71,15 +71,14 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
 
   @override
   void dispose() {
-    // _groupNameController.dispose();
     super.dispose();
   }
 
   void _onCreateGroup() async{
     if(_formKey.currentState !=null && _formKey.currentState!.validate()){
-      if(selectedYear == null){
+      if(selectedYear == null || selectedOption == null){
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Please select an academic year')),
+          SnackBar(content: Text('Please select both an academic year and a group/major')),
         );
         return;
       }
@@ -291,6 +290,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                                       onChanged: (v) => setState(() {
                                           selectedOption = v;
                                         }),
+                                      validator: (v) => v == null ? 'Please select a group or major' : null,
                                       decoration: InputDecoration(
                                         border: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(15)

@@ -54,7 +54,7 @@ class _CreateSubjectScreenState extends State<CreateSubjectScreen> {
   }
 
   Future <void> _onCreateSubject(List <GroupModel> yearGroups) async{
-    if(_formKey.currentState !=null || !_formKey.currentState!.validate()) return;
+    if(_formKey.currentState == null || !_formKey.currentState!.validate()) return;
       if(selectedYear == null){
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Please select an academic year')),
@@ -75,6 +75,7 @@ class _CreateSubjectScreenState extends State<CreateSubjectScreen> {
             'Please select at least one specialization'
           ))
         );
+        return;
       }
 
       setState(() {
@@ -335,7 +336,7 @@ class _CreateSubjectScreenState extends State<CreateSubjectScreen> {
                 children: [
                   SizedBox(height:20),
                   CustomElevatedButton(
-                    text: 'Create Subject',
+                    text: isLoading ? 'Creating...' : 'Create Subject',
                     onPressed:(){
                       _onCreateSubject(_latestYearGroups);
                     },
