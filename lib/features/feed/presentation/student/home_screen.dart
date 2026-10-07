@@ -84,7 +84,6 @@ class _HomeScreenState extends State <HomeScreen>{
 
   @override
   Widget build(BuildContext context){
-    // final displayedPosts = _filteredPosts;
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -109,7 +108,6 @@ class _HomeScreenState extends State <HomeScreen>{
                 children: [
                   // for top header
                   Padding(
-                    // padding: EdgeInsets.fromLTRB(20,40,20,10),
                     padding: EdgeInsets.all(20),
                     child: Column(
                       children: [
@@ -124,7 +122,6 @@ class _HomeScreenState extends State <HomeScreen>{
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text('UniConnect', style: GoogleFonts.inter(fontSize:25, fontWeight: FontWeight.bold)),
-                                      // Text(departmentText, style: GoogleFonts.inter(fontSize:15, color: Colors.grey)),
                                       SizedBox(height:2),
                                       if (userModel?.groupId != null && userModel!.groupId!.isNotEmpty)
                                         FutureBuilder(
@@ -154,51 +151,7 @@ class _HomeScreenState extends State <HomeScreen>{
                                   );
                                 },
                               ),
-                              // child: Column(
-                              //   crossAxisAlignment: CrossAxisAlignment.start,
-                              //   children: [
-                              //     Text('UniConnect', style: GoogleFonts.inter(fontSize:25, fontWeight: FontWeight.bold)),
-                              //     Text('Business Administration, Master 2', style: GoogleFonts.inter(fontSize:15, color: Colors.grey)),
-                              //   ],
-                              // ),
                             ),
-                            //Notification Bell
-                            // GestureDetector(
-                            //   onTap: (){
-                            //     Navigator.push(
-                            //       context,
-                            //       MaterialPageRoute(builder: (context)=> NotificationScreen()),
-                            //     );
-                            //   },
-                            //   child: Stack(
-                            //     clipBehavior: Clip.none,
-                            //     children: [
-                            //       Container(
-                            //         width:40,
-                            //         height:40,
-                            //         decoration:BoxDecoration(
-                            //           color: Color(0xFFF3F4F6),
-                            //           borderRadius: BorderRadius.circular(20),
-                            //           border: Border.all( color: Color(0xFFF3F4F6)),
-                            //         ),
-                            //         child: Icon(Icons.notifications_none, color: Colors.black54, size:25),
-                            //       ),
-                            //       Positioned(
-                            //         top:-8,
-                            //         right: -4,
-                            //         child: Container(
-                            //             padding: EdgeInsets.all(4),
-                            //             decoration: BoxDecoration(
-                            //                 color: Colors.red,
-                            //                 shape: BoxShape.circle
-                            //             ),
-                            //             child: Text('3', style:GoogleFonts.inter(color:Colors.white, fontSize:15))
-                            //         ),
-                            //       ),
-                            //     ],
-                            //   ),
-                            // ),
-
                             SizedBox(width:10),
                             //User Avatar
                             GestureDetector(
@@ -286,9 +239,6 @@ class _HomeScreenState extends State <HomeScreen>{
                           final post = displayedPosts[index];
                           return PostCard(
                             post: post,
-                            // onTap: () {
-                            //   // will open post detail screen later
-                            // },
                             onTap: () async{
                               await Navigator.push(
                                   context,
@@ -296,7 +246,6 @@ class _HomeScreenState extends State <HomeScreen>{
                               );
                               if(mounted){
                                 setState(() {
-
                                 });
                               }
                             },

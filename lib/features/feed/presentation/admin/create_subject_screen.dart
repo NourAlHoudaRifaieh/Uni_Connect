@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:uni_connect/core/models/group_model.dart';
 import 'package:uni_connect/core/models/subject_model.dart';
+import 'package:uni_connect/core/widgets/custom_elevated_button.dart';
 import 'package:uni_connect/core/widgets/custom_form_field.dart';
 import 'package:uni_connect/features/auth/data/group_repository.dart';
 import 'package:uni_connect/features/auth/data/subject_repository.dart';
-import '../../../../core/mock/mock_data.dart';
-import '../../../../core/models/group_model.dart';
-import '../../../../core/widgets/custom_elevated_button.dart';
 
 const List<String> kAcademicYears = [
   'Year 1',
@@ -38,8 +37,6 @@ class _CreateSubjectScreenState extends State<CreateSubjectScreen> {
   final SubjectRepository _subjectRepository = SubjectRepository();
   final GroupRepository _groupRepository = GroupRepository();
 
-  // String? selectedGroupId;
-  // GroupModel? selectedGroup;
   String? selectedYear;
   final Set<String> selectedGroupIds = {};
   List<GroupModel> _latestYearGroups = [];
@@ -53,35 +50,11 @@ class _CreateSubjectScreenState extends State<CreateSubjectScreen> {
   @override
   void dispose() {
     _subjectNameController.dispose();
-    // _subjectCodeController.dispose();
     super.dispose();
   }
 
-  // List<String> get _availableAcademicYears {
-  //   if (selectedGroup == null) return kAcademicYears;
-  //   final name = selectedGroup!.groupName.toLowerCase();
-  //
-  //   if (name.contains('general preparation')) {
-  //     return ['Year 1'];
-  //   } else if (name.contains('economic science')) {
-  //     return ['Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5'];
-  //   } else {
-  //     return ['Year 2', 'Year 3', 'Year 4', 'Year 5'];
-  //   }
-  // }
-
   Future <void> _onCreateSubject(List <GroupModel> yearGroups) async{
-    // final currentGroupId = selectedGroupId;
-    if(_formKey.currentState !=null && _formKey.currentState!.validate()){
-      // if(currentGroupId == null){
-      //   ScaffoldMessenger.of(context).showSnackBar(
-      //     SnackBar(content: Text('Please select a group')),
-      //   );
-      //   return;
-      // }
-      // setState(() {
-      //   isLoading= true;
-      // });
+    if(_formKey.currentState !=null || !_formKey.currentState!.validate()) return;
       if(selectedYear == null){
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Please select an academic year')),
@@ -110,10 +83,8 @@ class _CreateSubjectScreenState extends State<CreateSubjectScreen> {
 
       try{
         final newSubject = SubjectModel(
-          // subjectId: 'sub_${DateTime.now().millisecondsSinceEpoch}',
           subjectId: '',
-          // subjectCode: _subjectCodeController.text.trim(),
-            subjectCode: '',
+          subjectCode: '',
           subjectName: _subjectNameController.text.trim(),
           academicYear: selectedYear,
           groupId: ids.first,
@@ -122,9 +93,12 @@ class _CreateSubjectScreenState extends State<CreateSubjectScreen> {
         );
         final dup = await _subjectRepository.duplicateError(newSubject);
         if(dup != null){
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(dup), backgroundColor: Colors.red,)
-          );
+          if(mounted){
+            ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(dup), backgroundColor: Colors.red,)
+            );
+          }
+          return;
         }
 
         await _subjectRepository.createSubject(newSubject);
@@ -144,7 +118,7 @@ class _CreateSubjectScreenState extends State<CreateSubjectScreen> {
           });
         }
       }
-    }
+
   }
 
 
@@ -196,74 +170,6 @@ class _CreateSubjectScreenState extends State<CreateSubjectScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      // Text(
-                      //   'Select Group / Major',
-                      //   style: GoogleFonts.inter(
-                      //     fontSize: 16,
-                      //     fontWeight: FontWeight.w600,
-                      //     color: const Color(0xFF2F3A4A),
-                      //   ),
-                      // ),
-                      // SizedBox(height:5),
-                      // StreamBuilder<List<GroupModel>>(
-                      //   stream: _groupRepository.watchAllGroups(),
-                      //   builder: (context, snapshot) {
-                      //     if (snapshot.connectionState == ConnectionState.waiting) {
-                      //       return Center(child: CircularProgressIndicator());
-                      //     }
-                      //     final groups = snapshot.data ?? [];
-                      //     return DropdownButtonFormField<String>(
-                      //       value: selectedGroupId,
-                      //       hint: Text('Select group'),
-                      //       isExpanded: true,
-                      //       items: groups.map((group) {
-                      //         return DropdownMenuItem<String>(
-                      //           value: group.groupId,
-                      //           // child: Text('${group.groupName} (${group.academicYear ?? ""}) - ${group.membersCount ?? 0} members'),
-                      //           // child: Text('${group.groupName}'),
-                      //           child: Text('${group.groupName} (${group.academicYear ?? ""})'),
-                      //         );
-                      //       }).toList(),
-                      //       onChanged: (value) {
-                      //         setState(() {
-                      //           selectedGroupId = value;
-                      //           selectedGroup = groups.firstWhere(
-                      //                 (g) => g.groupId == value,
-                      //             orElse: () => GroupModel(groupName: ''),
-                      //           );
-                      //           final name = selectedGroup?.groupName.toLowerCase() ?? '';
-                      //           if (name.contains('general preparation')) {
-                      //             selectedYear = 'Year 1';
-                      //           } else if (_availableAcademicYears.length == 1) {
-                      //             selectedYear = _availableAcademicYears.first;
-                      //           } else if (selectedYear != null && !_availableAcademicYears.contains(selectedYear)) {
-                      //             selectedYear = null;
-                      //           }
-                      //         });
-                      //       },
-                      //       decoration: InputDecoration(
-                      //         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                      //         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                      //       ),
-                      //     );
-                      //   },
-                      // ),
-                      // const SizedBox(height: 20),
-                      // CustomFormField(
-                      //   label: 'Subject Name',
-                      //   hint: 'eg: Database Systems',
-                      //   controller: _subjectNameController,
-                      //   validator: (value) => (value == null || value.trim().isEmpty) ? 'Please enter a subject name' : null,
-                      // ),
-                      // SizedBox(height:20),
-                      // // CustomFormField(
-                      // //   label: 'Subject Code',
-                      // //   hint: 'eg: DB602',
-                      // //   controller: _subjectCodeController,
-                      // //   validator: (value) => (value == null || value.trim().isEmpty) ? 'Please enter a subject code' : null,
-                      // // ),
-                      // // SizedBox(height:20),
-                      // const SizedBox(height: 10),
                       Text(
                         'Academic Year',
                         style: GoogleFonts.inter(
@@ -286,7 +192,6 @@ class _CreateSubjectScreenState extends State<CreateSubjectScreen> {
                               });
                             },
                             child: Container(
-                              // width: (MediaQuery.of(context).size.width - 24 * 2 - 10) / 2,
                               width: (MediaQuery.of(context).size.width - 40 - 15) / 2,
                               padding: const EdgeInsets.symmetric(vertical: 14),
                               alignment: Alignment.center,

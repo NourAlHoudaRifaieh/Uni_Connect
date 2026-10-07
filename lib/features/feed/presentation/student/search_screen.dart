@@ -5,8 +5,10 @@ import 'package:uni_connect/core/models/post_model.dart';
 import 'package:uni_connect/core/models/user_model.dart';
 import 'package:uni_connect/core/widgets/custom_elevated_button.dart';
 import 'package:uni_connect/core/widgets/custom_form_field.dart';
+import 'package:uni_connect/features/auth/data/feed_access.dart';
 import 'package:uni_connect/features/auth/data/group_repository.dart';
 import 'package:uni_connect/features/auth/data/post_repository.dart';
+import 'package:uni_connect/features/auth/data/subject_repository.dart';
 import 'package:uni_connect/features/auth/data/user_repository.dart';
 import 'package:uni_connect/features/feed/presentation/student/post_details_screen.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/search_post_card.dart';
@@ -68,7 +70,6 @@ class SearchScreenState extends State<SearchScreen>{
     if (query.isEmpty) return posts;
     
     return posts.where((post){
-      // final matchesTitle = post.title.toLowerCase().contains(query);
       final matchesDescription = post.description.toLowerCase().contains(query);
       final matchesSubject = post.subjectCode?.toLowerCase().contains(query) ?? false;
       final matchesCategory = post.categoryName?.toLowerCase().contains(query) ?? false;
@@ -95,27 +96,33 @@ class SearchScreenState extends State<SearchScreen>{
       final matchesFaculty = faculty.contains(query);
       final matchesMajor = major.contains(query);
 
-      // return matchesName || matchesEmail || matchesFaculty || matchesMajor;
       return matchesName || matchesEmail || matchesFaculty || matchesMajor;
     }).toList();
   }
 
   Stream<List<PostModel>> _postsInMySpecialty() {
+    final subjectRepo = SubjectRepository();
     return _userRepository.watchCurrentUser().asyncExpand((user) {
-      final groupId = user?.groupId;
-      return _postRepository.watchAllPosts().map((posts) {
-        if (groupId == null || groupId.isEmpty) return posts;
-        return posts.where((p) => p.groupId == groupId).toList();
+      return subjectRepo.watchAllSubjects().asyncExpand((subjects){
+        return _postRepository.watchAllPosts().map((posts){
+          if(user == null || user.role == 'admin') return posts;
+          final mine = FeedAccess.subjectIdsFor(user, subjects);
+          return posts.where((p) => FeedAccess.canSee(p, user, mine)).toList();
+        });
       });
     });
   }
 
   Stream<List<UserModel>> _studentsInMySpecialty() {
-    return _userRepository.watchCurrentUser().asyncExpand((user) {
-      final groupId = user?.groupId;
-      return _userRepository.watchAllUsers().map((students) {
-        if (groupId == null || groupId.isEmpty) return students;
-        return students.where((s) => s.groupId == groupId).toList();
+    final subjectRepo = SubjectRepository();
+    return _userRepository.watchCurrentUser().asyncExpand((me) {
+      return subjectRepo.watchAllSubjects().asyncExpand((subjects) {
+        return _userRepository.watchAllUsers().map((users) {
+          if (me == null || me.role == 'admin') return users;
+          final mine = FeedAccess.subjectIdsFor(me, subjects);
+          return users.where((u) =>
+          u.userId == me.userId || FeedAccess.sharesSpace(me, u, mine, subjects)).toList();
+        });
       });
     });
   }

@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:uni_connect/core/models/post_model.dart';
+import 'package:uni_connect/core/models/subject_model.dart';
 import 'package:uni_connect/features/auth/data/post_repository.dart';
 import 'package:uni_connect/features/feed/presentation/student/post_details_screen.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/category_selector.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/post_card.dart';
-import '../../../../core/mock/mock_data.dart';
-import '../../../../core/models/post_model.dart';
-import '../../../../core/models/subject_model.dart';
 
 class SubjectDetailsScreen extends StatefulWidget {
 
@@ -22,7 +21,6 @@ class SubjectDetailsScreen extends StatefulWidget {
 }
 
 class _SubjectDetailsScreenState extends State<SubjectDetailsScreen> {
-  // List <String> categories = ['All','Exams','General help', 'Programming', 'Assignments', 'Math','Physics'];
   final PostRepository _postRepository = PostRepository();
   String selectedCategory = 'All';
 
@@ -43,36 +41,22 @@ class _SubjectDetailsScreenState extends State<SubjectDetailsScreen> {
       if(_matchesSubject(post) && post.categoryName != null && post.categoryName!.trim().isNotEmpty){
         categorySet.add(post.categoryName!.trim());
       }
-      // final matchesSubject = post.subjectCode?.trim().toLowerCase() == widget.subject.subjectCode.trim().toLowerCase()
-      //     || post.subjectId?.trim().toLowerCase() == widget.subject.subjectId!.trim().toLowerCase(); ;
-      // // final matchesSubject = post.subjectCode?.trim().toLowerCase() == widget.subject.subjectCode.trim().toLowerCase();
-      // if(matchesSubject && post.categoryName !=null && post.categoryName!.trim().isNotEmpty){
-      //   categorySet.add(post.categoryName!.trim());
-      // }
     }
     return categorySet.toList();
   }
 
-  // List <PostModel> get posts => MockData.posts;
   List <PostModel> _getFilteredPosts(List<PostModel> posts){
     return posts.where((post){
       final matchesSubject = _matchesSubject(post);
       final matchesCategory = selectedCategory == 'All' ||
         post.categoryName?.trim().toLowerCase() == selectedCategory.trim().toLowerCase();
       return matchesSubject && matchesCategory;
-      // final matchesSubject = post.subjectCode?.trim().toLowerCase() ==
-      //     widget.subject.subjectCode.trim().toLowerCase() ||
-      //     post.subjectId?.trim().toLowerCase() == widget.subject.subjectId!.trim().toLowerCase();
-      // // final matchesSubject = post.subjectCode?.trim().toLowerCase() == widget.subject.subjectCode.trim().toLowerCase();
-      // final matchesCategory = selectedCategory == 'All' || post.categoryName?.trim().toLowerCase() == selectedCategory.trim().toLowerCase();
-      // return matchesSubject && matchesCategory ;
     }).toList();
   }
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    // final displayedPosts = _filteredPosts;
     return Scaffold(
       backgroundColor: Colors.white,
       body:SafeArea(
@@ -158,7 +142,7 @@ class _SubjectDetailsScreenState extends State<SubjectDetailsScreen> {
                   Expanded(
                     child: displayedPosts.isEmpty
                         ? Center(
-                      child: Column(
+                          child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Container(
@@ -181,30 +165,30 @@ class _SubjectDetailsScreenState extends State<SubjectDetailsScreen> {
                           ),
                         ],
                       ),
-                    )
+                          )
                         : ListView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      itemCount: displayedPosts.length,
-                      itemBuilder: (context, index) {
-                        final post = displayedPosts[index];
-                        return PostCard(
-                          post: post,
-                          onTap: () async{
-                            await Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => PostDetailsScreen(post: post))
-                            );
-                            if(mounted){
-                              setState(() {
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          itemCount: displayedPosts.length,
+                          itemBuilder: (context, index) {
+                            final post = displayedPosts[index];
+                            return PostCard(
+                              post: post,
+                              onTap: () async{
+                                await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => PostDetailsScreen(post: post))
+                                );
+                                if(mounted){
+                                  setState(() {
 
-                              });
-                            }
-                            // will open post detail screen later
+                                  });
+                                }
+                                // will open post detail screen later
+                              },
+                              onLikeTap: (){},
+                              onCommentTap: (){},
+                            );
                           },
-                          onLikeTap: (){},
-                          onCommentTap: (){},
-                        );
-                      },
                     ),
                   ),
                 ],

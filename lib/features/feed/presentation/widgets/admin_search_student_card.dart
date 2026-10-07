@@ -77,59 +77,60 @@ class AdminSearchStudentCard extends StatelessWidget {
                       overflow:  TextOverflow.ellipsis,
                     ),
                     SizedBox(height:2),
-                    user.groupId != null && user.groupId!.isNotEmpty
-                      ? FutureBuilder<GroupModel?>(
-                          future: _groupRepository.getGroupById(user.groupId!),
-                          builder: (context, snapshot){
-                            if (snapshot.connectionState == ConnectionState.waiting) {
-                              return Text(
-                                'Loading group...',
-                                style: GoogleFonts.inter(
-                                  fontSize: 12,
-                                  color: Colors.grey.shade400,
-                                  fontStyle: FontStyle.italic,
-                                ),
-                              );
-                            }
-                            final group = snapshot.data;
-                            if(group == null){
-                              return Text(
-                                'Group not found',
-                                style: GoogleFonts.inter(
-                                  fontSize: 12,
-                                  color: Colors.red.shade400,
-                                ),
-                              );
-                            }
-                            final details = [
-                              if(group.faculty != null && group.faculty!.isNotEmpty) group.faculty!,
-                              if(group.groupName.isNotEmpty) group.groupName,
-                              if(group.academicYear != null) group.academicYear!,
-                            ].join(' - ');
-                            return Text(
-                              details.isNotEmpty ? details : 'No details provided',
-                              style: GoogleFonts.inter(
-                                fontSize: 12,
-                                color: Colors.grey.shade600,
-                              ),
-                            );
-                          }
+                    user.role == 'admin'
+                      ? Text(
+                          'Admin',
+                          style: GoogleFonts.inter(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                            color: Color(0xFF2563EB),
+                          )
                         )
-                      : Text(
-                        'No group assigned',
-                        style: GoogleFonts.inter(
-                          fontSize: 12,
-                          color: Colors.grey.shade500,
-                          fontStyle: FontStyle.italic,
-                        ),
-                      ),
-                    // Text(
-                    //   '${user.faculty} - ${user.academicYear}',
-                    //   style: GoogleFonts.inter(
-                    //       fontSize: 12,
-                    //       color: Colors.grey.shade600
-                    //   ),
-                    // ),
+                      : user.groupId != null && user.groupId!.isNotEmpty
+                          ? FutureBuilder<GroupModel?>(
+                              future: _groupRepository.getGroupById(user.groupId!),
+                              builder: (context, snapshot){
+                                if (snapshot.connectionState == ConnectionState.waiting) {
+                                  return Text(
+                                    'Loading group...',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 12,
+                                      color: Colors.grey.shade400,
+                                      fontStyle: FontStyle.italic,
+                                    ),
+                                  );
+                                }
+                                final group = snapshot.data;
+                                if(group == null){
+                                  return Text(
+                                    'Group not found',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 12,
+                                      color: Colors.red.shade400,
+                                    ),
+                                  );
+                                }
+                                final details = [
+                                  if(group.faculty != null && group.faculty!.isNotEmpty) group.faculty!,
+                                  if(group.groupName.isNotEmpty) group.groupName,
+                                ].join(' - ');
+                                return Text(
+                                  details.isNotEmpty ? details : 'No details provided',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 12,
+                                    color: Colors.grey.shade600,
+                                  ),
+                                );
+                              }
+                            )
+                          : Text(
+                            'No group assigned',
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              color: Colors.grey.shade500,
+                              fontStyle: FontStyle.italic,
+                            ),
+                          ),
                   ],
                 ),
               ),

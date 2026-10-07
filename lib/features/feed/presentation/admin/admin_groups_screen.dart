@@ -103,7 +103,7 @@ class _AdminGroupsScreenState extends State<AdminGroupsScreen> {
                       ),
                       SizedBox(height:20),
                       CustomElevatedButton(
-                          text: 'Create New Group',
+                          text: 'Create New Group $_selectedYear',
                           onPressed: () async{
                             //await the result from createGroupScree
                             final result = await

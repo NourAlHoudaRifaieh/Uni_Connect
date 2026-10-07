@@ -51,17 +51,9 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
 
   void _addComment() async{
     final text = _commentController.text.trim();
-
-    // print('--- ATTEMPTING TO ADD COMMENT ---');
-    // print('Post ID: ${widget.post.postId}');
-    // print('Comment Text: $text');
-    // print('User ID: $_currentUserId');
-
     if (text.isEmpty || widget.post.postId == null || widget.post.postId!.isEmpty) {
-      // print('ERROR: Cannot add comment because text is empty or postId is missing!');
       return;
     }
-    // if(text.isEmpty || widget.post.postId == null) return;
 
     try{
       final me = await _userRepository.getCurrentUserModel();
@@ -107,7 +99,6 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     final post = widget.post;
-    // final subject = _getSubject(post.subjectId);
 
     final currentUser = FirebaseAuth.instance.currentUser;
     final currentUserName = currentUser?.displayName ?? currentUser?.email ?? 'User';
@@ -386,23 +377,6 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                           );
                                         }
                                     ),
-                                    // Row(
-                                    //   children: [
-                                    //     Icon(
-                                    //       Icons.mode_comment_outlined,
-                                    //       size: 16,
-                                    //       color: Colors.grey.shade600,
-                                    //     ),
-                                    //     SizedBox(width: 4),
-                                    //     Text(
-                                    //       '${_replies.length} Comments',
-                                    //       style: TextStyle(
-                                    //         fontSize: 12,
-                                    //         color: Colors.grey.shade600,
-                                    //       ),
-                                    //     ),
-                                    //   ],
-                                    // ),
                                   ],
                                 ),
 
@@ -411,93 +385,9 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                           );
                         }
                     ),
-                    // Container(
-                    //   margin: EdgeInsets.symmetric(
-                    //     horizontal: 20,
-                    //     vertical: 10,
-                    //   ),
-                    //   padding: EdgeInsets.all(16),
-                    //   decoration: BoxDecoration(
-                    //     color: Colors.white,
-                    //     borderRadius: BorderRadius.circular(20),
-                    //     border: Border.all(color: Colors.grey.shade200),
-                    //   ),
-                    //   child: Column(
-                    //     crossAxisAlignment: CrossAxisAlignment.start,
-                    //     children: [
-                    //       Text(
-                    //         post.description,
-                    //         style: GoogleFonts.inter(
-                    //           fontSize: 14,
-                    //           height: 1.5,
-                    //           color: Color(0xFF334155),
-                    //         ),
-                    //       ),
-                    //       SizedBox(height: 16),
-                    //       Container(
-                    //         height: 1,
-                    //         width: double.infinity,
-                    //         color:  Color(0xFFF1F5F9),
-                    //       ),
-                    //       SizedBox(height: 12),
-                    //       Row(
-                    //         children: [
-                    //           GestureDetector(
-                    //             onTap: _toggleLike,
-                    //             behavior: HitTestBehavior.opaque,
-                    //             child: Row(
-                    //               children: [
-                    //                 Icon(
-                    //                   _isLiked ?Icons.favorite : Icons.favorite_border,
-                    //                   size: 16,
-                    //                  color: _isLiked ? Colors.red : Colors.grey.shade600,
-                    //                 ),
-                    //                 SizedBox(width: 4),
-                    //                 Text(
-                    //                   '$_likeCount Likes',
-                    //                   style: TextStyle(
-                    //                     fontSize: 12,
-                    //                     fontWeight: _isLiked ? FontWeight.w600 : FontWeight.normal,
-                    //                     color: _isLiked ? Colors.red : Colors.grey.shade600,
-                    //                   ),
-                    //                 ),
-                    //               ],
-                    //             ),
-                    //           ),
-                    //           SizedBox(width: 16),
-                    //           Row(
-                    //             children: [
-                    //               Icon(
-                    //                 Icons.mode_comment_outlined,
-                    //                 size: 16,
-                    //                 color: Colors.grey.shade600,
-                    //               ),
-                    //               SizedBox(width: 4),
-                    //               Text(
-                    //                 '${_replies.length} Comments',
-                    //                 style: TextStyle(
-                    //                   fontSize: 12,
-                    //                   color: Colors.grey.shade600,
-                    //                 ),
-                    //               ),
-                    //             ],
-                    //           ),
-                    //         ],
-                    //       ),
-                    //
-                    //     ],
-                    //   ),
-                    // ),
-
-                    // Comments Title Header
                     StreamBuilder<List<ReplyModel>>(
                         stream: _replyRepository.watchRepliesForPost(post.postId ?? ''),
                         builder: (context, snapshot){
-
-                          print('Stream connection state: ${snapshot.connectionState}');
-                          print('Stream has error: ${snapshot.error}');
-                          print('Replies count received from stream: ${snapshot.data?.length ?? 0}');
-
                           final replies = snapshot.data ?? [];
                           return Column(
                             crossAxisAlignment:  CrossAxisAlignment.start,
