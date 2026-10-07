@@ -1,8 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:uni_connect/core/mock/mock_data.dart';
 import 'package:uni_connect/core/models/post_model.dart';
+import 'package:uni_connect/features/auth/data/post_repository.dart';
+import 'package:uni_connect/features/auth/data/user_repository.dart';
 
 class PostCard extends StatelessWidget{
   final PostModel post;
@@ -22,9 +23,20 @@ class PostCard extends StatelessWidget{
     this.onDeletePressed,
   });
 
+  Future<void> _defaultToggleLike() async{
+    final u = FirebaseAuth.instance.currentUser;
+    if(u == null || post.postId == null) return;
+    final name = (u.displayName != null && u.displayName!.trim().isNotEmpty)
+        ? u.displayName!.trim()
+        : (u.email?.split('@').first ?? 'User');
+    await PostRepository().toggleLike(post.postId!, u.uid, name);
+  }
+
   @override
   Widget build(BuildContext context){
-    final currentUserId = FirebaseAuth.instance.currentUser?.uid ?? '';
+    final authUid = FirebaseAuth.instance.currentUser?.uid ?? '';
+    final currentUserId = UserRepository.cachedDocId ?? authUid;
+    final liked = post.isLikedBy(currentUserId) || post.isLikedBy(authUid);
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -65,13 +77,36 @@ class PostCard extends StatelessWidget{
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        post.authorName,
-                        style: GoogleFonts.inter(
-                            fontWeight: FontWeight.bold,
-                            fontSize:14
-                        ),
-                        overflow: TextOverflow.ellipsis,
+                      Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              post.authorName,
+                              style: GoogleFonts.inter(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          if(post.authorRole == 'admin')
+                            Container(
+                              margin: EdgeInsets.only(left:6),
+                              padding: EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                              decoration: BoxDecoration(
+                                color:Color(0xFF2563EB).withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                'Admin',
+                                style: GoogleFonts.inter(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF2563EB),
+                                ),
+                              ),
+                            )
+                        ],
                       ),
                       Row(
                         children: [
@@ -82,6 +117,15 @@ class PostCard extends StatelessWidget{
                                 color: Colors.grey.shade600
                             ),
                           ),
+                          if(post.isEdited)
+                            Text(
+                              '(Edited)',
+                              style: GoogleFonts.inter(
+                                fontSize: 12,
+                                fontStyle: FontStyle.italic,
+                                color: Colors.grey.shade500,
+                              ),
+                            ),
                           if(post.subjectCode !=null && post.subjectCode!.isNotEmpty) ...[
                             Text(
                               ' . ',
@@ -196,10 +240,12 @@ class PostCard extends StatelessWidget{
                 Spacer(),
                 GestureDetector(
                   onTap: (){
-                    if(post.postId != null && currentUserId.isNotEmpty){
-                      MockData.toggleLike(post.postId!, currentUserId);
-                      if(onLikeTap !=null) onLikeTap!();
-                    }
+                    if(post.postId == null || currentUserId.isEmpty) return;
+                      if(onLikeTap !=null){
+                        onLikeTap!();
+                      }else{
+                        _defaultToggleLike();
+                      }
                   },
                   behavior: HitTestBehavior.opaque,
                   child: Row(
