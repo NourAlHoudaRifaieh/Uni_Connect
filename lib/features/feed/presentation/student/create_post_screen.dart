@@ -47,9 +47,15 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       final userModel = await _userRepository.getCurrentUserModel();
       final groupId = userModel?.groupId;
       final allSubjects = await _subjectRepository.getSubjects();
+
       final loadedSubjects = (groupId == null || groupId.isEmpty)
         ? allSubjects
-        : allSubjects.where((s) => s.groupId == groupId).toList();
+        : allSubjects.where((s) {
+            final isMainGroup = s.groupId == groupId;
+            final isSharedGroup = s.sharedGroupIds != null && s.sharedGroupIds!.contains(groupId);
+            return isMainGroup || isSharedGroup;
+          }).toList();
+
       if(!mounted) return;
       setState(() {
         subjects = loadedSubjects;
