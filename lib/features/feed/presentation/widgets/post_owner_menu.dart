@@ -29,10 +29,10 @@ class PostOwnerMenu extends StatelessWidget {
         builder: (context) =>
             EditPostDialog(
               initialDescription: post.description,
-              onUpdateConfirmed: (newText) async{
+              onUpdateConfirmed: (newText, newCategory) async{
                 if(newText.trim().isEmpty || post.postId == null) return;
-                if(newText.trim() == post.description.trim()) return;
-                await PostRepository().updatePost(post.postId!, description: newText);
+                // if(newText.trim() == post.description.trim()) return;
+                await PostRepository().updatePost(post.postId!, description: newText, categoryName: newCategory);
               },
             ),
     );
