@@ -32,7 +32,7 @@ class EditProfileSheet extends StatefulWidget {
 
 class _EditProfileSheetState extends State<EditProfileSheet> {
   late final TextEditingController _nameController ;
-  late final TextEditingController _emailController ;
+  // late final TextEditingController _emailController ;
   final _formKey = GlobalKey<FormState>();
   bool _saving = false;
 
@@ -40,13 +40,13 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.user.fullName);
-    _emailController = TextEditingController(text: widget.user.email);
+    // _emailController = TextEditingController(text: widget.user.email);
   }
 
   @override
   void dispose() {
     _nameController.dispose();
-    _emailController.dispose();
+    // _emailController.dispose();
     super.dispose();
   }
 
@@ -128,12 +128,12 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
                   return (v == null || v.trim().length < 2) ? 'Please enter your name' : null;
                 },
               ),
-              SizedBox(height:16),
-              CustomFormField(
-                label: 'Email',
-                  hint: 'Email address',
-                  controller: _emailController,
-              ),
+              // SizedBox(height:16),
+              // CustomFormField(
+              //   label: 'Email',
+              //     hint: 'Email address',
+              //     controller: _emailController,
+              // ),
               SizedBox(height: 24),
               Row(
                 children: [

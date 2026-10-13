@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:uni_connect/core/models/post_model.dart';
 import 'package:uni_connect/core/models/user_model.dart';
 import 'package:uni_connect/core/widgets/custom_form_field.dart';
+import 'package:uni_connect/features/auth/data/feed_access.dart';
 import 'package:uni_connect/features/auth/data/group_repository.dart';
 import 'package:uni_connect/features/auth/data/post_repository.dart';
+import 'package:uni_connect/features/auth/data/subject_repository.dart';
 import 'package:uni_connect/features/auth/data/subject_request_repository.dart';
 import 'package:uni_connect/features/auth/data/user_repository.dart';
 import 'package:uni_connect/features/feed/presentation/student/post_details_screen.dart';
@@ -53,15 +55,14 @@ class _HomeScreenState extends State <HomeScreen>{
   }
 
   Stream<List<PostModel>> _postsInMySpecialty() {
+    final subjectRepo = SubjectRepository();
     return _userRepository.watchCurrentUser().asyncExpand((user) {
-      final groupId = user?.groupId;
-      return _postRepository.watchAllPosts().map((posts) {
-        if (groupId == null || groupId.isEmpty) return posts;
-        final locked = isLockedYear(user?.academicYear);
-        final extra = locked ? const <String>[] : (user?.extraSubjectIds ?? const <String>[]);
-        return posts.where((p) =>
-        p.groupId == groupId ||
-            (p.subjectId != null && extra.contains(p.subjectId))).toList();
+      return subjectRepo.watchAllSubjects().asyncExpand((subjects){
+        return _postRepository.watchAllPosts().map((posts){
+          if (user == null || user.role == 'admin') return posts;
+          final mine = FeedAccess.subjectIdsFor(user, subjects);
+          return posts.where((p) => FeedAccess.canSee(p, user, mine)).toList();
+        });
       });
     });
   }
