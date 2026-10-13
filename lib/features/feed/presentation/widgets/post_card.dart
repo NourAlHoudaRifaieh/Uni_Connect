@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:uni_connect/core/models/post_model.dart';
 import 'package:uni_connect/features/auth/data/post_repository.dart';
 import 'package:uni_connect/features/auth/data/user_repository.dart';
+import 'package:uni_connect/features/feed/presentation/widgets/post_owner_menu.dart';
 
 class PostCard extends StatelessWidget{
   final PostModel post;
@@ -117,15 +118,15 @@ class PostCard extends StatelessWidget{
                                 color: Colors.grey.shade600
                             ),
                           ),
-                          if(post.isEdited)
-                            Text(
-                              '(Edited)',
-                              style: GoogleFonts.inter(
-                                fontSize: 12,
-                                fontStyle: FontStyle.italic,
-                                color: Colors.grey.shade500,
-                              ),
-                            ),
+                          // if(post.isEdited)
+                          //   Text(
+                          //     '(Edited)',
+                          //     style: GoogleFonts.inter(
+                          //       fontSize: 12,
+                          //       fontStyle: FontStyle.italic,
+                          //       color: Colors.grey.shade500,
+                          //     ),
+                          //   ),
                           if(post.subjectCode !=null && post.subjectCode!.isNotEmpty) ...[
                             Text(
                               ' . ',
@@ -142,68 +143,83 @@ class PostCard extends StatelessWidget{
                               ),
                             ),
                           ],
+                          SizedBox(width:7),
+                          if(post.isEdited)
+                            Text(
+                              '(Edited)',
+                              style: GoogleFonts.inter(
+                                fontSize: 12,
+                                fontStyle: FontStyle.italic,
+                                color: Colors.grey.shade500,
+                              ),
+                            ),
                         ],
                       ),
                     ],
                   ),
                 ),
-                PopupMenuButton<String>(
-                  style: IconButton.styleFrom(
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    padding: EdgeInsets.zero,
-                    minimumSize: Size.zero,
-                  ),
-                  color: Colors.white,
-                  elevation: 5,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  offset: Offset(-5, 30),
-                  onSelected: (value) {
-                    if (value == 'edit' && onEditPressed != null) {
-                      onEditPressed!();
-                    } else if (value == 'delete' && onDeletePressed != null) {
-                      onDeletePressed!();
-                    }
-                  },
-                  itemBuilder: (context) => [
-                    PopupMenuItem<String>(
-                      value: 'edit',
-                      child: Row(
-                        children: [
-                          Icon(Icons.edit_outlined, color: Color(0xFF2563EB), size: 15),
-                          SizedBox(width: 8),
-                          Text(
-                            'Edit',
-                            style: GoogleFonts.inter(
-                              color: Color(0xFF2563EB),
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    PopupMenuItem<String>(
-                      value: 'delete',
-                      child: Row(
-                        children: [
-                          Icon(Icons.delete_outline, color: Colors.redAccent, size: 15),
-                          SizedBox(width: 8),
-                          Text(
-                            'Delete',
-                            style: GoogleFonts.inter(
-                              color: Colors.redAccent,
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                  child: Icon(Icons.more_vert, size: 20, color: Colors.grey),
+                PostOwnerMenu(
+                    post: post,
+                  onEdit: onEditPressed,
+                  onDelete: onDeletePressed,
                 ),
+                // PopupMenuButton<String>(
+                //   style: IconButton.styleFrom(
+                //     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                //     padding: EdgeInsets.zero,
+                //     minimumSize: Size.zero,
+                //   ),
+                //   color: Colors.white,
+                //   elevation: 5,
+                //   shape: RoundedRectangleBorder(
+                //     borderRadius: BorderRadius.circular(15),
+                //   ),
+                //   offset: Offset(-5, 30),
+                //   onSelected: (value) {
+                //     if (value == 'edit' && onEditPressed != null) {
+                //       onEditPressed!();
+                //     } else if (value == 'delete' && onDeletePressed != null) {
+                //       onDeletePressed!();
+                //     }
+                //   },
+                //   itemBuilder: (context) => [
+                //     PopupMenuItem<String>(
+                //       value: 'edit',
+                //       child: Row(
+                //         children: [
+                //           Icon(Icons.edit_outlined, color: Color(0xFF2563EB), size: 15),
+                //           SizedBox(width: 8),
+                //           Text(
+                //             'Edit',
+                //             style: GoogleFonts.inter(
+                //               color: Color(0xFF2563EB),
+                //               fontSize: 15,
+                //               fontWeight: FontWeight.w600,
+                //             ),
+                //           ),
+                //         ],
+                //       ),
+                //     ),
+                //     PopupMenuItem<String>(
+                //       value: 'delete',
+                //       child: Row(
+                //         children: [
+                //           Icon(Icons.delete_outline, color: Colors.redAccent, size: 15),
+                //           SizedBox(width: 8),
+                //           Text(
+                //             'Delete',
+                //             style: GoogleFonts.inter(
+                //               color: Colors.redAccent,
+                //               fontSize: 15,
+                //               fontWeight: FontWeight.w600,
+                //             ),
+                //           ),
+                //         ],
+                //       ),
+                //     ),
+                //   ],
+                //   child: Icon(Icons.more_vert, size: 20, color: Colors.grey),
+                // ),
               ],
             ),
             SizedBox(height:10),
