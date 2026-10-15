@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:uni_connect/core/models/user_model.dart';
 import 'package:uni_connect/core/widgets/custom_elevated_button.dart';
-import 'package:uni_connect/features/feed/presentation/widgets/see_another_subject/SeeAnotherSubjectSheet.dart';
+import 'package:uni_connect/features/feed/presentation/widgets/see_another_subject/see_another_subject_sheet.dart';
 
 class SeeAnotherSubjectButton extends StatelessWidget {
   final UserModel user;

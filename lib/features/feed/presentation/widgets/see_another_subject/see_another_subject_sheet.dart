@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:uni_connect/core/models/group_model.dart';
 import 'package:uni_connect/core/models/subject_model.dart';
 import 'package:uni_connect/core/models/user_model.dart';
+import 'package:uni_connect/core/widgets/custom_elevated_button.dart';
 import 'package:uni_connect/features/auth/data/group_repository.dart';
 import 'package:uni_connect/features/auth/data/subject_repository.dart';
 import 'package:uni_connect/features/auth/data/subject_request_repository.dart';
@@ -10,7 +11,7 @@ import 'package:uni_connect/features/feed/presentation/widgets/see_another_subje
 
 class SeeAnotherSubjectSheet extends StatefulWidget {
   final UserModel user;
-  SeeAnotherSubjectSheet({
+  const SeeAnotherSubjectSheet({
     super.key,
     required this.user,
   });
@@ -26,7 +27,7 @@ class _SeeAnotherSubjectSheetState extends State<SeeAnotherSubjectSheet> {
   final SubjectRequestRepository _requestRepository = SubjectRequestRepository();
   final GroupRepository _groupRepository = GroupRepository();
   
-  static const _years = ['Year 1', 'Year2', 'Year3'];
+  static const _years = ['Year 1', 'Year 2', 'Year 3'];
   
   String? _selectedYear;
   String? _selectedGroupId;
@@ -44,7 +45,7 @@ class _SeeAnotherSubjectSheetState extends State<SeeAnotherSubjectSheet> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(error ?? 'Request send to admin'),
-        backgroundColor: error == null ? Colors.green : Colors.red
+        backgroundColor: error == null ? Colors.green : Colors.red,
       ),
     );
 
@@ -89,13 +90,41 @@ class _SeeAnotherSubjectSheetState extends State<SeeAnotherSubjectSheet> {
                 fontWeight:FontWeight.bold,
               ),
             ),
-            SizedBox(height:4),
+            SizedBox(height:8),
             Text(
-              '1. Pick a year  2. Pick Specialization  3.Request subject',
+              'Follow these steps:',
               style: GoogleFonts.inter(
-                fontSize: 12,
-                color:Colors.grey.shade600,
+                fontSize: 13,
+                color:Colors.grey.shade700,
+                fontWeight: FontWeight.bold,
               ),
+            ),
+            SizedBox(height:6),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  '1. Pick a year  ->',
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    color:Colors.grey.shade600,
+                  ),
+                ),
+                Text(
+                  '2. Pick Specialization  -> ',
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    color:Colors.grey.shade600,
+                  ),
+                ),
+                Text(
+                  '3. Request subject',
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    color:Colors.grey.shade600,
+                  ),
+                ),
+              ],
             ),
             SizedBox(height:14),
             
@@ -195,17 +224,27 @@ class _SeeAnotherSubjectSheetState extends State<SeeAnotherSubjectSheet> {
                                             }else if(status == 'pending'){
                                               trailingWidget = RequestStatusChip(status: 'pending');
                                             }else{
-                                              trailingWidget = ElevatedButton(
-                                                onPressed: () => _sendRequest(subject),
-                                                style: ElevatedButton.styleFrom(
+                                              trailingWidget = SizedBox(
+                                                width: 120,
+                                                child: CustomElevatedButton(
+                                                  text: status == 'rejected' ? 'Request again' : 'Request',
+                                                  onPressed: () => _sendRequest(subject),
+                                                  height: 36,
+                                                  borderRadius: 10,
                                                   backgroundColor: Color(0xFF2563EB),
-                                                  foregroundColor: Colors.white,
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius: BorderRadius.circular(10),
-                                                  ),
                                                 ),
-                                                child: Text(status == 'rejected' ? 'Request again' : 'Request'),
                                               );
+                                              // trailingWidget = ElevatedButton(
+                                              //   onPressed: () => _sendRequest(subject),
+                                              //   style: ElevatedButton.styleFrom(
+                                              //     backgroundColor: Color(0xFF2563EB),
+                                              //     foregroundColor: Colors.white,
+                                              //     shape: RoundedRectangleBorder(
+                                              //       borderRadius: BorderRadius.circular(10),
+                                              //     ),
+                                              //   ),
+                                              //   child: Text(status == 'rejected' ? 'Request again' : 'Request'),
+                                              // );
                                             }
                                             return ListTile(
                                               contentPadding: EdgeInsets.zero,

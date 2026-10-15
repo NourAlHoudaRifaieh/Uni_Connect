@@ -9,7 +9,7 @@ import 'package:uni_connect/features/auth/data/subject_repository.dart';
 import 'package:uni_connect/features/auth/data/subject_request_repository.dart';
 import 'package:uni_connect/features/auth/data/user_repository.dart';
 import 'package:uni_connect/features/feed/presentation/student/subject_details_screen.dart';
-import 'package:uni_connect/features/feed/presentation/widgets/see_another_subject/SeeAnotherSubjectSheet.dart';
+import 'package:uni_connect/features/feed/presentation/widgets/see_another_subject/see_another_subject_sheet.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/see_another_subject/my_subject_requests.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/see_another_subject/see_anothor_subject_button.dart';
 
