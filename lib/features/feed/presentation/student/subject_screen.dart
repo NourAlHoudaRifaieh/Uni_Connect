@@ -63,7 +63,8 @@ class SubjectScreen extends StatelessWidget {
                         : Future.value(null),
                       builder: (context, groupSnapshot){
                         final group = groupSnapshot.data;
-                        final faculty = group?.faculty ?? '';
+                        // final faculty = group?.faculty ?? '';
+                        final major = group?.major ?? '';
                         final academicYear = group?.academicYear ?? '';
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -77,7 +78,7 @@ class SubjectScreen extends StatelessWidget {
                                       style: GoogleFonts.inter(fontSize: 22, fontWeight:  FontWeight.bold)
                                   ),
                                   SizedBox(height:4),
-                                  Text('$academicYear - ${subjects.length} subjects enrolled',
+                                  Text('$academicYear - $major - ${subjects.length} subjects enrolled',
                                     style: GoogleFonts.inter(
                                         fontSize: 13, color: Colors.grey.shade600
                                     ),
@@ -110,6 +111,12 @@ class SubjectScreen extends StatelessWidget {
                                 padding: EdgeInsets.all(20),
                                 child: Column(
                                   children: [
+                                    // if (userModel != null && !isLockedYear(userModel.academicYear)) ...[
+                                    //   SeeAnotherSubjectButton(user: userModel),
+                                    //   SizedBox(height:12),
+                                    //   MySubjectRequest(user: userModel),
+                                    //   SizedBox(height:8),
+                                    // ],
                                     subjects.isEmpty
                                         ? Center(
                                             child: Padding(

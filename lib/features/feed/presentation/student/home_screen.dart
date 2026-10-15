@@ -113,46 +113,48 @@ class _HomeScreenState extends State <HomeScreen>{
                     child: Column(
                       children: [
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children:[
-                            Expanded(
-                              child: StreamBuilder <UserModel?>(
-                                stream: _userRepository.watchCurrentUser(),
-                                builder: (context, userSnapshot){
-                                  final userModel = userSnapshot.data;
-                                  return  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text('UniConnect', style: GoogleFonts.inter(fontSize:25, fontWeight: FontWeight.bold)),
-                                      SizedBox(height:2),
-                                      if (userModel?.groupId != null && userModel!.groupId!.isNotEmpty)
-                                        FutureBuilder(
-                                          future: _groupRepository.getGroupById(userModel.groupId!),
-                                          builder: (context, groupSnapshot) {
-                                            if (!groupSnapshot.hasData) return const SizedBox.shrink();
-                                            final group = groupSnapshot.data;
-                                            if (group == null) return const SizedBox.shrink();
-
-                                            final departmentText = [
-                                              if (group.faculty != null) group.faculty!,
-                                              if (group.academicYear != null) group.academicYear!,
-                                            ].join(', ');
-
-                                            return Text(
-                                              departmentText.isNotEmpty ? departmentText : 'Business Administration',
-                                              style: GoogleFonts.inter(fontSize: 14, color: Colors.grey),
-                                            );
-                                          },
-                                        )
-                                      else
-                                        Text(
-                                          'Business Administration,',
-                                          style: GoogleFonts.inter(fontSize: 14, color: Colors.grey),
-                                        ),
-                                    ],
-                                  );
-                                },
-                              ),
-                            ),
+                            // Expanded(
+                            //   child: StreamBuilder <UserModel?>(
+                            //     stream: _userRepository.watchCurrentUser(),
+                            //     builder: (context, userSnapshot){
+                            //       final userModel = userSnapshot.data;
+                            //       return Column(
+                            //         crossAxisAlignment: CrossAxisAlignment.start,
+                            //         children: [
+                            //           Text('UniConnect', style: GoogleFonts.inter(fontSize:25, fontWeight: FontWeight.bold)),
+                            //           SizedBox(height:2),
+                            //           if (userModel?.groupId != null && userModel!.groupId!.isNotEmpty)
+                            //             FutureBuilder(
+                            //               future: _groupRepository.getGroupById(userModel.groupId!),
+                            //               builder: (context, groupSnapshot) {
+                            //                 if (!groupSnapshot.hasData) return const SizedBox.shrink();
+                            //                 final group = groupSnapshot.data;
+                            //                 if (group == null) return const SizedBox.shrink();
+                            //
+                            //                 final departmentText = [
+                            //                   if (group.faculty != null) group.faculty!,
+                            //                   if (group.academicYear != null) group.academicYear!,
+                            //                 ].join(', ');
+                            //
+                            //                 return Text(
+                            //                   departmentText.isNotEmpty ? departmentText : 'Business Administration',
+                            //                   style: GoogleFonts.inter(fontSize: 14, color: Colors.grey),
+                            //                 );
+                            //               },
+                            //             )
+                            //           else
+                            //             Text(
+                            //               'Business Administration,',
+                            //               style: GoogleFonts.inter(fontSize: 14, color: Colors.grey),
+                            //             ),
+                            //         ],
+                            //       );
+                            //     },
+                            //   ),
+                            // ),
+                            Text('UniConnect', style: GoogleFonts.inter(fontSize:25, fontWeight: FontWeight.bold)),
                             SizedBox(width:10),
                             //User Avatar
                             GestureDetector(
@@ -183,7 +185,7 @@ class _HomeScreenState extends State <HomeScreen>{
                         SizedBox(height:8),
                         // Search Bar
                         CustomFormField(
-                            hint: 'Search posts, students...',
+                            hint: 'Search posts...',
                             controller: _searchController,
                             prefixIcon: Icon(Icons.search,
                               color: Color(0xFFB5B5C3),
