@@ -3,11 +3,16 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:uni_connect/core/models/group_model.dart';
 import 'package:uni_connect/core/models/subject_model.dart';
 import 'package:uni_connect/core/models/user_model.dart';
+import 'package:uni_connect/core/widgets/custom_elevated_button.dart';
 import 'package:uni_connect/features/auth/data/group_repository.dart';
 import 'package:uni_connect/features/auth/data/subject_repository.dart';
 import 'package:uni_connect/features/auth/data/subject_request_repository.dart';
 import 'package:uni_connect/features/auth/data/user_repository.dart';
 import 'package:uni_connect/features/feed/presentation/student/subject_details_screen.dart';
+import 'package:uni_connect/features/feed/presentation/widgets/see_another_subject/SeeAnotherSubjectSheet.dart';
+import 'package:uni_connect/features/feed/presentation/widgets/see_another_subject/my_subject_requests.dart';
+import 'package:uni_connect/features/feed/presentation/widgets/see_another_subject/see_anothor_subject_button.dart';
+
 
 class SubjectScreen extends StatelessWidget {
   const SubjectScreen({super.key});
@@ -111,12 +116,34 @@ class SubjectScreen extends StatelessWidget {
                                 padding: EdgeInsets.all(20),
                                 child: Column(
                                   children: [
-                                    // if (userModel != null && !isLockedYear(userModel.academicYear)) ...[
-                                    //   SeeAnotherSubjectButton(user: userModel),
-                                    //   SizedBox(height:12),
-                                    //   MySubjectRequest(user: userModel),
-                                    //   SizedBox(height:8),
-                                    // ],
+                                    if (userModel != null && !isLockedYear(userModel.academicYear)) ...[
+                                      // SizedBox(
+                                      //   width: double.infinity,
+                                      //   child: CustomElevatedButton(
+                                      //       text: 'See Another Subject',
+                                      //       // type: ButtonType.outlined,
+                                      //       height: 48,
+                                      //       borderRadius: 14,
+                                      //       onPressed: (){
+                                      //         showModalBottomSheet(
+                                      //             context: context,
+                                      //             isScrollControlled: true,
+                                      //             backgroundColor: Colors.white,
+                                      //             shape: RoundedRectangleBorder(
+                                      //                 borderRadius: BorderRadius.vertical(top: Radius.circular(24))
+                                      //             ),
+                                      //             builder: (context) {
+                                      //               return SeeAnotherSubjectSheet(user:user);
+                                      //             }
+                                      //         );
+                                      //       }
+                                      //   ),
+                                      // ),
+                                      SeeAnotherSubjectButton(user: userModel),
+                                      SizedBox(height:12),
+                                      MySubjectRequests(user: userModel),
+                                      SizedBox(height:8),
+                                    ],
                                     subjects.isEmpty
                                         ? Center(
                                             child: Padding(

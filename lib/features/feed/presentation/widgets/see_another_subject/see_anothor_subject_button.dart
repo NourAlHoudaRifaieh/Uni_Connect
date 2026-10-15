@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:uni_connect/core/models/user_model.dart';
 import 'package:uni_connect/core/widgets/custom_elevated_button.dart';
+import 'package:uni_connect/features/feed/presentation/widgets/see_another_subject/SeeAnotherSubjectSheet.dart';
 
 class SeeAnotherSubjectButton extends StatelessWidget {
   final UserModel user;
@@ -16,7 +17,7 @@ class SeeAnotherSubjectButton extends StatelessWidget {
       width: double.infinity,
       child: CustomElevatedButton(
           text: 'See Another Subject',
-          type: ButtonType.outlined,
+          // type: ButtonType.outlined,
           height: 48,
           borderRadius: 14,
           onPressed: (){
