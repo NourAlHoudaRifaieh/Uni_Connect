@@ -7,18 +7,13 @@ import 'package:uni_connect/features/auth/data/reply_repository.dart';
 
 class EditReplyDialog extends StatefulWidget {
   final ReplyModel reply;
+  final Function(String updateContent) onUpdateConfirmed;
 
   EditReplyDialog({
     super.key,
     required this.reply,
+    required this.onUpdateConfirmed,
   });
-
-  static Future<void> show(BuildContext context, ReplyModel reply) async{
-    await showDialog(
-        context: context,
-        builder: (context) => EditReplyDialog(reply: reply),
-    );
-  }
 
   @override
   _EditReplyDialogState createState() {
@@ -28,7 +23,6 @@ class EditReplyDialog extends StatefulWidget {
 
 class _EditReplyDialogState extends State<EditReplyDialog> {
   TextEditingController _replyController = TextEditingController();
-  bool _isSaving = false;
 
   @override
   void initState() {
@@ -46,27 +40,7 @@ class _EditReplyDialogState extends State<EditReplyDialog> {
     final newText = _replyController.text.trim();
     if(newText.isEmpty || newText == widget.reply.content.trim()){
       Navigator.pop(context);
-      return;
-    }
-    setState(() {
-      _isSaving = true;
-    });
-    try{
-      await ReplyRepository().editReply(
-          postId: widget.reply.postId,
-          replyId: widget.reply.replyId,
-          newContent: newText,
-      );
-      if(!mounted) return;
-      Navigator.pop(context);
-    }catch(e){
-      if(!mounted) return;
-      setState(() {
-        _isSaving = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to update reply: $e')),
-      );
+      widget.onUpdateConfirmed(newText);
     }
   }
 
@@ -112,7 +86,7 @@ class _EditReplyDialogState extends State<EditReplyDialog> {
             children: [
               CustomFormField(
                 label:'Reply',
-                hint: 'Enter your eply...',
+                hint: 'Enter your reply...',
                 controller: _replyController,
               ),
               SizedBox(height:24),
@@ -134,7 +108,6 @@ class _EditReplyDialogState extends State<EditReplyDialog> {
                     child: CustomElevatedButton(
                       text: 'Save',
                       backgroundColor: Color(0xFF2563EB),
-                      isLoading: _isSaving,
                       onPressed: _handleSave,
                     ),
                   ),

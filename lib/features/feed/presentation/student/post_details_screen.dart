@@ -73,7 +73,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
       final newReply = ReplyModel(
         replyId: '',
         postId: widget.post.postId!,
-        userId: _currentUserId,
+        userId: me.userId,
         authorName: fullName,
         content: text,
         createdAt: DateTime.now(),
@@ -86,8 +86,11 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
           SnackBar(content: Text('Could not send reply: $e'), backgroundColor: Colors.red),
         );
       }
+      return;
     }
-    return;
+    _commentController.clear();
+    FocusScope.of(context).unfocus();
+
   }
 
   @override
@@ -388,6 +391,10 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                     StreamBuilder<List<ReplyModel>>(
                         stream: _replyRepository.watchRepliesForPost(post.postId ?? ''),
                         builder: (context, snapshot){
+                          print('Stream connection state: ${snapshot.connectionState}');
+                          print('Stream has error: ${snapshot.error}');
+                          print('Replies count received from stream: ${snapshot.data?.length ?? 0}');
+
                           final replies = snapshot.data ?? [];
                           return Column(
                             crossAxisAlignment:  CrossAxisAlignment.start,
