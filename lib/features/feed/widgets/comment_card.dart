@@ -87,13 +87,6 @@ class CommentCard extends StatelessWidget {
               ),
               Row(
                 children: [
-                  Text(
-                    reply.timeAgo,
-                    style: GoogleFonts.inter(
-                      fontSize: 11,
-                      color: Colors.grey.shade500,
-                    ),
-                  ),
                   if (reply.isEdited)
                     Text(
                       ' (Edited)',
@@ -103,6 +96,14 @@ class CommentCard extends StatelessWidget {
                         color: Colors.grey.shade500,
                       ),
                     ),
+                  SizedBox(width:8),
+                  Text(
+                    reply.timeAgo,
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      color: Colors.grey.shade500,
+                    ),
+                  ),
                   if (isMine)
                     ContentOwnerMenu(
                         ownerId: reply.userId,

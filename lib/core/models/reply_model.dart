@@ -77,6 +77,7 @@ class ReplyModel{
         authorName: data['authorName'] ?? '',
         userId: data['userId']?? '',
         content: data['content'] ?? '',
+        isEdited:  data['isEdited'] == true,
         createdAt: data['createdAt'] is Timestamp
          ? (data['createdAt'] as Timestamp).toDate()
           : DateTime.now(),
