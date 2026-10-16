@@ -3,8 +3,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:uni_connect/core/models/reply_model.dart';
 import 'package:uni_connect/core/widgets/custom_elevated_button.dart';
 import 'package:uni_connect/core/widgets/custom_form_field.dart';
-import 'package:uni_connect/features/auth/data/reply_repository.dart';
-
 class EditReplyDialog extends StatefulWidget {
   final ReplyModel reply;
   final Function(String updateContent) onUpdateConfirmed;
@@ -38,10 +36,9 @@ class _EditReplyDialogState extends State<EditReplyDialog> {
 
   Future<void> _handleSave() async{
     final newText = _replyController.text.trim();
-    if(newText.isEmpty || newText == widget.reply.content.trim()){
-      Navigator.pop(context);
-      widget.onUpdateConfirmed(newText);
-    }
+    if(newText.isEmpty || newText == widget.reply.content.trim()) return;
+    Navigator.pop(context);
+    widget.onUpdateConfirmed(newText);
   }
 
   @override

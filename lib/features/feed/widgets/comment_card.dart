@@ -2,7 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:uni_connect/core/models/reply_model.dart';
+import 'package:uni_connect/features/auth/data/reply_repository.dart';
 import 'package:uni_connect/features/auth/data/user_repository.dart';
+import 'package:uni_connect/features/feed/presentation/widgets/delete_reply_dialog.dart';
+import 'package:uni_connect/features/feed/presentation/widgets/edit_reply_dialog.dart';
 
 class CommentCard extends StatelessWidget {
 
@@ -109,7 +112,31 @@ class CommentCard extends StatelessWidget {
                       icon: const Icon(Icons.more_vert, size: 18, color: Colors.grey),
                       onSelected: (v) {
                         if (v == 'edit') {
-                        } else {
+                          showDialog(
+                              context: context,
+                              builder: (context) => EditReplyDialog(
+                                  reply: reply,
+                                  onUpdateConfirmed: (newContent) async{
+                                    await ReplyRepository().editReply(
+                                        postId: reply.postId,
+                                        replyId: reply.replyId,
+                                        newContent: newContent
+                                    );
+                                  }
+                              ),
+                          );
+                        } else if(v == 'delete'){
+                          showDialog(
+                              context: context,
+                              builder: (context) => DeleteReplyDialog(
+                                  onDeleteConfirmed: () async{
+                                    await ReplyRepository().deleteReply(
+                                        postId: reply.postId,
+                                        replyId: reply.replyId
+                                    );
+                                  }
+                              ),
+                          );
                         }
                       },
                       itemBuilder: (context) => [

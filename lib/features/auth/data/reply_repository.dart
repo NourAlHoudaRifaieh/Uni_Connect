@@ -35,12 +35,13 @@ class ReplyRepository {
       final u = await _firestore.collection('users').doc(reply.userId).get();
       role = (u.data()?['role'] ?? 'student').toString();
     }catch(_){
-      batch.set(replyRef, {...reply.toJson(), 'replyId': replyId, 'authorRole': role});
-      batch.update(postRef,{
-        'comments': FieldValue.increment(1),
-      });
-      await batch.commit();
+      role = 'student';
     }
+    batch.set(replyRef, {...reply.toJson(), 'replyId': replyId, 'authorRole': role});
+    batch.update(postRef,{
+      'comments': FieldValue.increment(1),
+    });
+    await batch.commit();
 
   }
 
