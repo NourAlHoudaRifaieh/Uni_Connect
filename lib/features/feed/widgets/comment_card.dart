@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:uni_connect/core/models/reply_model.dart';
 import 'package:uni_connect/features/auth/data/reply_repository.dart';
 import 'package:uni_connect/features/auth/data/user_repository.dart';
+import 'package:uni_connect/features/feed/presentation/widgets/content_owner_menu.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/delete_reply_dialog.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/edit_reply_dialog.dart';
 
@@ -103,15 +104,9 @@ class CommentCard extends StatelessWidget {
                       ),
                     ),
                   if (isMine)
-                    PopupMenuButton<String>(
-                      padding: EdgeInsets.zero,
-                      color: Colors.white,
-                      elevation: 5,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                      offset: const Offset(-5, 30),
-                      icon: const Icon(Icons.more_vert, size: 18, color: Colors.grey),
-                      onSelected: (v) {
-                        if (v == 'edit') {
+                    ContentOwnerMenu(
+                        ownerId: reply.userId,
+                        onEdit: (){
                           showDialog(
                               context: context,
                               builder: (context) => EditReplyDialog(
@@ -120,44 +115,84 @@ class CommentCard extends StatelessWidget {
                                     await ReplyRepository().editReply(
                                         postId: reply.postId,
                                         replyId: reply.replyId,
-                                        newContent: newContent
+                                        newContent: newContent,
                                     );
-                                  }
+                                  },
                               ),
                           );
-                        } else if(v == 'delete'){
+                        },
+                        onDelete: (){
                           showDialog(
                               context: context,
-                              builder: (context) => DeleteReplyDialog(
+                              builder: (context)=> DeleteReplyDialog(
                                   onDeleteConfirmed: () async{
                                     await ReplyRepository().deleteReply(
                                         postId: reply.postId,
-                                        replyId: reply.replyId
+                                        replyId: reply.replyId,
                                     );
-                                  }
+                                  },
                               ),
                           );
                         }
-                      },
-                      itemBuilder: (context) => [
-                        PopupMenuItem<String>(
-                          value: 'edit',
-                          child: Row(children: [
-                            const Icon(Icons.edit_outlined, color: Color(0xFF2563EB), size: 15),
-                            const SizedBox(width: 8),
-                            Text('Edit', style: GoogleFonts.inter(color: const Color(0xFF2563EB), fontSize: 15, fontWeight: FontWeight.w600)),
-                          ]),
-                        ),
-                        PopupMenuItem<String>(
-                          value: 'delete',
-                          child: Row(children: [
-                            const Icon(Icons.delete_outline, color: Colors.redAccent, size: 15),
-                            const SizedBox(width: 8),
-                            Text('Delete', style: GoogleFonts.inter(color: Colors.redAccent, fontSize: 15, fontWeight: FontWeight.w600)),
-                          ]),
-                        ),
-                      ],
                     ),
+                    // PopupMenuButton<String>(
+                    //   style: IconButton.styleFrom(
+                    //     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    //     padding: EdgeInsets.zero,
+                    //     minimumSize: Size.zero,
+                    //   ),
+                    //   color: Colors.white,
+                    //   elevation: 5,
+                    //   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                    //   offset: const Offset(-5, 30),
+                    //   onSelected: (v) {
+                    //     if (v == 'edit') {
+                    //       showDialog(
+                    //           context: context,
+                    //           builder: (context) => EditReplyDialog(
+                    //               reply: reply,
+                    //               onUpdateConfirmed: (newContent) async{
+                    //                 await ReplyRepository().editReply(
+                    //                     postId: reply.postId,
+                    //                     replyId: reply.replyId,
+                    //                     newContent: newContent
+                    //                 );
+                    //               }
+                    //           ),
+                    //       );
+                    //     } else if(v == 'delete'){
+                    //       showDialog(
+                    //           context: context,
+                    //           builder: (context) => DeleteReplyDialog(
+                    //               onDeleteConfirmed: () async{
+                    //                 await ReplyRepository().deleteReply(
+                    //                     postId: reply.postId,
+                    //                     replyId: reply.replyId
+                    //                 );
+                    //               }
+                    //           ),
+                    //       );
+                    //     }
+                    //   },
+                    //   itemBuilder: (context) => [
+                    //     PopupMenuItem<String>(
+                    //       value: 'edit',
+                    //       child: Row(children: [
+                    //         const Icon(Icons.edit_outlined, color: Color(0xFF2563EB), size: 15),
+                    //         const SizedBox(width: 8),
+                    //         Text('Edit', style: GoogleFonts.inter(color: const Color(0xFF2563EB), fontSize: 15, fontWeight: FontWeight.w600)),
+                    //       ]),
+                    //     ),
+                    //     PopupMenuItem<String>(
+                    //       value: 'delete',
+                    //       child: Row(children: [
+                    //         const Icon(Icons.delete_outline, color: Colors.redAccent, size: 15),
+                    //         const SizedBox(width: 8),
+                    //         Text('Delete', style: GoogleFonts.inter(color: Colors.redAccent, fontSize: 15, fontWeight: FontWeight.w600)),
+                    //       ]),
+                    //     ),
+                    //   ],
+                    // ),
                 ],
               ),
               // Text(

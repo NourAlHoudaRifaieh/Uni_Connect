@@ -4,7 +4,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:uni_connect/core/models/post_model.dart';
 import 'package:uni_connect/features/auth/data/post_repository.dart';
 import 'package:uni_connect/features/auth/data/user_repository.dart';
-import 'package:uni_connect/features/feed/presentation/widgets/post_owner_menu.dart';
+import 'package:uni_connect/features/feed/presentation/widgets/content_owner_menu.dart';
+import 'package:uni_connect/features/feed/presentation/widgets/delete_post_dialog.dart';
+import 'package:uni_connect/features/feed/presentation/widgets/edit_post_dialog.dart';
 
 class PostCard extends StatelessWidget{
   final PostModel post;
@@ -158,11 +160,48 @@ class PostCard extends StatelessWidget{
                     ],
                   ),
                 ),
-                PostOwnerMenu(
-                    post: post,
-                  onEdit: onEditPressed,
-                  onDelete: onDeletePressed,
-                ),
+                // PostOwnerMenu(
+                //     post: post,
+                //   onEdit: onEditPressed,
+                //   onDelete: onDeletePressed,
+                // ),
+
+               ContentOwnerMenu(
+                   ownerId: post.userId ?? '',
+                    onEdit: (){
+                     showDialog(
+                         context: context,
+                         builder: (context) => EditPostDialog(
+                             initialDescription: post.description,
+                             onUpdateConfirmed: (newText, newCategory) async{
+                               if(newText.trim().isEmpty || post.postId == null) return;
+                               await PostRepository().updatePost(
+                                   post.postId!,
+                                   description: newText,
+                                 categoryName: newCategory,
+                               );
+                             },
+                         ),
+                     );
+                    },
+                   onDelete: (){
+                     showDialog(
+                         context: context,
+                         builder: (context) => DeletePostDialog(
+                             onDeleteConfirmed: () async{
+                               if(post.postId == null) return;
+                                await PostRepository().deletePost(
+                                  post.postId!,
+                                  subjectId: post.subjectId,
+                                  groupId: post.groupId,
+                                  userId: post.userId,
+                                );
+                             }
+                         ),
+                     );
+                   }
+               ),
+
                 // PopupMenuButton<String>(
                 //   style: IconButton.styleFrom(
                 //     tapTargetSize: MaterialTapTargetSize.shrinkWrap,

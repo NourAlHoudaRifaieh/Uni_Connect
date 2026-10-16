@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:uni_connect/features/auth/data/post_repository.dart';
@@ -6,57 +7,57 @@ import 'package:uni_connect/core/models/post_model.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/delete_post_dialog.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/edit_post_dialog.dart';
 
-class PostOwnerMenu extends StatelessWidget {
+class ContentOwnerMenu extends StatelessWidget {
   
-  final PostModel post;
-  final VoidCallback? onEdit;
-  final VoidCallback? onDelete;
-  
-  PostOwnerMenu({
+  final String ownerId;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
+
+  ContentOwnerMenu({
     super.key,
-    required this.post,
-    this.onDelete,
-    this.onEdit,
+    required this.ownerId,
+    required this.onEdit,
+    required this.onDelete,
   });
 
-  Future<void> onEditPressed(BuildContext context) async{
-    if(onEdit != null){
-      onEdit!();
-      return;
-    }
-    showDialog(
-        context: context,
-        builder: (context) =>
-            EditPostDialog(
-              initialDescription: post.description,
-              onUpdateConfirmed: (newText, newCategory) async{
-                if(newText.trim().isEmpty || post.postId == null) return;
-                // if(newText.trim() == post.description.trim()) return;
-                await PostRepository().updatePost(post.postId!, description: newText, categoryName: newCategory);
-              },
-            ),
-    );
-  }
+  // Future<void> onEditPressed(BuildContext context) async{
+  //   if(onEdit != null){
+  //     onEdit!();
+  //     return;
+  //   }
+  //   showDialog(
+  //       context: context,
+  //       builder: (context) =>
+  //           EditPostDialog(
+  //             initialDescription: post.description,
+  //             onUpdateConfirmed: (newText, newCategory) async{
+  //               if(newText.trim().isEmpty || post.postId == null) return;
+  //               // if(newText.trim() == post.description.trim()) return;
+  //               await PostRepository().updatePost(post.postId!, description: newText, categoryName: newCategory);
+  //             },
+  //           ),
+  //   );
+  // }
 
-  Future<void> onDeletePressed(BuildContext context) async{
-    if(onDelete != null){
-      onDelete!();
-      return;
-    }
-    showDialog(
-      context:context,
-      builder: (context) => DeletePostDialog(
-        onDeleteConfirmed :() async{
-          if(post.postId == null) return;
-          await PostRepository().deletePost(
-            post.postId!,
-            subjectId: post.userId,
-            groupId: post.groupId,
-          );
-        }
-      ),
-    );
-  }
+  // Future<void> onDeletePressed(BuildContext context) async{
+  //   if(onDelete != null){
+  //     onDelete!();
+  //     return;
+  //   }
+  //   showDialog(
+  //     context:context,
+  //     builder: (context) => DeletePostDialog(
+  //       onDeleteConfirmed :() async{
+  //         if(post.postId == null) return;
+  //         await PostRepository().deletePost(
+  //           post.postId!,
+  //           subjectId: post.userId,
+  //           groupId: post.groupId,
+  //         );
+  //       }
+  //     ),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +67,9 @@ class PostOwnerMenu extends StatelessWidget {
       initialData: UserRepository.cachedDocId,
       builder: (context, snap){
         final me = snap.data;
-        final isOwner = me != null && me.isNotEmpty && post.userId == me;
+        final authUid = FirebaseAuth.instance.currentUser?.uid ?? '';
+        final isOwner = ownerId.isNotEmpty && (ownerId == me || ownerId == authUid);
+        // final isOwner = me != null && me.isNotEmpty && post.userId == me;
         if(!isOwner) return SizedBox.shrink();
 
         return PopupMenuButton<String>(
@@ -83,9 +86,11 @@ class PostOwnerMenu extends StatelessWidget {
           offset: Offset(-5, 30),
           onSelected: (value) {
             if (value == 'edit') {
-              onEditPressed(context);
+              // onEditPressed(context);
+              onEdit();
             } else if (value == 'delete') {
-              onDeletePressed(context);
+              // onDeletePressed(context);
+              onDelete();
             }
           },
           itemBuilder: (context) => [
