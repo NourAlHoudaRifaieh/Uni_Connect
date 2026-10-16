@@ -24,6 +24,7 @@ class SeeAnotherSubjectButton extends StatelessWidget {
             showModalBottomSheet(
                 context: context,
                 isScrollControlled: true,
+                useRootNavigator: true,
                 backgroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.vertical(top: Radius.circular(24))

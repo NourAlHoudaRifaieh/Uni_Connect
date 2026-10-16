@@ -7,10 +7,12 @@ import 'package:uni_connect/features/auth/data/user_repository.dart';
 class CommentCard extends StatelessWidget {
 
   final ReplyModel reply;
+  final VoidCallback? onReply;
 
   const CommentCard({
     super.key,
     required this.reply,
+    this.onReply,
   });
 
   @override
@@ -19,7 +21,7 @@ class CommentCard extends StatelessWidget {
 
     final me = UserRepository.cachedDocId;
     final isMine = reply.userId.isNotEmpty && (reply.userId == me || reply.userId == FirebaseAuth.instance.currentUser?.uid);
-    final authorName = reply.authorName.isNotEmpty ? reply.authorName : 'Anonymous';
+    // final authorName = reply.authorName.isNotEmpty ? reply.authorName : 'Anonymous';
 
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 20),
@@ -79,13 +81,65 @@ class CommentCard extends StatelessWidget {
                     ),
                 ],
               ),
-              Text(
-                reply.timeAgo,
-                style: GoogleFonts.inter(
-                  fontSize: 11,
-                  color: Colors.grey.shade500,
-                ),
+              Row(
+                children: [
+                  Text(
+                    reply.timeAgo,
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      color: Colors.grey.shade500,
+                    ),
+                  ),
+                  if (reply.isEdited)
+                    Text(
+                      ' (Edited)',
+                      style: GoogleFonts.inter(
+                        fontSize: 11,
+                        fontStyle: FontStyle.italic,
+                        color: Colors.grey.shade500,
+                      ),
+                    ),
+                  if (isMine)
+                    PopupMenuButton<String>(
+                      padding: EdgeInsets.zero,
+                      color: Colors.white,
+                      elevation: 5,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                      offset: const Offset(-5, 30),
+                      icon: const Icon(Icons.more_vert, size: 18, color: Colors.grey),
+                      onSelected: (v) {
+                        if (v == 'edit') {
+                        } else {
+                        }
+                      },
+                      itemBuilder: (context) => [
+                        PopupMenuItem<String>(
+                          value: 'edit',
+                          child: Row(children: [
+                            const Icon(Icons.edit_outlined, color: Color(0xFF2563EB), size: 15),
+                            const SizedBox(width: 8),
+                            Text('Edit', style: GoogleFonts.inter(color: const Color(0xFF2563EB), fontSize: 15, fontWeight: FontWeight.w600)),
+                          ]),
+                        ),
+                        PopupMenuItem<String>(
+                          value: 'delete',
+                          child: Row(children: [
+                            const Icon(Icons.delete_outline, color: Colors.redAccent, size: 15),
+                            const SizedBox(width: 8),
+                            Text('Delete', style: GoogleFonts.inter(color: Colors.redAccent, fontSize: 15, fontWeight: FontWeight.w600)),
+                          ]),
+                        ),
+                      ],
+                    ),
+                ],
               ),
+              // Text(
+              //   reply.timeAgo,
+              //   style: GoogleFonts.inter(
+              //     fontSize: 11,
+              //     color: Colors.grey.shade500,
+              //   ),
+              // ),
             ],
           ),
           SizedBox(height: 8),

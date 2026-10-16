@@ -44,6 +44,24 @@ class ReplyRepository {
 
   }
 
+  //edit a reply's content and flag it as edited "Edited"
+  Future<void> editReply({
+    required String postId,
+    required String replyId,
+    required String newContent,
+  }) async {
+    await _firestore
+        .collection('posts')
+        .doc(postId)
+        .collection('replies')
+        .doc(replyId)
+        .update({
+          'content': newContent.trim(),
+          'isEdited': true,
+          'editAt': FieldValue.serverTimestamp(),
+        });
+  }
+
   //Delete a reply & decrement the post's comment count
   Future<void> deleteReply({
     required String postId,
