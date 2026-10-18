@@ -69,7 +69,7 @@ class AdminSubjectRequestScreen extends StatelessWidget {
               child: StreamBuilder<List<Map<String, dynamic>>>(
                   stream: SubjectRequestRepository().watchPending(),
                   builder: (context, snap){
-                    if(!snap.hasData) {
+                    if(snap.hasData) {
                       return Center(
                         child: Padding(
                           padding: EdgeInsets.all(24),

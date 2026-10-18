@@ -35,8 +35,8 @@ class MySubjectRequests extends StatelessWidget {
                     ),
                   ),
                   if(requests.any((r) => r['status'] != 'pending'))
-                    CustomElevatedButton(
-                        text: 'Clear finished',
+                    TextButton(
+                        child: Text('Clear finished'),
                         onPressed: () => SubjectRequestRepository().clearDecided(user.userId),
                     ),
                   SizedBox(height:8),
