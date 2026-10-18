@@ -69,7 +69,7 @@ class AdminSubjectRequestScreen extends StatelessWidget {
               child: StreamBuilder<List<Map<String, dynamic>>>(
                   stream: SubjectRequestRepository().watchPending(),
                   builder: (context, snap){
-                    if(snap.hasData) {
+                    if(snap.hasError) {
                       return Center(
                         child: Padding(
                           padding: EdgeInsets.all(24),
@@ -121,7 +121,7 @@ class AdminSubjectRequestScreen extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                'Currently: ${r['userName'] ?? ''} (${r['userYear']}',
+                                'Currently: ${r['userGroupName'] ?? ''} (${r['userYear']}',
                                 style: GoogleFonts.inter(
                                   color:Colors.grey.shade600,
                                   fontSize: 12,
