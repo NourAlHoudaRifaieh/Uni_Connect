@@ -154,12 +154,14 @@ class SubjectRequestRepository {
       'status': 'accepted',
       'decidedAt': FieldValue.serverTimestamp()
     });
-    await _notifications.send(
-      toUserDocId: request['userId'],
-      content: 'Your request for "${request['subjectName']}" was accepted.',
-      senderName: 'Admin',
-      type: 'request_accepted',
-    );
+    try{
+      await _notifications.send(
+        toUserDocId: request['userId'],
+        content: 'Your request for "${request['subjectName']}" was accepted.',
+        senderName: 'Admin',
+        type: 'request_accepted',
+      );
+    }catch(_){}
     return null;
   }
 
@@ -171,12 +173,14 @@ class SubjectRequestRepository {
       'status': 'rejected',
       'decidedAt': FieldValue.serverTimestamp(),
     });
-    await _notifications.send(
-      toUserDocId: request['userId'],
-      content: 'Your request for "${request['subjectName']}" was rejected.',
-      senderName: 'Admin',
-      type: 'request_rejected',
-    );
+    try{
+      await _notifications.send(
+        toUserDocId: request['userId'],
+        content: 'Your request for "${request['subjectName']}" was rejected.',
+        senderName: 'Admin',
+        type: 'request_rejected',
+      );
+    }catch(_){}
   }
 
 }

@@ -31,25 +31,41 @@ class _SeeAnotherSubjectSheetState extends State<SeeAnotherSubjectSheet> {
   
   String? _selectedYear;
   String? _selectedGroupId;
+  String? _errorText;
+  bool _sending = false;
   
   //Sends the request to the backend database
   Future<void> _sendRequest(SubjectModel subject) async{
+    if(_sending) return;
+    setState(() {
+      _sending = true;
+      _errorText = null;
+    });
     String? error;
     try{
       error = await _requestRepository.createRequest(user: widget.user, subject: subject);
     }catch(e){
-      error = 'Error: $e';
+      error = 'Could not send the request: $e';
     }
     if(!mounted) return;
+    if(error != null){
+      setState(() {
+        _sending = false;
+        _errorText = error;
+      });
+      return;
+    }
 
-    ScaffoldMessenger.of(context).showSnackBar(
+    final messenger = ScaffoldMessenger.of(context);
+    Navigator.pop(context);
+    messenger.showSnackBar(
       SnackBar(
-        content: Text(error ?? 'Request send to admin'),
-        backgroundColor: error == null ? Colors.green : Colors.red,
+        content: Text('Request send to the admin'),
+        backgroundColor: Colors.green,
       ),
     );
 
-    if (error == null ) Navigator.pop(context);
+    // if (error == null ) Navigator.pop(context);
   }
 
   //Filters specialization by year and student department
@@ -144,7 +160,27 @@ class _SeeAnotherSubjectSheetState extends State<SeeAnotherSubjectSheet> {
                 )).toList(),
             ),
             SizedBox(height:12),
-            
+
+            if(_errorText != null)
+              Container(
+                width: double.infinity,
+                margin: EdgeInsets.only(bottom: 10),
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.red.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color:Colors.red.shade200,
+                  ),
+                ),
+                child: Text(
+                  _errorText!,
+                  style: GoogleFonts.inter(
+                    fontSize: 12, color: Colors.red.shade700,
+                  ),
+                ),
+              ),
+
             Expanded(
               child: _selectedYear == null
                 ? Center(
@@ -228,7 +264,7 @@ class _SeeAnotherSubjectSheetState extends State<SeeAnotherSubjectSheet> {
                                                 width: 120,
                                                 child: CustomElevatedButton(
                                                   text: status == 'rejected' ? 'Request again' : 'Request',
-                                                  onPressed: () => _sendRequest(subject),
+                                                  onPressed: _sending ? null : () => _sendRequest(subject),
                                                   height: 36,
                                                   borderRadius: 10,
                                                   backgroundColor: Color(0xFF2563EB),

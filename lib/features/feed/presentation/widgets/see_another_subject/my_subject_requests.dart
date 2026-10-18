@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:uni_connect/core/models/user_model.dart';
+import 'package:uni_connect/core/widgets/custom_elevated_button.dart';
 import 'package:uni_connect/features/auth/data/subject_request_repository.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/see_another_subject/request_status_chip.dart';
 
@@ -33,6 +34,11 @@ class MySubjectRequests extends StatelessWidget {
                       ),
                     ),
                   ),
+                  if(requests.any((r) => r['status'] != 'pending'))
+                    CustomElevatedButton(
+                        text: 'Clear finished',
+                        onPressed: () => SubjectRequestRepository().clearDecided(user.userId),
+                    ),
                   SizedBox(height:8),
                   ...requests.map((req) => Container(
                     margin: EdgeInsets.only(bottom: 8),
@@ -60,7 +66,8 @@ class MySubjectRequests extends StatelessWidget {
                         ),
                       ],
                     ),
-                  ))
+                  )),
+                  SizedBox(height:8),
                 ],
               ),
             ],
