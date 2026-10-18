@@ -65,26 +65,39 @@ class AdminSubjectRequestScreen extends StatelessWidget {
                 ),
               ),
             ],
-            StreamBuilder<List<Map<String, dynamic>>>(
-                stream: SubjectRequestRepository().watchPending(),
-                builder: (context, snap){
-                  if(!snap.hasData) {
-                    return Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-                  final items= snap.data!;
-                  if(items.isEmpty){
-                    return Center(
-                      child: Text(
-                        'No pending requests',
-                        style: GoogleFonts.inter(
-                          color:Colors.grey.shade500,
+            Expanded(
+              child: StreamBuilder<List<Map<String, dynamic>>>(
+                  stream: SubjectRequestRepository().watchPending(),
+                  builder: (context, snap){
+                    if(!snap.hasData) {
+                      return Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(24),
+                          child: Text(
+                            'Could not load requests: \n${snap.error}\n\nCheck that the Firestore rules were deployed.',
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.inter(color: Colors.red.shade400),
+                          ),
                         ),
-                      ),
-                    );
-                  }
-                  return ListView.builder(
+                      );
+                    }
+                    if(!snap.hasData){
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                    final items= snap.data!;
+                    if(items.isEmpty){
+                      return Center(
+                        child: Text(
+                          'No pending requests',
+                          style: GoogleFonts.inter(
+                            color:Colors.grey.shade500,
+                          ),
+                        ),
+                      );
+                    }
+                    return ListView.builder(
                       padding: EdgeInsets.all(20),
                       itemCount: items.length,
                       itemBuilder: (context, i){
@@ -122,24 +135,37 @@ class AdminSubjectRequestScreen extends StatelessWidget {
                               Row(
                                 children: [
                                   Expanded(
-                                      child: CustomElevatedButton(
-                                          text: 'Reject',
-                                          onPressed: (){
-                                            SubjectRequestRepository().reject(r);
-                                          },
-                                          type: ButtonType.outlined,
-                                          backgroundColor: Colors.redAccent,
-                                      ),
+                                    child: CustomElevatedButton(
+                                      text: 'Reject',
+                                      onPressed: () async{
+                                        try{
+                                          await SubjectRequestRepository().reject(r);
+                                        }catch(e){
+                                          if(context.mounted){
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              SnackBar(content: Text('Could not reject: $e'), backgroundColor: Colors.red,),
+                                            );
+                                          }
+                                        }
+                                      },
+                                      type: ButtonType.outlined,
+                                      backgroundColor: Colors.redAccent,
+                                    ),
                                   ),
                                   SizedBox(width:18),
                                   Expanded(
                                     child: CustomElevatedButton(
                                       text: 'Accept',
                                       onPressed: () async{
-                                        final error = await SubjectRequestRepository().accept(r);
-                                        if(error != null){
+                                        String? error;
+                                        try{
+                                          error = await SubjectRequestRepository().accept(r);
+                                        }catch(e){
+                                          error = 'Could not accept: $e';
+                                        }
+                                        if(error != null && context.mounted){
                                           ScaffoldMessenger.of(context).showSnackBar(
-                                            SnackBar(content: Text(error)),
+                                            SnackBar(content: Text(error), backgroundColor: Colors.red,),
                                           );
                                         }
                                       },
@@ -154,8 +180,9 @@ class AdminSubjectRequestScreen extends StatelessWidget {
                           ),
                         );
                       },
-                  );
-                }
+                    );
+                  }
+              ),
             ),
           ],
         ),
