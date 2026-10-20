@@ -121,7 +121,7 @@ class AdminSubjectRequestScreen extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                'Currently: ${r['userGroupName'] ?? ''} (${r['userYear']}',
+                                'Currently: ${r['userGroupName'] ?? ''} (${r['userYear']})',
                                 style: GoogleFonts.inter(
                                   color:Colors.grey.shade600,
                                   fontSize: 12,
