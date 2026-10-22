@@ -54,15 +54,36 @@ class _HomeScreenState extends State <HomeScreen>{
     }).toList();
   }
 
-  Stream<List<PostModel>> _postsInMySpecialty() {
-    final subjectRepo = SubjectRepository();
+  // Stream<List<PostModel>> _postsInMySpecialty() {
+  //   final subjectRepo = SubjectRepository();
+  //   return _userRepository.watchCurrentUser().asyncExpand((user) {
+  //     return subjectRepo.watchAllSubjects().asyncExpand((subjects){
+  //       return _postRepository.watchAllPosts().map((posts){
+  //         if (user == null || user.role == 'admin') return posts;
+  //         final mine = FeedAccess.subjectIdsFor(user, subjects);
+  //         return posts.where((p) => FeedAccess.canSee(p, user, mine)).toList();
+  //       });
+  //     });
+  //   });
+  // }
+
+  Stream <List<PostModel>> _postsInMySpecialty(){
     return _userRepository.watchCurrentUser().asyncExpand((user) {
-      return subjectRepo.watchAllSubjects().asyncExpand((subjects){
-        return _postRepository.watchAllPosts().map((posts){
-          if (user == null || user.role == 'admin') return posts;
-          final mine = FeedAccess.subjectIdsFor(user, subjects);
-          return posts.where((p) => FeedAccess.canSee(p, user, mine)).toList();
-        });
+      final groupId = user?.groupId;
+      return _postRepository.watchAllPosts().asyncMap((posts) async{
+        if(groupId == null || groupId.isEmpty) return posts;
+        final locked = isLockedYear(user?.academicYear);
+        final extra = locked ? const <String>[] : (user?.extraSubjectIds ?? const <String>[]);
+        //subjects that belong to my group own or shared with it
+        final subjects = await SubjectRepository().getSubjects();
+        final mySubjectIds = subjects
+          .where((s) => s.belongsToGroup(groupId))
+          .map((s) => s.subjectId)
+          .whereType<String>()
+          .toSet();
+        return posts
+            .where((p) => p.groupId == groupId || (p.subjectId != null && (mySubjectIds.contains(p.subjectId) || extra.contains(p.subjectId))))
+            .toList();
       });
     });
   }

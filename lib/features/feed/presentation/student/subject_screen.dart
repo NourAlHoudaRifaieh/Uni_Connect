@@ -69,8 +69,9 @@ class SubjectScreen extends StatelessWidget {
                       builder: (context, groupSnapshot){
                         final group = groupSnapshot.data;
                         // final faculty = group?.faculty ?? '';
-                        final major = group?.major ?? '';
-                        final academicYear = group?.academicYear ?? '';
+                        // final major = group?.major ?? '';
+                        final academicYear = group?.academicYear ?? userModel?.academicYear ?? '';
+                        final departmentName = group?.department ?? userModel?.department ?? group?.major ?? '';
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -83,7 +84,7 @@ class SubjectScreen extends StatelessWidget {
                                       style: GoogleFonts.inter(fontSize: 22, fontWeight:  FontWeight.bold)
                                   ),
                                   SizedBox(height:4),
-                                  Text('$academicYear - $major - ${subjects.length} subjects enrolled',
+                                  Text('$academicYear - $departmentName - ${subjects.length} subjects enrolled',
                                     style: GoogleFonts.inter(
                                         fontSize: 13, color: Colors.grey.shade600
                                     ),

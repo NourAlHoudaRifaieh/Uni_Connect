@@ -89,8 +89,15 @@ class PostRepository {
             (userQuery.docs.first.data()['role'] ?? 'student').toString();
       }
     }
+
+    //the post inherits the group of its subject
+    String? postGroupId = post.groupId;
+    if((postGroupId == null || postGroupId.isEmpty) && post.subjectId != null && post.subjectId!.isNotEmpty){
+      final subjectDoc = await _firestore.collection('subjects').doc(post.subjectId).get();
+      postGroupId = subjectDoc.data()?['groupId'] as String?;
+    }
     final correctedPost = post.copyWith(
-        userId: correctUserId, postId: newPostId, authorRole: authorRole);
+        userId: correctUserId, postId: newPostId, authorRole: authorRole, groupId: postGroupId);
 
     await _firestore.collection('posts').doc(newPostId).set(
         correctedPost.toJson());

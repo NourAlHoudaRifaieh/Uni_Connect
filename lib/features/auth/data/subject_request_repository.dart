@@ -4,6 +4,8 @@ import 'package:uni_connect/core/models/user_model.dart';
 import 'package:uni_connect/features/auth/data/group_repository.dart';
 import 'package:uni_connect/features/auth/data/notification_repository.dart';
 
+const int kMaxExtraSubjects = 2;
+
 /// Year helpers shared by the request flow and the validations.
 int? yearNumber(String? year) {
   if (year == null) return null;
@@ -34,6 +36,9 @@ class SubjectRequestRepository {
     if (user.extraSubjectIds.contains(subject.subjectId)) {
       return 'You already have this subject.';
     }
+    if (user.extraSubjectIds.length >= kMaxExtraSubjects){
+      return 'You can have at most $kMaxExtraSubjects extra subjects.';
+    }
     return null;
   }
   
@@ -55,16 +60,26 @@ class SubjectRequestRepository {
     if(existing.docs.isNotEmpty){
       return 'You already sent a pending request for this subject.';
     }
-    
+
+    //accepted extra subjects + pending requests must stay within the limit
+    final pendingAll = await _firestore
+      .collection('subjectRequests')
+      .where('userId', isEqualTo: user.userId)
+      .where('status', isEqualTo: 'pending')
+      .get();
+    if(user.extraSubjectIds.length + pendingAll.docs.length >= kMaxExtraSubjects){
+      return 'You can have at most $kMaxExtraSubjects extra subjects (accepted + pending).';
+    }
+
     final subjectGroup = subject.groupId.isNotEmpty
       ? await GroupRepository().getGroupById(subject.groupId)
       : null;
 
     //Business Administration , Economic Science subjects are never mixed
-    final subDept = subjectGroup?.department;
-    if(user.department != null && subDept != null && user.department != subDept){
-      return '${user.department} students cannot request $subDept subjects.';
-    }
+    // final subDept = subjectGroup?.department;
+    // if(user.department != null && subDept != null && user.department != subDept){
+    //   return '${user.department} students cannot request $subDept subjects.';
+    // }
 
     final userGroup = (user.groupId != null && user.groupId!.isNotEmpty)
       ? await GroupRepository().getGroupById(user.groupId!)
@@ -144,6 +159,23 @@ class SubjectRequestRepository {
       await _firestore.collection('subjectRequests').doc(request['id']).update({'status': 'rejected'});
       return 'Rejected automatically: Year 4/5 restriction.';
     }
+    // if student already reached the maximum of extra subjects
+    if(user.extraSubjectIds.length >= kMaxExtraSubjects){
+      await _firestore
+          .collection('subjectRequests')
+          .doc(request['id'])
+          .update({
+            'status': 'rejected',
+            'decidedAt': FieldValue.serverTimestamp(),
+          });
+      await _notifications.send(
+          toUserDocId: request['userId'],
+          content: 'Your request for "${request['subjectName']}" was rejected: maximum $kMaxExtraSubjects extra subjects.',
+          senderName: 'System',
+          type: 'request_rejected',
+      );
+      return 'Rejected automatically: maximum $kMaxExtraSubjects extra subjects.';
+    }
     await userRef.update({
       'extraSubjectIds': FieldValue.arrayUnion([request['subjectId']]),
     });
@@ -154,14 +186,14 @@ class SubjectRequestRepository {
       'status': 'accepted',
       'decidedAt': FieldValue.serverTimestamp()
     });
-    try{
+    // try{
       await _notifications.send(
         toUserDocId: request['userId'],
         content: 'Your request for "${request['subjectName']}" was accepted.',
         senderName: 'Admin',
         type: 'request_accepted',
       );
-    }catch(_){}
+    // }catch(_){}
     return null;
   }
 
@@ -173,14 +205,14 @@ class SubjectRequestRepository {
       'status': 'rejected',
       'decidedAt': FieldValue.serverTimestamp(),
     });
-    try{
+    // try{
       await _notifications.send(
         toUserDocId: request['userId'],
         content: 'Your request for "${request['subjectName']}" was rejected.',
         senderName: 'Admin',
         type: 'request_rejected',
       );
-    }catch(_){}
+    // }catch(_){}
   }
 
 }

@@ -31,6 +31,12 @@ class GroupModel{
     return base;
   }
 
+  String get effectiveMajor {
+    if (major != null && major!.trim().isNotEmpty) return major!.trim();
+    if (department != null && department!.trim().isNotEmpty) return department!.trim();
+    return '';
+  }
+
   String get displayName {
     var base = groupName.trim();
     final y = (academicYear ?? '').trim();
