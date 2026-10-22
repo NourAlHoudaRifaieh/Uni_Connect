@@ -186,4 +186,24 @@ class PostRepository {
       await _userRepository.decrementUserPostCount(userId);
     }
   }
+
+  Future<void> addComment(String postId, Map<String, dynamic> commentData, String userId) async {
+    final postRef = _firestore.collection('posts').doc(postId);
+    await postRef.update({
+      'comments': FieldValue.arrayUnion([commentData]),
+    });
+    if (userId.isNotEmpty) {
+      await _userRepository.incrementUserCommentCount(userId);
+    }
+  }
+
+  Future<void> deleteComment(String postId, Map<String, dynamic> commentData, String userId) async {
+    final postRef = _firestore.collection('posts').doc(postId);
+    await postRef.update({
+      'comments': FieldValue.arrayRemove([commentData]),
+    });
+    if (userId.isNotEmpty) {
+      await _userRepository.decrementUserCommentCount(userId);
+    }
+  }
 }

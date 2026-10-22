@@ -9,6 +9,7 @@ class UserModel {
   final String? academicYear;
   final String? major;
   final int postCount;
+  final int commentCount;
   final String? groupId;
   final List<String> extraSubjectIds;
 
@@ -22,6 +23,7 @@ class UserModel {
     this.department,
     this.major,
     this.postCount=0,
+    this.commentCount = 0,
     this.groupId,
     this.extraSubjectIds = const [],
   });
@@ -36,6 +38,7 @@ class UserModel {
     String? department,
     String? major,
     int? postCount,
+    int? commentCount,
     List<String>? extraSubjectIds,
   }) {
     return UserModel(
@@ -48,6 +51,7 @@ class UserModel {
       department: department ?? this.department,
       major: major ?? this.major,
       postCount: postCount ?? this.postCount,
+      commentCount: commentCount ?? this.commentCount,
       groupId: groupId,
       extraSubjectIds: extraSubjectIds ?? this.extraSubjectIds,
     );
@@ -78,6 +82,7 @@ class UserModel {
         major: json['major'],
         groupId: json['groupId'],
         postCount:json['postCount'] ?? 0,
+        commentCount:json['commentCount'] ?? 0,
         extraSubjectIds: List<String>.from(json['extraSubjectIds'] ?? const []),
     );
   }
@@ -94,6 +99,7 @@ class UserModel {
         major: data['major'],
         groupId: data['groupId'],
         postCount: data['postCount'] ?? 0,
+        commentCount: data['commentCount'] ?? 0,
        extraSubjectIds: List<String>.from(data['extraSubjectIds'] ?? const []),
     );
   }
@@ -110,6 +116,7 @@ class UserModel {
       if(groupId !=null) 'groupId': groupId,
       if(major !=null) 'major':major,
       'postCount': postCount,
+      'commentCount': commentCount,
     };
   }
 

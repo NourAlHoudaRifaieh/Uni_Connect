@@ -52,6 +52,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ? userModel!.fullName!
               : _getNameFromEmail(email);
           final postCount = userModel?.postCount.toString() ?? '0';
+          final commentCount = userModel?.commentCount.toString() ?? '0';
 
           final initials = userModel?.authorInitials.isNotEmpty == true
               ? userModel!.authorInitials
@@ -309,7 +310,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               width: 1,
                               color: Colors.grey.shade200,
                             ),
-                            _buildStatItem('0', 'Comments'),
+                            _buildStatItem(commentCount, 'Comments'),
                           ],
                         ),
                       ),
