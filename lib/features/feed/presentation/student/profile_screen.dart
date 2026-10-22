@@ -198,6 +198,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     ),
                                   ),
                                   SizedBox(height:6),
+                                  if(userModel?.role == 'admin')
+                                    Container(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 18,
+                                        vertical: 3,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.25),
+                                        borderRadius:   BorderRadius.circular(12),
+                                      ),
+                                      child: Text(
+                                        'Admin',
+                                        style: GoogleFonts.inter(
+                                          color: Colors.white,
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    )
+                                  else
                                   FutureBuilder<GroupModel?>(
                                       future: userModel?.groupId != null && userModel!.groupId!.isNotEmpty
                                         ? _groupRepository.getGroupById(userModel.groupId!)
