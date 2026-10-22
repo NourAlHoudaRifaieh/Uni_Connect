@@ -187,9 +187,8 @@ class PostRepository {
     }
   }
 
-  Future<void> addComment(String postId, Map<String, dynamic> commentData, String userId) async {
-    final postRef = _firestore.collection('posts').doc(postId);
-    await postRef.update({
+  Future<void> addComment({ required String postId, required Map<String, dynamic> commentData, required String userId}) async {
+    await _firestore.collection('posts').doc(postId).update({
       'comments': FieldValue.arrayUnion([commentData]),
     });
     if (userId.isNotEmpty) {

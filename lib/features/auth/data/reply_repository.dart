@@ -1,11 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:uni_connect/core/models/reply_model.dart';
 import 'package:uni_connect/core/utils/sequential_id_service.dart';
+import 'package:uni_connect/features/auth/data/user_repository.dart';
 
 
 class ReplyRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final SequentialIdService _ids = SequentialIdService();
+  final UserRepository _userRepository = UserRepository();
 
   Stream <List<ReplyModel>> watchRepliesForPost(String postId){
     return _firestore
@@ -67,9 +70,16 @@ class ReplyRepository {
   Future<void> deleteReply({
     required String postId,
     required String replyId,
+    String? userId,
   }) async {
     final postRef = _firestore.collection('posts').doc(postId);
     final replyRef = postRef.collection('replies').doc(replyId);
+    String authorUserId = userId ?? '';
+    if(authorUserId.isEmpty){
+      final replyDoc = await replyRef.get();
+      if(replyDoc.exists){}
+      authorUserId = replyDoc.data()?['userId'] ?? '';
+    }
     final batch = _firestore.batch();
     //Delete reply document
     batch.delete(replyRef);
@@ -78,5 +88,9 @@ class ReplyRepository {
       'comments': FieldValue.increment(-1),
     });
     await batch.commit();
+
+    if(authorUserId.isNotEmpty){
+      await _userRepository.decrementUserCommentCount(authorUserId);
+    }
   }
 }

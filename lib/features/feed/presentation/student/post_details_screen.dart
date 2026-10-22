@@ -80,6 +80,10 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
       );
       //Save reply to Firestore & increment comment count
       await _replyRepository.addReply(postId: widget.post.postId!, reply: newReply);
+      //increment comment count for current user in firebase
+      if(me.userId.isNotEmpty){
+        await _userRepository.incrementUserCommentCount(me.userId);
+      }
     }catch(e){
       if(mounted){
         ScaffoldMessenger.of(context).showSnackBar(

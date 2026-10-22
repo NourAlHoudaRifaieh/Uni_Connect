@@ -130,6 +130,7 @@ class CommentCard extends StatelessWidget {
                                     await ReplyRepository().deleteReply(
                                         postId: reply.postId,
                                         replyId: reply.replyId,
+                                        userId: reply.userId,
                                     );
                                   },
                               ),

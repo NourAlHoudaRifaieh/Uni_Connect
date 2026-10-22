@@ -128,14 +128,14 @@ class UserRepository {
   }
 
   Future<void> incrementUserCommentCount(String userId) async {
-    await _firestore.collection('users').doc(userId).update({
+    await _firestore.collection('users').doc(userId).set({
       'commentCount': FieldValue.increment(1),
-    });
+    }, SetOptions(merge: true));
   }
 
   Future<void> decrementUserCommentCount(String userId) async {
-    await _firestore.collection('users').doc(userId).update({
+    await _firestore.collection('users').doc(userId).set({
       'commentCount': FieldValue.increment(-1),
-    });
+    }, SetOptions(merge: true));
   }
 }
