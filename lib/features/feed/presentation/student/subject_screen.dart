@@ -71,7 +71,10 @@ class SubjectScreen extends StatelessWidget {
                         // final faculty = group?.faculty ?? '';
                         // final major = group?.major ?? '';
                         final academicYear = group?.academicYear ?? userModel?.academicYear ?? '';
-                        final departmentName = group?.department ?? userModel?.department ?? group?.major ?? '';
+                        // final departmentName = group?.department ?? userModel?.department ?? group?.major ?? '';
+                        final majorOrDept = (group?.major != null && group!.major!.trim().isNotEmpty)
+                            ? group.major!.trim()
+                            : (group?.department ?? userModel?.department ?? '');
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -84,7 +87,7 @@ class SubjectScreen extends StatelessWidget {
                                       style: GoogleFonts.inter(fontSize: 22, fontWeight:  FontWeight.bold)
                                   ),
                                   SizedBox(height:4),
-                                  Text('$academicYear - $departmentName - ${subjects.length} subjects enrolled',
+                                  Text('$academicYear - $majorOrDept - ${subjects.length} subjects enrolled',
                                     style: GoogleFonts.inter(
                                         fontSize: 13, color: Colors.grey.shade600
                                     ),
