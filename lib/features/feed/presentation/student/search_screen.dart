@@ -89,14 +89,28 @@ class SearchScreenState extends State<SearchScreen>{
       final matchesName = student.fullName.toLowerCase().contains(query);
       final matchesEmail = student.email.toLowerCase().contains(query);
 
+      final matchesUserDept = student.department?.toLowerCase().contains(query) ?? false;
+      final matchesUserMajor = student.major?.toLowerCase().contains(query) ?? false;
+      final matchesUserYear = student.academicYear?.toLowerCase().contains(query) ?? false;
+
       final group = student.groupId != null ? _groupsMap[student.groupId] : null;
       final faculty = group?.faculty?.toLowerCase() ?? '';
-      final major = group?.major?.toLowerCase() ?? '';
+      final groupMajor = group?.major?.toLowerCase() ?? '';
+      final groupDept = group?.department?.toLowerCase() ?? '';
+      final groupYear = group?.academicYear?.toLowerCase() ?? '';
 
-      final matchesFaculty = faculty.contains(query);
-      final matchesMajor = major.contains(query);
+      final matchesGroupFaculty = faculty.contains(query);
+      final matchesGroupMajor = groupMajor.contains(query);
+      final matchesGroupDept = groupDept.contains(query);
+      final matchesGroupYear = groupYear.contains(query);
 
-      return matchesName || matchesEmail || matchesFaculty || matchesMajor;
+      return matchesName
+          || matchesEmail
+          || matchesUserDept
+          || matchesUserMajor
+          || matchesGroupFaculty
+          || matchesGroupMajor
+          || matchesGroupDept || matchesGroupYear;
     }).toList();
   }
 
