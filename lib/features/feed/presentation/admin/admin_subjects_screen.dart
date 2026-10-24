@@ -179,7 +179,7 @@ class _AdminSubjectsScreenState extends State<AdminSubjectsScreen> {
                                       builder: (context){
                                         return EditSubjectDialog(
                                             subject: subject,
-                                            onUpdateConfirmed: (updateName, updateYear) async{
+                                            onUpdateConfirmed: (updateName, updateYear, mainGroupId, sharedGroupIds) async{
                                               if(subject.subjectId != null){
                                                 SubjectModel updatedSubject = SubjectModel(
                                                   subjectId:  subject.subjectId,
@@ -188,6 +188,7 @@ class _AdminSubjectsScreenState extends State<AdminSubjectsScreen> {
                                                   academicYear: updateYear,
                                                   groupId: subject.groupId,
                                                   postCount: subject.postCount,
+                                                  sharedGroupIds: sharedGroupIds,
                                                 );
                                                 await _subjectRepository.updateSubject(updatedSubject);
                                                 if(mounted){
