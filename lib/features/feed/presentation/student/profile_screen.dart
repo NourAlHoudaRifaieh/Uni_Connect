@@ -257,11 +257,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 : Future.value(null),
                               builder: (context, groupSnapshot){
                                 final group = groupSnapshot.data;
-                                final facultyText = group?.department
-                                    ?? group?.major
-                                    ?? group?.groupName
-                                    ?? 'Business Administration';
+                                final departmentText = userModel?.department ?? group?.department ?? '';
+                                final majorText = userModel?.major ?? group?.major ?? '';
+
+                                // final facultyText = group?.department
+                                //     ?? group?.major
+                                //     ?? group?.groupName
+                                //     ?? 'Business Administration';
                                 return Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Icon(
                                       Icons.business_sharp,
@@ -269,13 +274,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       size: 18,
                                     ),
                                     SizedBox(width:8),
-                                    Text(
-                                      facultyText,
-                                      style: GoogleFonts.inter(
-                                        color: Colors.white.withOpacity(0.9),
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 13,
-                                      ),
+                                    Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            if(departmentText.isNotEmpty)
+                                              Text(
+                                                departmentText,
+                                                style: GoogleFonts.inter(
+                                                  color: Colors.white.withOpacity(0.9),
+                                                  fontWeight: FontWeight.w500,
+                                                  fontSize: 13,
+                                                ),
+                                              ),
+                                            if(majorText.isNotEmpty && majorText != departmentText) ...[
+                                              SizedBox( height:2),
+                                              Text(
+                                                majorText,
+                                                style: GoogleFonts.inter(
+                                                  color: Colors.white.withOpacity(0.9),
+                                                  fontWeight: FontWeight.w500,
+                                                  fontSize: 13,
+                                                ),
+                                              ),
+                                            ]
+                                          ],
+                                        ),
                                     ),
                                   ],
                                 );
