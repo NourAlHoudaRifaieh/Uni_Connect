@@ -177,7 +177,9 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                       if(query.isEmpty) return true;
                       final matchesName = student.fullName.toLowerCase().contains(query);
                       final matchesEmail = student.email.toLowerCase().contains(query);
-                      return matchesEmail || matchesName;
+                      final matchesMajor = student.major?.toLowerCase().contains(query) ?? false;
+                      final matchesDepartment = student.department?.toLowerCase().contains(query) ?? false;
+                      return matchesEmail || matchesName || matchesMajor || matchesDepartment;
                     }).toList();
 
                     if(filteredUsers.isEmpty){
@@ -197,8 +199,8 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                       itemBuilder: (context, index){
                         return AdminSearchStudentCard(
                           user: filteredUsers[index],
-                          onEditPressed: () {},
-                          onDeletePressed: () {},
+                          // onEditPressed: () {},
+                          // onDeletePressed: () {},
                         );
                       },
                     );
