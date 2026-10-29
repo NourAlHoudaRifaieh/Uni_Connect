@@ -48,7 +48,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   bool get _isAminEmail =>
-      _emailController.text.trim().toLowerCase().endsWith('@admin.ul.edu.lb');
+      _emailController.text.trim().toLowerCase().endsWith('.admin@gmail.com');
 
   Future <void> _goToStep2() async{
     if(!_formKeyStep1.currentState!.validate()) return;
@@ -104,48 +104,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  // void _handleCreateAccount() async {
-  //   if(_selectedFaculty == null || _selectedYear == null || _selectedMajor == null) return;
-  //     setState(() {
-  //       _isLoading = true;
-  //     });
-  //     final error = await _authRepository.register(
-  //       fullName: _fullNameController.text.trim(),
-  //       email: _emailController.text.trim(),
-  //       password: _passwordController.text,
-  //       faculty: _selectedFaculty!,
-  //       academicYear: _selectedYear!,
-  //       major: _selectedMajor!,
-  //     );
-  //     if(!mounted) return;
-  //     setState(() {
-  //       _isLoading = false;
-  //     });
-  //     if(error != null){
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(
-  //           content: Text(error),
-  //           backgroundColor: Colors.red
-  //         ),
-  //       );
-  //     }else{
-  //       // direct navigation to login
-  //       context.go('/login');
-  //       //welcome notification snackbar
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         const SnackBar(
-  //           content: Text('Account created successfully! Please sign in.'),
-  //           backgroundColor:  Colors.green,
-  //         ),
-  //       );
-  //     }
-  //
-  //   //Firebase Auth + Firestore logic goes here next
-  //   // print('Name: ${_fullNameController.text}');
-  //   // print('Email: ${_emailController.text}');
-  //   // print('Faculty: ${_selectedFaculty}');
-  //   // print('Auto-assigned group: $_selectedFaculty - $_selectedYear');
-  // }
 
   void _handleCreateAccount() async{
     if(_selectedDepartment == null || _selectedYear == null) return;
@@ -210,7 +168,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         children: [
           AuthHeader(
             title: 'Create Account',
-            subtitle: 'Join Lebanese University platform',
+            subtitle: 'Join the Uni-Connect platform',
             backLabel: 'Back to login',
             onBack: () {
               if( _currentStep == 0){
