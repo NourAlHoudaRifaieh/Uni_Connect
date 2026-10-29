@@ -34,7 +34,10 @@ class AuthRepository {
       );
       final uid = credential.user!.uid;
       final sequentialId = await _generateSequentialUserId();
-      final role = email.toLowerCase().endsWith('@admin.ul.edu.lb') ? 'admin' : 'student';
+
+      final cleanEmail = email.trim().toLowerCase();
+      final role = cleanEmail.endsWith('.admin@gmail.com') ? 'admin' : 'student';
+      // final role = email.toLowerCase().endsWith('@admin.ul.edu.lb') ? 'admin' : 'student';
 
 
       //to remove the academicYear and faculty fields if added admin
