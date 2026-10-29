@@ -47,8 +47,8 @@ class _PersonalInfoStepState extends State<PersonalInfoStep> {
             ),
             const SizedBox(height: 16),
             CustomFormField(
-              label: 'Full Name',
-              hint: 'Enter your full name',
+              label: 'Name',
+              hint: 'Enter your Your name',
               color: Colors.white30,
               autovalidateMode: AutovalidateMode.onUserInteraction,
               controller: widget.fullNameController,
@@ -57,15 +57,15 @@ class _PersonalInfoStepState extends State<PersonalInfoStep> {
                   return 'Full name is required';
                 }
                 if(RegExp(r'[0-9]').hasMatch(value)){
-                  return 'Full name cannot contain numbers';
+                  return 'The name cannot contain numbers';
                 }
                 return null;
               },
             ),
             const SizedBox(height:18),
             CustomFormField(
-              label:'University Email',
-              hint: 'Enter your university email',
+              label:'Email',
+              hint: 'Enter your email',
               controller: widget.emailController,
               autovalidateMode: AutovalidateMode.onUserInteraction,
               keyboardType: TextInputType.emailAddress,
@@ -73,27 +73,27 @@ class _PersonalInfoStepState extends State<PersonalInfoStep> {
                 if(value == null || value.isEmpty){
                   return 'Email is required';
                 }
-                final email = value.toLowerCase();
-                final isStudent = email.endsWith('@st.ul.edu.lb');
-                final isAdmin = email.endsWith('@admin.ul.edu.lb');
-                if(!isStudent && !isAdmin){
-                  return 'Use your university email';
+                final emailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@gmail\.com$');
+                if(!emailRegex.hasMatch(value.trim().toLowerCase())){
+                  return 'Use your Gmail address';
                 }
-                // final usernamePart = email.split('@')[0];
-                // if (RegExp(r'[0-9]').hasMatch(usernamePart)) {
-                //   return 'Email username cannot contain numbers';
+                // final email = value.toLowerCase();
+                // final isStudent = email.endsWith('@st.ul.edu.lb');
+                // final isAdmin = email.endsWith('@admin.ul.edu.lb');
+                // if(!isStudent && !isAdmin){
+                //   return 'Use your university email';
                 // }
                 return null;
               },
             ),
-            SizedBox(height:10),
-            Text(
-              'Must end with @st.ul.edu.lb (Students) or @admin.ul.edu.lb (Admins)',
-              style: GoogleFonts.inter(
-                fontSize: 12,
-                color: Colors.grey.shade600,
-              ),
-            ),
+            // SizedBox(height:10),
+            // Text(
+            //   'Must end with @st.ul.edu.lb (Students) or @admin.ul.edu.lb (Admins)',
+            //   style: GoogleFonts.inter(
+            //     fontSize: 12,
+            //     color: Colors.grey.shade600,
+            //   ),
+            // ),
             const SizedBox(height:18),
             CustomFormField(
               label:'Password',
