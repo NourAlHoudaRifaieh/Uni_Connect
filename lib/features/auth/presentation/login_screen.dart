@@ -55,13 +55,6 @@ class _LoginScreenState extends State<LoginScreen> {
         });
       }
     }
-    // final saveEmail = prefs.getString('save_email');
-    // if(saveEmail !=null){
-    //   setState(() {
-    //     _emailController.text = saveEmail;
-    //     isChecked = true;
-    //   });
-    // }
   }
   void _handleLogin() async {
     if (!_formKey.currentState!.validate()) return;
@@ -92,8 +85,6 @@ class _LoginScreenState extends State<LoginScreen> {
           await prefs.remove('saved_email');
         }
 
-        // context.go('/home');// the placeholder route, I'll build the home next
-
         final currentUser = FirebaseAuth.instance.currentUser;
         if(currentUser !=null ){
           final role = await _authRepository.getUserRole(currentUser.uid);
@@ -105,9 +96,7 @@ class _LoginScreenState extends State<LoginScreen> {
           }
         }
       }
-    // //firebase Auth logic goes here
-    // print('Email: ${_emailController.text}');
-    // print('Password: ${_passwordController.text}');
+
   }
 
 
@@ -118,14 +107,13 @@ class _LoginScreenState extends State<LoginScreen> {
       backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
-          // padding: const EdgeInsets.symmetric(horizontal: 24),
           child:Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
                AuthHeader(
                 icon: Icons.school,
                 title: 'Welcome back!',
-                subtitle: 'Sign in to your LU account',
+                subtitle: 'Sign in to your Uni-Connect account',
               ),
               Padding(
                 padding: const EdgeInsets.all(24),
@@ -136,8 +124,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     children: [
                       //CustomFormField for Email
                       CustomFormField(
-                        label: 'University Email',
-                        hint: 'Enter your university email',
+                        label: 'Email',
+                        hint: 'Enter your email',
                         controller: _emailController,
                         autovalidateMode: AutovalidateMode.onUserInteraction,
                         keyboardType: TextInputType.emailAddress,
@@ -145,12 +133,16 @@ class _LoginScreenState extends State<LoginScreen> {
                           if( value == null || value.isEmpty){
                             return 'Email is required';
                           }
-                          final email = value.toLowerCase().trim();
-                          final isStudent = email.endsWith('@st.ul.edu.lb');
-                          final isAdmin = email.endsWith('@admin.ul.edu.lb');
-                          if (!isStudent && !isAdmin) {
-                            return 'Use your university email';
+                          final emailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@gmail\.com$');
+                          if (!emailRegex.hasMatch(value.toLowerCase().trim())) {
+                            return 'Use your Gmail address';
                           }
+                          // final email = value.toLowerCase().trim();
+                          // final isStudent = email.endsWith('@st.ul.edu.lb');
+                          // final isAdmin = email.endsWith('@admin.ul.edu.lb');
+                          // if (!isStudent && !isAdmin) {
+                          //   return 'Use your university email';
+                          // }
                           // final usernamePart = email.split('@')[0];
                           // if(RegExp(r'[0-9]').hasMatch(usernamePart)){
                           //   return 'Email username cannot contain numbers';
@@ -260,27 +252,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             onPressed: _handleLogin,
                             isLoading: _isLoading,
                         ),
-                        // child:ElevatedButton(
-                        //   onPressed: _isLoading ? null : _handleLogin,
-                        //   style: ElevatedButton.styleFrom(
-                        //     backgroundColor: const Color(0xFF2563EB),
-                        //     shape: RoundedRectangleBorder(
-                        //       borderRadius: BorderRadius.circular(20),
-                        //     ),
-                        //     elevation: 5,
-                        //     shadowColor: Colors.blue,
-                        //   ),
-                        //   child: _isLoading
-                        //       ? const CircularProgressIndicator(color: Colors.white)
-                        //       : const Text(
-                        //     'Sign In',
-                        //     style: TextStyle(
-                        //       color: Colors.white,
-                        //       fontWeight: FontWeight.bold,
-                        //       fontSize:16,
-                        //     ) ,
-                        //   ),
-                        // ),
                       ),
                       const SizedBox(height:16),
                       //Register link
