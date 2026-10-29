@@ -100,7 +100,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               SizedBox(height:32),
               CustomFormField(
                   label: 'Email Address',
-                  hint: 'name@st.ul.edu.lb',
+                  hint: 'name@gmail.com',
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                   prefixIcon: Icon(Icons.email_outlined),
@@ -108,9 +108,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     if(value == null || value.isEmpty){
                       return ' Please enter your email';
                     }
-                    if(!value.contains('@')){
-                      return 'Please enter a valid email';
+                    final emailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@gmail\.com$');
+                    if(!emailRegex.hasMatch(value.trim().toLowerCase())){
+                      return 'Use your Gmail address';
                     }
+                    return null;
+                    // if(!value.contains('@')){
+                    //   return 'Please enter a valid email';
+                    // }
                   },
               ),
               SizedBox(height:24),
