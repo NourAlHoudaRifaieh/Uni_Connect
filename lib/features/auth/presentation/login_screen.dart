@@ -135,7 +135,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           }
                           final emailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@gmail\.com$');
                           if (!emailRegex.hasMatch(value.toLowerCase().trim())) {
-                            return 'Use your Gmail address';
+                            return 'Use your email address eg. name@gmail.com';
                           }
                           // final email = value.toLowerCase().trim();
                           // final isStudent = email.endsWith('@st.ul.edu.lb');
