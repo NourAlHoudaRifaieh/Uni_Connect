@@ -1,0 +1,51 @@
+text,label
+"The accounting midterm is next Tuesday at 10 am in room B2",Exam
+"Finance final exam results are out on the portal",Exam
+"the marketing quiz was so easy, mostly definitions",Exam
+"Dr said the economics exam will cover chapters 1 to 5 only",Exam
+"I uploaded the past exam of business statistics in the drive",Exam
+"macro midterm is postponed to next Thursday",Exam
+"Studying all night for tomorrow's cost accounting exam",Exam
+"The management final will be open book, bring your textbook",Exam
+"exam hall for micro changed to building C",Exam
+"Just finished the auditing midterm, the last question was really long",Exam
+"The marketing project is due Sunday, upload it on the platform",Assignment
+"Dr posted a new homework for business statistics, 10 questions on regression",Assignment
+"Our group presentation for management is next Monday at 9 am",Assignment
+"The deadline for the finance case study was extended to Friday",Assignment
+"i finished the accounting assignment, took me 3 hours",Assignment
+"Each team must submit a 10 page report about a Lebanese company",Assignment
+"Homework 3 in macro requires an excel sheet with the GDP data",Assignment
+"Reminder that the economics research paper is due in two weeks",Assignment
+"our group is still working on the slides for the entrepreneurship project",Assignment
+"The business law assignment should be submitted as a single PDF",Assignment
+"When is the micro midterm?",Question
+"can someone explain how to calculate depreciation",Question
+"Does anyone have the marketing slides for chapter 4",Question
+"what is the difference between GDP and GNP",Question
+"anyone knows if the finance exam is open book",Question
+"Which room is the statistics class in today",Question
+"how do i solve question 3 in the accounting homework",Question
+"Is anybody free to study together for the macro exam",Question
+"i dont understand elasticity of demand, can someone help",Question
+"Can I submit the management project one day late",Question
+"Class cancelled tomorrow",Announcement
+"The marketing lecture is moved to room A3 on Wednesday",Announcement
+"The faculty will hold a career day on November 20, everyone is invited",Announcement
+"Office hours for macroeconomics are every Monday from 11 am to 1 pm",Announcement
+"Registration for the spring semester opens next week",Announcement
+"No classes on Friday due to the public holiday",Announcement
+"The faculty office will be closed on Thursday",Announcement
+"A seminar about stock market basics will be held on Tuesday at 2 pm in the main hall",Announcement
+"New timetable is available on the portal, please check it",Announcement
+"Scholarship applications are open until the end of the month",Announcement
+"Good morning everyone",General
+"Thanks a lot for the help yesterday guys",General
+"I made a summary of the whole marketing course, sharing it with you",General
+"Lost my black wallet near the cafeteria",General
+"this semester is going by so fast",General
+"Congratulations to everyone who passed the finance course",General
+"Just found a quiet place to study near the library",General
+"I really love my economics class this semester",General
+"Happy birthday to our classmate Sara",General
+"Sharing my accounting notes if anyone needs them",General
