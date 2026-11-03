@@ -1,24 +1,28 @@
-"""UniConnect - AI post categorization backend (Python + Google Gemini)."""
+"""UniConnect - post categorization backend.
+
+Uses our own trained model (model.joblib: TF-IDF + sentence embeddings + question
+cues). No external LLM and no API key are needed.
+
+Run:  uvicorn main:app --host 0.0.0.0 --port 8000
+"""
 import os
 from typing import Optional
 
+import joblib
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-CATEGORIES = ["Exam", "Assignment", "Question", "Summary", "Announcement", "General"]
+import classifier  # noqa: F401  (joblib needs this module to rebuild the model)
 
-# Models are tried in this order until one answers. GEMINI_MODEL (env) goes first.
-MODEL_CANDIDATES = [
-    m for m in [
-        os.environ.get("GEMINI_MODEL", "").strip(),
-        "gemini-3.1-flash-lite",
-        "gemini-2.5-flash",
-        "gemini-flash-latest",
-    ] if m
-]
+CATEGORIES = ["Exam", "Assignment", "Question", "Announcement", "General"]
+MODEL_PATH = os.environ.get(
+    "MODEL_PATH", os.path.join(os.path.dirname(os.path.abspath(__file__)), "model.joblib"))
+# Below this confidence we answer "General" instead of guessing.
+MIN_CONFIDENCE = float(os.environ.get("MIN_CONFIDENCE", "0.40"))
+MODEL_NAME = "hybrid-tfidf-minilm"
 
-app = FastAPI(title="UniConnect AI Categorizer")
+app = FastAPI(title="UniConnect Post Categorizer")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -26,19 +30,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-_client = None
-_active_model = None
-_api_key = os.environ.get("GEMINI_API_KEY", "").strip()
-if _api_key:
-    try:
-        from google import genai
-
-        _client = genai.Client(api_key=_api_key)
-        print(f"[ai] Gemini client ready, candidates={MODEL_CANDIDATES}")
-    except Exception as exc:
-        print(f"[ai] Could not initialise Gemini: {exc}")
-else:
-    print("[ai] GEMINI_API_KEY not set - using the keyword fallback only")
+_model = None
+try:
+    _model = joblib.load(MODEL_PATH)
+    print(f"[ml] model loaded from {MODEL_PATH}")
+except Exception as exc:
+    print(f"[ml] could not load the model ({exc}) - using the keyword fallback only")
 
 
 class PostRequest(BaseModel):
@@ -47,33 +44,9 @@ class PostRequest(BaseModel):
 
 class CategoryResponse(BaseModel):
     category: str
-    source: str                    # "gemini" | "fallback"
-    model: Optional[str] = None    # which LLM answered (None for fallback)
-
-
-PROMPT = """You are a classifier for a university students' forum.
-Classify the post below into exactly ONE of these categories:
-{categories}
-
-Rules:
-- Answer with the category name only, nothing else.
-- The post may be written in English, Arabic or a mix of both.
-- If none of them fits well, answer "General".
-
-Post:
-\"\"\"{description}\"\"\"
-"""
-
-
-def _normalize(raw: str) -> str:
-    text = (raw or "").strip().strip(".").lower()
-    for category in CATEGORIES:
-        if category.lower() == text:
-            return category
-    for category in CATEGORIES:
-        if category.lower() in text:
-            return category
-    return "General"
+    source: str                          # "model" | "fallback"
+    model: Optional[str] = None          # model name (None for fallback)
+    confidence: Optional[float] = None   # 0..1 (None for fallback)
 
 
 def _fallback(text: str) -> str:
@@ -86,11 +59,9 @@ def _fallback(text: str) -> str:
         return "Exam"
     if has("assignment", "homework", "due", "submit", "deadline"):
         return "Assignment"
-    if has("summary", "summarize", "notes"):
-        return "Summary"
-    if has("announce", "announcement", "reminder"):
+    if has("announce", "announcement", "reminder", "cancelled", "canceled"):
         return "Announcement"
-    if "?" in t or "؟" in t:
+    if "?" in t:
         return "Question"
     return "General"
 
@@ -99,37 +70,31 @@ def _fallback(text: str) -> str:
 def health():
     return {
         "status": "ok",
-        "ai_enabled": _client is not None,
-        "active_model": _active_model,
-        "model_candidates": MODEL_CANDIDATES,
+        "model_loaded": _model is not None,
+        "model": MODEL_NAME if _model is not None else None,
+        "min_confidence": MIN_CONFIDENCE,
+        "categories": CATEGORIES,
     }
 
 
 @app.post("/categorize", response_model=CategoryResponse)
 def categorize(req: PostRequest):
-    global _active_model
     text = (req.description or "").strip()
     if not text:
-        return CategoryResponse(category="General", source="fallback", model=None)
+        return CategoryResponse(category="General", source="fallback")
 
-    if _client is not None:
-        prompt = PROMPT.format(categories=", ".join(CATEGORIES), description=text)
-        order = ([_active_model] if _active_model else []) + [
-            m for m in MODEL_CANDIDATES if m != _active_model
-        ]
-        for model in order:
-            try:
-                response = _client.models.generate_content(model=model, contents=prompt)
-                _active_model = model
-                return CategoryResponse(
-                    category=_normalize(getattr(response, "text", "") or ""),
-                    source="gemini",
-                    model=model,
-                )
-            except Exception as exc:
-                print(f"[ai] model {model} failed: {exc}")
+    if _model is not None:
+        try:
+            label, confidence = _model.predict_with_confidence(text)
+            if confidence < MIN_CONFIDENCE:
+                label = "General"
+            return CategoryResponse(
+                category=str(label), source="model",
+                model=MODEL_NAME, confidence=round(confidence, 3))
+        except Exception as exc:
+            print(f"[ml] prediction failed: {exc}")
 
-    return CategoryResponse(category=_fallback(text), source="fallback", model=None)
+    return CategoryResponse(category=_fallback(text), source="fallback")
 
 
 if __name__ == "__main__":

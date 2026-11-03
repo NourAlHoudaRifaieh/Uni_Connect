@@ -28,7 +28,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   final UserRepository _userRepository = UserRepository();
   final SubjectRepository _subjectRepository = SubjectRepository();
 
-  // Sends the post description to the Python/Gemini backend to get a category
+  // Sends the post description to the Python backend (our trained model) to get a category
   final AiCategoryService _aiCategoryService = AiCategoryService();
 
   List<SubjectModel> subjects = [];
@@ -93,7 +93,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           : _nameFromEmail(currentUser.email);
         final description =_descriptionController.text.trim();
 
-        //AI categorization: the Python/Gemini backend decides the category from the description
+        //AI categorization: our trained model decides the category from the description
         final aiResult = await _aiCategoryService.categorizeDetailed(description);
         final category = aiResult.category;
 
@@ -117,7 +117,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(aiResult.label),
-              backgroundColor: aiResult.usedLlm ? Colors.green : Colors.orange,
+              backgroundColor: aiResult.usedModel ? Colors.green : Colors.orange,
             ),
           );
           Navigator.pop(context, true);
@@ -324,7 +324,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                               ],
                             ),
                             Text(
-                              'When you publish, AI will analyze your title and description to assign the right category automatically',
+                              'When you publish, AI will analyze your description to assign the right category automatically',
                               style: GoogleFonts.inter(
                                 color: Color(0xFF2563EB),
                                 fontSize: 13,
