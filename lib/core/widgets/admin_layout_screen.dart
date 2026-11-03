@@ -32,23 +32,23 @@ class _AdminLayoutScreenState extends State <AdminLayoutScreen>{
   final List<Map<String, dynamic>> _headerData = const[
     {
       'title': 'Dashboard',
-      'subtitle': 'Lebanese University - Admin ',
+      'subtitle': 'Uni-Connect - Admin ',
     },
     {
       'title': 'Manage Groups',
-      'subtitle': 'Lebanese University - Admin ',
+      'subtitle': 'Uni-Connect - Admin ',
     },
     {
       'title': 'Manage Subjects',
-      'subtitle': 'Lebanese University - Admin ',
+      'subtitle': 'Uni-Connect - Admin ',
     },
     {
       'title': 'Manage Posts',
-      'subtitle': 'Lebanese University - Admin ',
+      'subtitle': 'Uni-Connect - Admin ',
     },
     {
       'title': 'User Management',
-      'subtitle': 'Lebanese University - Admin ',
+      'subtitle': 'Uni-Connect - Admin ',
     },
   ];
 

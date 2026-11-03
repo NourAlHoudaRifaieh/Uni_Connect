@@ -24,14 +24,15 @@ class EditGroupDialog extends StatefulWidget {
 class _EditGroupDialogState extends State<EditGroupDialog> {
   late  TextEditingController _nameController = TextEditingController();
   late String _selectedYear;
+  String? _nameError;
 
-  final List<String> _academicYear =[
-    'Year 1',
-    'Year 2',
-    'Year 3',
-    'Year 4',
-    'Year 5',
-  ];
+  // final List<String> _academicYear =[
+  //   'Year 1',
+  //   'Year 2',
+  //   'Year 3',
+  //   'Year 4',
+  //   'Year 5',
+  // ];
 
   @override
   void initState() {
@@ -60,7 +61,7 @@ class _EditGroupDialogState extends State<EditGroupDialog> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            'Edit Subject',
+            'Edit Group',
             style: GoogleFonts.inter(
               fontSize:18,
               fontWeight:FontWeight.bold,
@@ -91,6 +92,11 @@ class _EditGroupDialogState extends State<EditGroupDialog> {
                 hint: 'Enter Group name',
                 controller: _nameController,
               ),
+              if(_nameError != null)
+                Padding(
+                  padding: EdgeInsets.only(top:6),
+                  child: Text(_nameError!, style: GoogleFonts.inter(color: Colors.red, fontSize: 12),),
+                ),
               SizedBox(height:16),
               Text(
                 'Academic Year',
@@ -101,42 +107,72 @@ class _EditGroupDialogState extends State<EditGroupDialog> {
                 ),
               ),
               SizedBox(height:10),
-              Wrap(
-                spacing: 15,
-                runSpacing: 15,
-                children: _academicYear.map((year) {
-                  final bool selected = _selectedYear == year;
-                  return GestureDetector(
-                    onTap: (){
-                      setState(() {
-                        _selectedYear = year;
-                      });
-                    },
-                    child: Container(
-                      width: (MediaQuery.of(context).size.width * 0.75 - 30 - 10) / 2,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: selected ?  Color(0xFF2563EB) : Color(0xFFF3F4F6),
-                        border: Border.all(
-                          color: selected
-                              ?  Color(0xFFE2E8F0)
-                              : Colors.grey.shade300,
-                          width: 1,
-                        ),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        year,
-                        style: TextStyle(
-                          color: selected ? Colors.white : Colors.black87,
-                          fontWeight: FontWeight.w600,
-                        ),
+              // The year cannot be edited: students, subjects and posts are
+              // linked to this group by its year. To move to another year,
+              // delete the group and create a new one.
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                decoration: BoxDecoration(
+                  color: Color(0xFFF3F4F6),
+                  border: Border.all(color: Colors.grey.shade300, width: 1),
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.lock_outline, color: Colors.grey.shade600, size: 18),
+                    SizedBox(width: 10),
+                    Text(
+                      _selectedYear,
+                      style: GoogleFonts.inter(
+                        color: Colors.black87,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                  );
-                }).toList(),
+                  ],
+                ),
               ),
+              SizedBox(height:6),
+              Text(
+                'The academic year cannot be changed.',
+                style: GoogleFonts.inter(fontSize: 12, color: Colors.grey.shade600),
+              ),
+              // Wrap(
+              //   spacing: 15,
+              //   runSpacing: 15,
+              //   children: _academicYear.map((year) {
+              //     final bool selected = _selectedYear == year;
+              //     return GestureDetector(
+              //       onTap: (){
+              //         setState(() {
+              //           _selectedYear = year;
+              //         });
+              //       },
+              //       child: Container(
+              //         width: (MediaQuery.of(context).size.width * 0.75 - 30 - 10) / 2,
+              //         padding: const EdgeInsets.symmetric(vertical: 14),
+              //         alignment: Alignment.center,
+              //         decoration: BoxDecoration(
+              //           color: selected ?  Color(0xFF2563EB) : Color(0xFFF3F4F6),
+              //           border: Border.all(
+              //             color: selected
+              //                 ?  Color(0xFFE2E8F0)
+              //                 : Colors.grey.shade300,
+              //             width: 1,
+              //           ),
+              //           borderRadius: BorderRadius.circular(20),
+              //         ),
+              //         child: Text(
+              //           year,
+              //           style: TextStyle(
+              //             color: selected ? Colors.white : Colors.black87,
+              //             fontWeight: FontWeight.w600,
+              //           ),
+              //         ),
+              //       ),
+              //     );
+              //   }).toList(),
+              // ),
               SizedBox(height:24),
               Row(
                 children: [
@@ -157,9 +193,16 @@ class _EditGroupDialogState extends State<EditGroupDialog> {
                         text: 'Save',
                         backgroundColor: Color(0xFF2563EB),
                         onPressed: (){
+                          final name = _nameController.text.trim();
+                          if(name.isEmpty){
+                            setState(() {
+                            _nameError = 'Group name cannot be empty';
+                            });
+                          return;
+                          }
                           Navigator.pop(context);
                           widget.onUpdateConfirmed(
-                            _nameController.text.trim(),
+                            name,
                             _selectedYear,
                           );
                         }

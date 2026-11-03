@@ -268,12 +268,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Icon(
-                                      Icons.business_sharp,
-                                      color: Colors.white.withOpacity(0.8),
-                                      size: 18,
-                                    ),
-                                    SizedBox(width:8),
+                                    // Icon(
+                                    //   Icons.business_sharp,
+                                    //   color: Colors.white.withOpacity(0.8),
+                                    //   size: 18,
+                                    // ),
+                                    // SizedBox(width:8),
                                     Expanded(
                                         child: Column(
                                           crossAxisAlignment: CrossAxisAlignment.start,

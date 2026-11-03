@@ -109,7 +109,7 @@ class _AdminGroupsScreenState extends State<AdminGroupsScreen> {
                             final result = await
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => CreateGroupScreen()),
+                              MaterialPageRoute(builder: (context) => CreateGroupScreen(initialYear: _selectedYear,)),
                             );
                             //rebuild screen if a group was created
                             if(result == true && mounted){
