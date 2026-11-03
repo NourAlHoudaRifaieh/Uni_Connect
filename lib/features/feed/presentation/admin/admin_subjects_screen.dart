@@ -111,7 +111,7 @@ class _AdminSubjectsScreenState extends State<AdminSubjectsScreen> {
                           final result = await
                           Navigator.push(
                               context, 
-                              MaterialPageRoute(builder: (context) => CreateSubjectScreen())
+                              MaterialPageRoute(builder: (context) => CreateSubjectScreen(initialYear: _selectedYear,))
                           );
                           if(result == true && mounted){
                             setState(() {
@@ -180,38 +180,52 @@ class _AdminSubjectsScreenState extends State<AdminSubjectsScreen> {
                                         return EditSubjectDialog(
                                             subject: subject,
                                             onUpdateConfirmed: (updateName, updateYear, mainGroupId, sharedGroupIds) async{
-                                              if(subject.subjectId != null){
-                                                SubjectModel updatedSubject = SubjectModel(
-                                                  subjectId:  subject.subjectId,
+                                              final id = subject.subjectId;
+                                              if(id == null || id.isEmpty) return;
+                                                final updatedSubject = SubjectModel(
+                                                  subjectId:  id,
                                                   subjectName: updateName,
                                                   subjectCode: subject.subjectCode,
                                                   academicYear: updateYear,
-                                                  groupId: subject.groupId,
+                                                  groupId: mainGroupId,
                                                   postCount: subject.postCount,
                                                   sharedGroupIds: sharedGroupIds,
                                                 );
-                                                await _subjectRepository.updateSubject(updatedSubject);
-                                                if(mounted){
-                                                  setState(() {
-
-                                                  });
+                                                try{
+                                                  final dup = await _subjectRepository.duplicateError(
+                                                    updatedSubject,
+                                                    excludeSubjectId: id,
+                                                  );
+                                                  if(dup != null){
+                                                    if (mounted) {
+                                                      ScaffoldMessenger.of(context).showSnackBar(
+                                                        SnackBar(content: Text(dup), backgroundColor: Colors.red),
+                                                      );
+                                                    }
+                                                    return;
+                                                  }
+                                                  await _subjectRepository.updateSubject(updatedSubject);
+                                                  if(mounted){
+                                                    ScaffoldMessenger.of(context).showSnackBar(
+                                                      SnackBar(content: Text('Subject updated')),
+                                                    );
+                                                    setState(() {});
+                                                  }
+                                                }catch(e){
+                                                  if (mounted) {
+                                                    ScaffoldMessenger.of(context).showSnackBar(
+                                                      SnackBar(
+                                                        content: Text('Error updating subject: $e'),
+                                                        backgroundColor: Colors.red,
+                                                      ),
+                                                    );
+                                                  }
                                                 }
-                                              }
                                             }
                                         );
                                       }
                                   );
                                 },
-                                // onDeletePressed: () async{
-                                //   if(subject.subjectId != null){
-                                //     await _subjectRepository.deleteSubject(subject.subjectId!);
-                                //     if(mounted){
-                                //       setState(() {
-                                //
-                                //       });
-                                //     }
-                                //   }
-                                // },
                                 onDeletePressed: (){
                                   showDialog(
                                       context: context,
@@ -221,23 +235,23 @@ class _AdminSubjectsScreenState extends State<AdminSubjectsScreen> {
                                           onDeleteConfirmed: () async{
                                             final id = subject.subjectId;
                                             if (id == null) return;
-                                            //students of the same year exist
-                                            final blocker = await _subjectRepository.subjectDeletionBlocker(subject);
-                                            if(blocker != null){
-                                              if(mounted){
+                                            try {
+                                              await _subjectRepository.deleteSubject(id);
+                                              if (mounted) {
+                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                  SnackBar(content: Text('Subject deleted')),
+                                                );
+                                                setState(() {});
+                                              }
+                                            } catch (e) {
+                                              if (mounted) {
                                                 ScaffoldMessenger.of(context).showSnackBar(
                                                   SnackBar(
-                                                    content: Text(blocker),
-                                                    backgroundColor:  Colors.red,
+                                                    content: Text('Error deleting subject: $e'),
+                                                    backgroundColor: Colors.red,
                                                   ),
                                                 );
                                               }
-                                              return;
-                                            }
-                                            await _subjectRepository.deleteSubject(id);
-                                            if(mounted){
-                                              setState(() {
-                                              });
                                             }
                                           },
                                         );

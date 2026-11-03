@@ -211,22 +211,35 @@ class _AdminGroupsScreenState extends State<AdminGroupsScreen> {
                                                             final id = group.groupId;
                                                             if(id == null) return;
                                                             // the group still has subjects and students
-                                                            final blocker = await _groupRepository.groupDeletionBlocker(group);
-                                                            if(blocker != null){
+                                                            // final blocker = await _groupRepository.groupDeletionBlocker(group);
+                                                            // if(blocker != null){
+                                                            //   if(mounted){
+                                                            //     ScaffoldMessenger.of(context).showSnackBar(
+                                                            //       SnackBar(
+                                                            //         content: Text(blocker),
+                                                            //         backgroundColor: Colors.red,
+                                                            //       ),
+                                                            //     );
+                                                            //   }
+                                                            //   return ;
+                                                            // }
+                                                            try{
+                                                              await _groupRepository.deleteGroup(id);
+                                                              if(mounted){
+                                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                                  SnackBar(content: Text('Group deleted')),
+                                                                );
+                                                                setState(() {});
+                                                              }
+                                                            }catch(e){
                                                               if(mounted){
                                                                 ScaffoldMessenger.of(context).showSnackBar(
                                                                   SnackBar(
-                                                                    content: Text(blocker),
+                                                                    content: Text('Error deleting group: $e'),
                                                                     backgroundColor: Colors.red,
                                                                   ),
                                                                 );
                                                               }
-                                                              return ;
-                                                            }
-                                                            await _groupRepository.deleteGroup(id);
-                                                            if(mounted){
-                                                              setState(() {
-                                                              });
                                                             }
                                                           },
                                                         );

@@ -31,7 +31,7 @@ class EditSubjectDialog extends StatefulWidget {
 }
 
 class _EditSubjectDialogState extends State<EditSubjectDialog> {
-  late  TextEditingController _nameController = TextEditingController();
+  late  TextEditingController _nameController;
   final GroupRepository _groupRepository = GroupRepository();
   late String _selectedYear;
   final Set<String> _selectedGroupIds = {};
@@ -265,6 +265,12 @@ class _EditSubjectDialogState extends State<EditSubjectDialog> {
                         text: 'Save',
                         backgroundColor: Color(0xFF2563EB),
                         onPressed: (){
+                          if (_nameController.text.trim().isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Please enter a subject name')),
+                            );
+                            return;
+                          }
                           if (_selectedGroupIds.isEmpty) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text('Please select at least one specialization')),

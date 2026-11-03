@@ -17,10 +17,10 @@ const List<String> kAcademicYears = [
 
 
 class CreateSubjectScreen extends StatefulWidget {
-
-  CreateSubjectScreen({
+  final String? initialYear;
+  const CreateSubjectScreen({
     super.key,
-
+    this.initialYear,
   });
 
   @override
@@ -45,6 +45,9 @@ class _CreateSubjectScreenState extends State<CreateSubjectScreen> {
   @override
   void initState() {
     super.initState();
+    if (widget.initialYear != null && kAcademicYears.contains(widget.initialYear)) {
+      selectedYear = widget.initialYear;
+    }
   }
 
   @override
@@ -180,6 +183,30 @@ class _CreateSubjectScreenState extends State<CreateSubjectScreen> {
                         ),
                       ),
                       SizedBox(height:10),
+                      if(widget.initialYear != null)
+                        Container(
+                          width: double.infinity,
+                          padding: EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                          decoration: BoxDecoration(
+                            color: Color(0xFFEFF6FF),
+                            border: Border.all(color: Color(0xFF2563EB), width: 1),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(Icons.schedule_outlined, color: Color(0xFF2563EB), size: 20),
+                              SizedBox(width: 10),
+                              Text(
+                                widget.initialYear!,
+                                style: GoogleFonts.inter(
+                                  color: Color(0xFF2563EB),
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      else
                       Wrap(
                         spacing: 15,
                         runSpacing: 15,

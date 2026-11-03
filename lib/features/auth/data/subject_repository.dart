@@ -44,7 +44,7 @@ class SubjectRepository {
         .toList();
   }
 
-  Future<String?> duplicateError(SubjectModel subject) async {
+  Future<String?> duplicateError(SubjectModel subject, {String? excludeSubjectId}) async {
     final snap = await _firestore
         .collection('subjects')
         .where('academicYear', isEqualTo: subject.academicYear)
@@ -52,6 +52,8 @@ class SubjectRepository {
     final name = subject.subjectName.trim().toLowerCase();
     final mine = <String>{subject.groupId, ...subject.sharedGroupIds};
     for (final d in snap.docs) {
+      // final other = SubjectModel.fromFirestore(d.data(), d.id);
+      if (excludeSubjectId != null && d.id == excludeSubjectId) continue;
       final other = SubjectModel.fromFirestore(d.data(), d.id);
       if (other.subjectName.trim().toLowerCase() != name) continue;
       final theirs = <String>{other.groupId, ...other.sharedGroupIds};
