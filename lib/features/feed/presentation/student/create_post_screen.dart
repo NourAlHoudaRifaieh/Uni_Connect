@@ -36,11 +36,14 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   // Sends the post description to the Python backend (our trained model) to get a category
   final AiCategoryService _aiCategoryService = AiCategoryService();
 
-  List<SubjectModel> subjects = [];
+  List<SubjectModel> studentSubjects = [];
+  List<SubjectModel> allSubjects = [];
   List<GroupModel> allGroups = [];
+
   SubjectModel? selectedSubject;
   bool _isLoading = false;
   bool _loadingOptions = true;
+  bool _isAdmin = false;
 
   String? _selectedYear;
   String? _selectedDepartment;
@@ -54,13 +57,38 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
 
   void _loadSubjects() async {
     try {
-      final fetchedSubjects = await _subjectRepository.getSubjects();
-      final fetchedGroups = await _groupRepository.watchAllGroups().first;
+      final userModel = await _userRepository.getCurrentUserModel();
+      _isAdmin = userModel?.isAdmin ?? false;
 
+      if (_isAdmin) {
+        final fetchedSubjects = await _subjectRepository.getSubjects();
+        final fetchedGroups = await _groupRepository
+            .watchAllGroups()
+            .first;
+
+        if (!mounted) return;
+        setState(() {
+          allSubjects = fetchedSubjects;
+          allGroups = fetchedGroups;
+          _loadingOptions = false;
+        });
+        return;
+      }
+      // Student flow
+      final groupId = userModel?.groupId;
+      final fetchedSubjects = await _subjectRepository.getSubjects();
+
+      final loadedSubjects = (groupId == null || groupId.isEmpty)
+          ? fetchedSubjects
+          : fetchedSubjects.where((s) {
+        final isMainGroup = s.groupId == groupId;
+        final isSharedGroup = s.sharedGroupIds != null && s.sharedGroupIds!.contains(groupId);
+        return isMainGroup || isSharedGroup;
+      }).toList();
       if (!mounted) return;
       setState(() {
-        subjects = fetchedSubjects;
-        allGroups = fetchedGroups;
+        studentSubjects = loadedSubjects;
+        selectedSubject = studentSubjects.isNotEmpty ? studentSubjects.first : null;
         _loadingOptions = false;
       });
     } catch (e) {
@@ -208,6 +236,8 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     super.dispose();
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -218,17 +248,14 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       );
     }
 
-    // Get available majors for the selected year and department
+    // Admin filter logic variables
     final availableMajors = _getAvailableMajors();
     final bool hasMajors = availableMajors.isNotEmpty;
 
-    // Determine if subjects should be shown:
-    // Either majors exist and one is selected, OR there are no majors for this department/year.
     final bool showSubjects = _selectedYear != null &&
         _selectedDepartment != null &&
         (!hasMajors || _selectedMajor != null);
 
-    // 1. Find group IDs that match the selected Year, Department, and Major
     final matchingGroupIds = allGroups.where((g) {
       bool matchesYear = _selectedYear == null || g.academicYear == _selectedYear;
       bool matchesDept = _selectedDepartment == null || g.department == _selectedDepartment;
@@ -236,14 +263,11 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       return matchesYear && matchesDept && matchesMajor;
     }).map((g) => g.groupId).where((id) => id != null).cast<String>().toSet();
 
-    // 2. Filter subjects that belong precisely to those matching group IDs and academic year
-    final filteredSubjects = subjects.where((s) {
+    final filteredAdminSubjects = allSubjects.where((s) {
       if (_selectedYear != null && s.academicYear != _selectedYear) return false;
-
-      final isMainGroupMatch = s.groupId != null && matchingGroupIds.contains(s.groupId);
-      final isSharedGroupMatch = s.sharedGroupIds != null && s.sharedGroupIds!.any((id) => matchingGroupIds.contains(id));
-
-      return isMainGroupMatch || isSharedGroupMatch;
+      final isMainMatch = s.groupId != null && matchingGroupIds.contains(s.groupId);
+      final isSharedMatch = s.sharedGroupIds != null && s.sharedGroupIds!.any((id) => matchingGroupIds.contains(id));
+      return isMainMatch || isSharedMatch;
     }).toList();
 
     return Scaffold(
@@ -330,39 +354,40 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Academic Year Selection
-                      Text('Academic Year', style: GoogleFonts.inter(fontWeight:FontWeight.w600, fontSize:15)),
-                      SizedBox(height:8),
-                      AcademicYearSelector(
-                          selectedYear: _selectedYear ?? '',
-                          onYearSelected: (year){
-                            setState(() {
-                              _selectedYear= year;
-                              _selectedDepartment = null;
-                              _selectedMajor = null;
-                              selectedSubject = null;
-                            });
-                          },
-                      ),
-                      // Department Selection (Appears after selecting Year)
-                      if (_selectedYear != null) ...[
-                        SizedBox(height: 16),
-                        Text('Department', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 15)),
-                        SizedBox(height: 8),
-                        CustomDropdown(
-                          value: _selectedDepartment,
-                          hint: 'Select department',
-                          items: kDepartments,
-                          onChanged: (dept) {
-                            setState(() {
-                              _selectedDepartment = dept;
-                              _selectedMajor = null;
-                              selectedSubject = null;
-                            });
-                          },
+                      if (_isAdmin) ...[
+                        Text('Academic Year', style: GoogleFonts.inter(fontWeight:FontWeight.w600, fontSize:15)),
+                        SizedBox(height:8),
+                        AcademicYearSelector(
+                            selectedYear: _selectedYear ?? '',
+                            onYearSelected: (year){
+                              setState(() {
+                                _selectedYear= year;
+                                _selectedDepartment = null;
+                                _selectedMajor = null;
+                                selectedSubject = null;
+                              });
+                            },
                         ),
-                      ],
-                      // Major Selection (Appears ONLY IF there are actual majors for this Dept & Year)
-                      if(_selectedYear != null && _selectedDepartment != null && hasMajors) ...[
+                        // Department Selection (Appears after selecting Year)
+                        if (_selectedYear != null) ...[
+                          SizedBox(height: 16),
+                          Text('Department', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 15)),
+                          SizedBox(height: 8),
+                          CustomDropdown(
+                            value: _selectedDepartment,
+                            hint: 'Select department',
+                            items: kDepartments,
+                            onChanged: (dept) {
+                              setState(() {
+                                _selectedDepartment = dept;
+                                _selectedMajor = null;
+                                selectedSubject = null;
+                              });
+                            },
+                          ),
+                        ],
+                        // Major Selection (Appears ONLY IF there are actual majors for this Dept & Year)
+                        if(_selectedYear != null && _selectedDepartment != null && hasMajors) ...[
                         SizedBox(height: 16),
                         Text('Major', style: GoogleFonts.inter(fontWeight:FontWeight.w600, fontSize:15)),
                         SizedBox(height:8),
@@ -378,49 +403,91 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                             }
                         ),
                       ],
-                      // Subject Selection (Appears ONLY after Year, Department AND Major are selected)
-                      if (showSubjects) ...[
+                        // Subject Selection (Appears ONLY after Year, Department AND Major are selected)
+                        if (showSubjects) ...[
+                          SizedBox(height: 16),
+                          Text('Select Subject', style: GoogleFonts.inter(fontWeight:FontWeight.w600, fontSize:15)),
+                          SizedBox(height:8),
+                          if (filteredAdminSubjects.isEmpty)
+                            Text('No subjects found for this selection.', style: GoogleFonts.inter(color: Colors.grey.shade600))
+                          else
+                            Wrap(
+                            spacing: 10,
+                            runSpacing: 10,
+                            children: filteredAdminSubjects.map((subject){
+                              final bool isSelected = selectedSubject?.subjectCode == subject.subjectCode;
+                              return GestureDetector(
+                                onTap: (){
+                                  setState(() {
+                                    selectedSubject = subject;
+                                  });
+                                },
+                                child: AnimatedContainer(
+                                  duration: Duration(milliseconds: 150),
+                                  padding: EdgeInsets.symmetric(horizontal:14, vertical:14),
+                                  decoration: BoxDecoration(
+                                    color: isSelected ? Color(0xFFEFF6FF) : Colors.white,
+                                    borderRadius: BorderRadius.circular(20),
+                                    border: Border.all(
+                                      color: isSelected ? Color(0xFF2563EB) : Colors.grey.shade300,
+                                      width: isSelected ? 1.5 :1.0,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    subject.subjectName,
+                                    style: GoogleFonts.inter(
+                                      fontSize: 13,
+                                      fontWeight:FontWeight.w600,
+                                      color: isSelected ? Color(0xFF2563EB) : Colors.black87,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ],
+                      ]else ...[
                         SizedBox(height: 16),
                         Text('Select Subject', style: GoogleFonts.inter(fontWeight:FontWeight.w600, fontSize:15)),
                         SizedBox(height:8),
-                        if (filteredSubjects.isEmpty)
-                          Text('No subjects found for this selection.', style: GoogleFonts.inter(color: Colors.grey.shade600))
+                        if (studentSubjects.isEmpty)
+                          Text('No subjects assigned to your group', style: GoogleFonts.inter(color: Colors.grey.shade600))
                         else
                           Wrap(
-                          spacing: 10,
-                          runSpacing: 10,
-                          children: filteredSubjects.map((subject){
-                            final bool isSelected = selectedSubject?.subjectCode == subject.subjectCode;
-                            return GestureDetector(
-                              onTap: (){
-                                setState(() {
-                                  selectedSubject = subject;
-                                });
-                              },
-                              child: AnimatedContainer(
-                                duration: Duration(milliseconds: 150),
-                                padding: EdgeInsets.symmetric(horizontal:14, vertical:14),
-                                decoration: BoxDecoration(
-                                  color: isSelected ? Color(0xFFEFF6FF) : Colors.white,
-                                  borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(
-                                    color: isSelected ? Color(0xFF2563EB) : Colors.grey.shade300,
-                                    width: isSelected ? 1.5 :1.0,
+                            spacing: 10,
+                            runSpacing: 10,
+                            children: studentSubjects.map((subject){
+                              final bool isSelected = selectedSubject?.subjectCode == subject.subjectCode;
+                              return GestureDetector(
+                                onTap: (){
+                                  setState(() {
+                                    selectedSubject = subject;
+                                  });
+                                },
+                                child: AnimatedContainer(
+                                  duration: Duration(milliseconds: 150),
+                                  padding: EdgeInsets.symmetric(horizontal:14, vertical:14),
+                                  decoration: BoxDecoration(
+                                    color: isSelected ? Color(0xFFEFF6FF) : Colors.white,
+                                    borderRadius: BorderRadius.circular(20),
+                                    border: Border.all(
+                                      color: isSelected ? Color(0xFF2563EB) : Colors.grey.shade300,
+                                      width: isSelected ? 1.5 :1.0,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    subject.subjectName,
+                                    style: GoogleFonts.inter(
+                                      fontSize: 13,
+                                      fontWeight:FontWeight.w600,
+                                      color: isSelected ? Color(0xFF2563EB) : Colors.black87,
+                                    ),
                                   ),
                                 ),
-                                child: Text(
-                                  subject.subjectName,
-                                  style: GoogleFonts.inter(
-                                    fontSize: 13,
-                                    fontWeight:FontWeight.w600,
-                                    color: isSelected ? Color(0xFF2563EB) : Colors.black87,
-                                  ),
-                                ),
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                      ],
+                              );
+                            }).toList(),
+                          ),
+                        ],
                       SizedBox(height:20),
                       CustomFormField(
                         label: 'Description',
