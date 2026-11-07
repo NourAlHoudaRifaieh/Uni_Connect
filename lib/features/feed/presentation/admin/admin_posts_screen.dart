@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:uni_connect/core/models/post_model.dart';
 import 'package:uni_connect/core/widgets/custom_form_field.dart';
 import 'package:uni_connect/features/auth/data/post_repository.dart';
+import 'package:uni_connect/features/auth/data/user_repository.dart';
 import 'package:uni_connect/features/feed/presentation/student/post_details_screen.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/category_selector.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/post_card.dart';
@@ -42,9 +43,11 @@ class _AdminPostsScreenState extends State<AdminPostsScreen> {
   static const int _pageSize = 20;
   int _visibleCount = _pageSize;
   List<PostModel> _allPosts = [];
+  String _myId = '';
   StreamSubscription<List<PostModel>>? _sub;
 
-  List <PostModel> get posts => _allPosts;
+  // List <PostModel> get posts => _allPosts;
+  List <PostModel> get posts => _allPosts.where((p) => p.userId != _myId).toList();
   List <PostModel> get _filteredPosts{
     final query = _searchController.text.trim().toLowerCase();
 
@@ -62,6 +65,9 @@ class _AdminPostsScreenState extends State<AdminPostsScreen> {
   @override
   void initState() {
     super.initState();
+    UserRepository().currentDocId().then((id) {
+      if (mounted) setState(() => _myId = id);
+    });
     _sub = PostRepository().watchAllPosts().listen((data){
       if(mounted){
         setState(() {
