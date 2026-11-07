@@ -36,9 +36,9 @@ class _SplashScreenState extends State<SplashScreen> {
       final currentUser = FirebaseAuth.instance.currentUser;
       if(currentUser != null){
         //Fetch user role from firestore before routing
-        final role = await _authRepository.getUserRole(currentUser.uid);
+        final isAdmin = await _authRepository.isAdminClaim();
         if(!mounted) return;
-        if(role == 'admin'){
+        if(isAdmin){
           context.go('/admin-dashboard');
         }else{
           context.go('/home');

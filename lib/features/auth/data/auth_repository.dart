@@ -34,11 +34,8 @@ class AuthRepository {
       );
       final uid = credential.user!.uid;
       final sequentialId = await _generateSequentialUserId();
-
-      final cleanEmail = email.trim().toLowerCase();
-      final role = cleanEmail.endsWith('.admin@gmail.com') ? 'admin' : 'student';
-      // final role = email.toLowerCase().endsWith('@admin.ul.edu.lb') ? 'admin' : 'student';
-
+      // every self-registered account is a student; admins come only from backend/create_admin.py
+      const role = 'student';
 
       //to remove the academicYear and faculty fields if added admin
       final userData = <String, dynamic>{
@@ -166,6 +163,21 @@ class AuthRepository {
       return true;
     } else {
       await _auth.signOut();
+      return false;
+    }
+  }
+
+  /// True only when the signed-in account carries the admin custom claim
+  /// (set by backend/create_admin.py). The Firestore role field is not used here.
+  Future<bool> isAdminClaim() async {
+    final user = _auth.currentUser;
+    if (user == null) return false;
+    try {
+      // forceRefresh picks up a claim that was added after the last sign-in
+      final token = await user.getIdTokenResult(true);
+      return token.claims?['admin'] == true;
+    } catch (e) {
+      debugPrint('Error reading admin claim: $e');
       return false;
     }
   }
