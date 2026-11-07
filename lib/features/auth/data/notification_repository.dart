@@ -12,6 +12,7 @@ class NotificationRepository {
     return _firestore
         .collection('notifications')
         .where('userId', isEqualTo: userDocId)
+        .where('ownerEmail', isEqualTo: _myEmail)
         .snapshots()
         .map((s) {
           final list = s.docs
@@ -36,6 +37,7 @@ class NotificationRepository {
     if (ownerEmail.isEmpty) return;
     await _firestore.collection('notifications').add({
       'userId': toUserDocId,
+      'ownerEmail': ownerEmail,
       'content': content,
       'senderName': senderName,
       'type': type,
