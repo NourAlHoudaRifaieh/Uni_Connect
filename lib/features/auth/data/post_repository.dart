@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:uni_connect/core/models/post_model.dart';
 import 'package:uni_connect/core/utils/sequential_id_service.dart';
+import 'package:uni_connect/features/auth/data/notification_repository.dart';
 import 'package:uni_connect/features/auth/data/subject_repository.dart';
 import 'package:uni_connect/features/auth/data/user_repository.dart';
 
@@ -130,6 +131,7 @@ class PostRepository {
     final postRef = _firestore.collection('posts').doc(postId);
     final postDoc = await postRef.get();
     if(!postDoc.exists) return;
+    final postAuthorId = (postDoc.data()?['userId'] ?? '').toString();
     List<dynamic> likedBy = List<dynamic>.from(postDoc.data()?['likedBy'] ?? []);
     // old likes may have been saved with the auth uid: treat them as the same person
     bool isMe(dynamic item) => item is Map &&
@@ -143,6 +145,20 @@ class PostRepository {
       'likedBy': likedBy,
       'likes': likedBy.length,
     });
+
+    // notify the post author only when a like is ADDED, never for his own post
+    final nowLiked = likedBy.any(isMe);
+    if (nowLiked && postAuthorId.isNotEmpty && postAuthorId != likerId) {
+      try {
+        await NotificationRepository().send(
+          toUserDocId: postAuthorId,
+          content: '$likerName liked your post',
+          senderName: likerName,
+          type: 'like',
+          postId: postId,
+        );
+      } catch (_) {}
+    }
   }
 
   Future<void> updatePost(String postId, {
