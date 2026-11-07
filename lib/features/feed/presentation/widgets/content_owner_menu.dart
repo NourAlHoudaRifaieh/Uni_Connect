@@ -69,69 +69,84 @@ class ContentOwnerMenu extends StatelessWidget {
         final me = snap.data;
         final authUid = FirebaseAuth.instance.currentUser?.uid ?? '';
         final isOwner = ownerId.isNotEmpty && (ownerId == me || ownerId == authUid);
-        // final isOwner = me != null && me.isNotEmpty && post.userId == me;
-        if(!isOwner) return SizedBox.shrink();
+        // if(!isOwner) return SizedBox.shrink();
 
-        return PopupMenuButton<String>(
-          style: IconButton.styleFrom(
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            padding: EdgeInsets.zero,
-            minimumSize: Size.zero,
-          ),
-          color: Colors.white,
-          elevation: 5,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          offset: Offset(-5, 30),
-          onSelected: (value) {
-            if (value == 'edit') {
-              // onEditPressed(context);
-              onEdit();
-            } else if (value == 'delete') {
-              // onDeletePressed(context);
-              onDelete();
+        return FutureBuilder<bool>(
+            future: _isAdmin(),
+            builder: (context, adminSnap){
+              final isAdmin = adminSnap.data ?? false;
+              //owner sees Edit + Delete; admin sees only Delete
+              if(!isOwner && !isAdmin) return SizedBox.shrink();
+              return PopupMenuButton<String>(
+                style: IconButton.styleFrom(
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  padding: EdgeInsets.zero,
+                  minimumSize: Size.zero,
+                ),
+                color: Colors.white,
+                elevation: 5,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                offset: Offset(-5, 30),
+                onSelected: (value) {
+                  if (value == 'edit') {
+                    // onEditPressed(context);
+                    onEdit();
+                  } else if (value == 'delete') {
+                    // onDeletePressed(context);
+                    onDelete();
+                  }
+                },
+                itemBuilder: (context) => [
+                  if (isOwner) PopupMenuItem<String>(
+                    value: 'edit',
+                    child: Row(
+                      children: [
+                        Icon(Icons.edit_outlined, color: Color(0xFF2563EB), size: 15),
+                        SizedBox(width: 8),
+                        Text(
+                          'Edit',
+                          style: GoogleFonts.inter(
+                            color: Color(0xFF2563EB),
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem<String>(
+                    value: 'delete',
+                    child: Row(
+                      children: [
+                        Icon(Icons.delete_outline, color: Colors.redAccent, size: 15),
+                        SizedBox(width: 8),
+                        Text(
+                          'Delete',
+                          style: GoogleFonts.inter(
+                            color: Colors.redAccent,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+                child: Icon(Icons.more_vert, size: 20, color: Colors.grey),
+              );
             }
-          },
-          itemBuilder: (context) => [
-            PopupMenuItem<String>(
-              value: 'edit',
-              child: Row(
-                children: [
-                  Icon(Icons.edit_outlined, color: Color(0xFF2563EB), size: 15),
-                  SizedBox(width: 8),
-                  Text(
-                    'Edit',
-                    style: GoogleFonts.inter(
-                      color: Color(0xFF2563EB),
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            PopupMenuItem<String>(
-              value: 'delete',
-              child: Row(
-                children: [
-                  Icon(Icons.delete_outline, color: Colors.redAccent, size: 15),
-                  SizedBox(width: 8),
-                  Text(
-                    'Delete',
-                    style: GoogleFonts.inter(
-                      color: Colors.redAccent,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-          child: Icon(Icons.more_vert, size: 20, color: Colors.grey),
         );
       },
     );
   }
+}
+
+// Reads the admin claim from the cached token (no network call on every rebuild)
+Future<bool> _isAdmin() async {
+  final user = FirebaseAuth.instance.currentUser;
+  if (user == null) return false;
+  final token = await user.getIdTokenResult();
+  return token.claims?['admin'] == true;
 }
