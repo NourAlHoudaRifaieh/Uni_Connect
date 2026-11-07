@@ -47,16 +47,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _passwordController.dispose();
   }
 
-  bool get _isAminEmail =>
-      _emailController.text.trim().toLowerCase().endsWith('.admin@gmail.com');
-
   Future <void> _goToStep2() async{
     if(!_formKeyStep1.currentState!.validate()) return;
-    if(_isAminEmail){
-      // this for to skip the academic information
-      await _handleAdminCreateAccount();
-      return;
-    }
     setState(() {
       _currentStep = 1;
     });
@@ -64,34 +56,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
     );
-  }
-
-  Future<void> _handleAdminCreateAccount() async {
-    setState(() => _isLoading = true);
-
-    final error = await _authRepository.register(
-      fullName: _fullNameController.text.trim(),
-      email: _emailController.text.trim(),
-      password: _passwordController.text,
-      // faculty and academicYear left null for admins
-    );
-
-    if (!mounted) return;
-    setState(() => _isLoading = false);
-
-    if (error != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(error), backgroundColor: Colors.red),
-      );
-    } else {
-      context.go('/login'); // later this becomes '/admin-dashboard'
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text('Admin account created successfully! Please sign in.'),
-            backgroundColor: Colors.green,
-        ),
-      );
-    }
   }
 
   void _goBackToStep1(){
