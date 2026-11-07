@@ -1,8 +1,7 @@
 import 'package:uni_connect/core/models/post_model.dart';
 import 'package:uni_connect/core/models/subject_model.dart';
 import 'package:uni_connect/core/models/user_model.dart';
-import 'package:uni_connect/features/auth/data/subject_request_repository.dart';
-
+import 'package:uni_connect/core/utils/year_rules.dart';
 /// Decides what a student can see, based on SUBJECTS (not only on the group id).
 /// A student sees a subject when it belongs to his group (own or shared/common)
 /// or when the admin accepted his "See Another Subject" request.

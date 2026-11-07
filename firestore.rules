@@ -75,15 +75,6 @@ service cloud.firestore {
       }
     }
 
-    // "See Another Subject" requests
-    match /subjectRequests/{requestId} {
-      allow create: if signedIn();
-      allow read: if signedIn();
-      allow update: if isAdmin();
-      // the student may clear his own request from his page
-      allow delete: if isAdmin() || isUserDocOwner(resource.data.userId);
-    }
-
     match /notifications/{notificationId} {
       allow create: if signedIn();
       allow read: if signedIn();

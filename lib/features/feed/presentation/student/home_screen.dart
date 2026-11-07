@@ -7,7 +7,7 @@ import 'package:uni_connect/features/auth/data/feed_access.dart';
 import 'package:uni_connect/features/auth/data/group_repository.dart';
 import 'package:uni_connect/features/auth/data/post_repository.dart';
 import 'package:uni_connect/features/auth/data/subject_repository.dart';
-import 'package:uni_connect/features/auth/data/subject_request_repository.dart';
+import 'package:uni_connect/core/utils/year_rules.dart';
 import 'package:uni_connect/features/auth/data/user_repository.dart';
 import 'package:uni_connect/features/feed/presentation/student/post_details_screen.dart';
 import 'package:uni_connect/features/feed/presentation/student/profile_screen.dart';
@@ -53,19 +53,6 @@ class _HomeScreenState extends State <HomeScreen>{
       return matchesCategory && matchesSearch;
     }).toList();
   }
-
-  // Stream<List<PostModel>> _postsInMySpecialty() {
-  //   final subjectRepo = SubjectRepository();
-  //   return _userRepository.watchCurrentUser().asyncExpand((user) {
-  //     return subjectRepo.watchAllSubjects().asyncExpand((subjects){
-  //       return _postRepository.watchAllPosts().map((posts){
-  //         if (user == null || user.role == 'admin') return posts;
-  //         final mine = FeedAccess.subjectIdsFor(user, subjects);
-  //         return posts.where((p) => FeedAccess.canSee(p, user, mine)).toList();
-  //       });
-  //     });
-  //   });
-  // }
 
   Stream <List<PostModel>> _postsInMySpecialty(){
     return _userRepository.watchCurrentUser().asyncExpand((user) {

@@ -9,8 +9,8 @@ import 'package:uni_connect/features/auth/data/subject_repository.dart';
 import 'package:uni_connect/features/auth/data/user_repository.dart';
 import 'package:uni_connect/features/feed/presentation/admin/admin_groups_screen.dart';
 import 'package:uni_connect/features/feed/presentation/admin/admin_posts_screen.dart';
-import 'package:uni_connect/features/feed/presentation/admin/admin_subjects_request_screen.dart';
 import 'package:uni_connect/features/feed/presentation/admin/admin_subjects_screen.dart';
+import 'package:uni_connect/features/feed/presentation/admin/admin_users_screen.dart';
 import 'package:uni_connect/features/feed/presentation/student/create_post_screen.dart';
 import 'package:uni_connect/features/feed/presentation/student/profile_screen.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/dashboard_manage_stat_card.dart';
@@ -122,17 +122,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                   mainAxisSpacing: 15,
                                   childAspectRatio: 1.60,
                                   children: [
-                                    // DashboardManageStatCard(
-                                    //   icon: Icons.person_2_outlined,
-                                    //   title: 'Manage Users',
-                                    //   subTitle: '1,284 students',
-                                    //   // onTap: (){
-                                    //   //   Navigator.push(
-                                    //   //       context,
-                                    //   //       MaterialPageRoute(builder: (context)=> AdminUsersScreen()),
-                                    //   //   );
-                                    //   // },
-                                    // ),
                                     DashboardManageStatCard(
                                       icon: Icons.people_alt_outlined,
                                       title: 'Manage Groups',
@@ -189,13 +178,13 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                       },
                                     ),
                                     DashboardManageStatCard(
-                                      icon: Icons.swap_horiz_outlined,
-                                      title: 'Subject Requests',
-                                      subTitle: 'Accept / Reject',
+                                      icon: Icons.person_2_outlined,
+                                      title: 'Manage Users',
+                                      subTitle: 'View and manage students',
                                       onTap: (){
                                         Navigator.push(
                                             context,
-                                            MaterialPageRoute(builder: (context) => AdminSubjectRequestScreen(isStandalone: true)),
+                                            MaterialPageRoute(builder: (context) => AdminUsersScreen(isStandalone: true)),
                                         );
                                         if(mounted){
                                           setState(() {
