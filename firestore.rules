@@ -1,9 +1,9 @@
 rules_version = '2';
 
 // UniConnect Firestore rules.
-// Admin = an account whose email ends with @admin.ul.edu.lb (same rule the app
-// uses at registration). Everything an admin-only screen does is enforced here
-// too, not only in the UI.
+// Admin = a signed-in account whose token has the custom claim admin == true.
+// The claim is set only by backend/create_admin.py (Firebase Admin SDK).
+// Everything an admin-only screen does is enforced here too, not only in the UI.
 service cloud.firestore {
   match /databases/{database}/documents {
 
@@ -12,7 +12,7 @@ service cloud.firestore {
     }
 
     function isAdmin() {
-      return signedIn() && request.auth.token.email.matches('.*@admin[.]ul[.]edu[.]lb');
+      return signedIn() && 'admin' in request.auth.token && request.auth.token.admin == true;
     }
 
     // true when only the listed fields changed in this write
@@ -28,12 +28,19 @@ service cloud.firestore {
 
     match /users/{userId} {
       allow read: if signedIn();
-      // registration writes the profile while the new account is signed in
-      allow create: if signedIn() && request.resource.data.email == request.auth.token.email;
-      // owner edits own profile, admin edits anyone; counters may be bumped by any signed-in user
+
+      // registration can never create an admin
+      allow create: if signedIn()
+        && request.resource.data.email == request.auth.token.email
+        && request.resource.data.role != 'admin';
+
+      // owner edits own profile but cannot change role or email; admin edits anyone
       allow update: if isAdmin()
-        || resource.data.email == request.auth.token.email
+        || (resource.data.email == request.auth.token.email
+            && request.resource.data.role == resource.data.role
+            && request.resource.data.email == resource.data.email)
         || onlyChanges(['postCount']);
+
       allow delete: if isAdmin();
     }
 
@@ -87,9 +94,13 @@ service cloud.firestore {
     }
 
     // Monotonic counters that hand out the sequential ids (user_1, group_1,
-    // subject_1, post_1...). A deleted record never frees up its number.
+    // subject_1, post_1...). A counter only moves forward by one and is never
+    // deleted, so a number is never reused.
     match /counters/{counterId} {
-      allow read, write: if signedIn();
+      allow read: if signedIn();
+      allow create, update: if signedIn()
+        && request.resource.data.value == (resource == null ? 0 : resource.data.value) + 1;
+      allow delete: if false;
     }
   }
-}
+}``
