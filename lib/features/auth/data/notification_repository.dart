@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:uni_connect/core/models/notification_model.dart';
+import 'package:uni_connect/core/utils/sequential_id_service.dart';
 
 class NotificationRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  final SequentialIdService _ids = SequentialIdService();
   String get _myEmail => (FirebaseAuth.instance.currentUser?.email ?? '').trim().toLowerCase();
 
   // only the signed-in owner's notifications (userId AND ownerEmail, so the rules can verify the query)
@@ -31,10 +33,13 @@ class NotificationRepository {
     String? postId,
   }) async {
     if(toUserDocId.isEmpty) return;
-    // store the owner's email so the read rule can check it without a lookup
+
+    // owner's email is stored in lowercase, so the read rule can match it
     final ownerDoc = await _firestore.collection('users').doc(toUserDocId).get();
     final ownerEmail = (ownerDoc.data()?['email'] ?? '').toString().trim().toLowerCase();
     if (ownerEmail.isEmpty) return;
+    // sequential id from the counter: notif_1, notif_2, ...
+    final notifId = await _ids.nextId('notifications', 'notif_');
     await _firestore.collection('notifications').add({
       'userId': toUserDocId,
       'ownerEmail': ownerEmail,
