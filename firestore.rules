@@ -60,10 +60,9 @@ service cloud.firestore {
     match /posts/{postId} {
       allow read: if signedIn();
       allow create: if signedIn();
-      // author or admin can edit/delete; anyone signed in may like / bump the comment counter
-      allow update: if isAdmin()
-        || isUserDocOwner(resource.data.userId)
-        || onlyChanges(['likedBy', 'likes', 'comments']);
+       // only the author edits the text; admin can delete but not edit; anyone signed in may like / bump the comment counter
+       allow update: if isUserDocOwner(resource.data.userId)
+         || onlyChanges(['likedBy', 'likes', 'comments']);
       allow delete: if isAdmin() || isUserDocOwner(resource.data.userId);
 
       match /replies/{replyId} {
