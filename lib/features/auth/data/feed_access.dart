@@ -20,8 +20,14 @@ class FeedAccess {
 
   /// A post is visible when it is in the student's group, belongs to one of the
   /// student's subjects, or was written by the student himself.
+  // static bool canSee(PostModel p, UserModel user, Set<String> mySubjectIds) {
+  //   if (p.userId != null && p.userId == user.userId) return true;
+  //   if (p.subjectId != null && mySubjectIds.contains(p.subjectId)) return true;
+  //   return user.groupId != null && user.groupId!.isNotEmpty && p.groupId == user.groupId;
+  // }
   static bool canSee(PostModel p, UserModel user, Set<String> mySubjectIds) {
-    if (p.userId != null && p.userId == user.userId) return true;
+    // own posts are shown only on the profile screen, never in the feed
+    if (p.userId != null && p.userId == user.userId) return false;
     if (p.subjectId != null && mySubjectIds.contains(p.subjectId)) return true;
     return user.groupId != null && user.groupId!.isNotEmpty && p.groupId == user.groupId;
   }

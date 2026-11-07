@@ -78,10 +78,10 @@ service cloud.firestore {
     match /notifications/{notificationId} {
       allow create: if signedIn();
       // every user, admin included, reads only the notifications addressed to him
-      allow read: if resource.data.ownerEmail == request.auth.token.email.lower();
-      allow update: if resource.data.ownerEmail == request.auth.token.email.lower()
+      allow read: if resource.data.ownerEmail == request.auth.token.email;
+      allow update: if resource.data.ownerEmail == request.auth.token.email
         && onlyChanges(['isRead']);
-      allow delete: if resource.data.ownerEmail == request.auth.token.email.lower();
+      allow delete: if resource.data.ownerEmail == request.auth.token.email;
     }
 
     // Monotonic counters that hand out the sequential ids (user_1, group_1,

@@ -72,7 +72,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                       ),
                     ),
                     SizedBox(height:10),
-                    Text('Manage Subject',
+                    Text('Manage Users',
                         style: GoogleFonts.inter(fontSize: 20, fontWeight:  FontWeight.bold)
                     ),
                   ],
@@ -169,7 +169,8 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                         ),
                       );
                     }
-                    final users = snapshot.data ?? [];
+                    // final users = snapshot.data ?? [];
+                    final users = (snapshot.data ?? []).where((u) => u.role != 'admin').toList();
                     // print('Fetched users count : ${users.length}');
                     final query = _searchController.text.trim().toLowerCase();
 

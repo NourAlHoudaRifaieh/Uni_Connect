@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:uni_connect/core/models/notification_model.dart';
 import 'package:uni_connect/core/utils/sequential_id_service.dart';
+import 'package:flutter/foundation.dart';
 
 class NotificationRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -40,6 +42,7 @@ class NotificationRepository {
     if (ownerEmail.isEmpty) return;
     // sequential id from the counter: notif_1, notif_2, ...
     final notifId = await _ids.nextId('notifications', 'notif_');
+    debugPrint('NOTIF ID => $notifId');
     await _firestore.collection('notifications').doc(notifId).set({
       'userId': toUserDocId,
       'ownerEmail': ownerEmail,
