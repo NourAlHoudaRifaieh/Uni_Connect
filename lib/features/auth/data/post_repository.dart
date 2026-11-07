@@ -188,7 +188,20 @@ class PostRepository {
 
   Future<void> deletePost(String postId,
       {String? subjectId, String? userId, String? groupId}) async {
-    await _firestore.collection('posts').doc(postId).delete();
+    final postRef = _firestore.collection('posts').doc(postId);
+
+    // Firestore does not delete subcollections automatically: remove replies first
+    while (true) {
+      final replies = await postRef.collection('replies').limit(400).get();
+      if (replies.docs.isEmpty) break;
+      final batch = _firestore.batch();
+      for (final r in replies.docs) {
+        batch.delete(r.reference);
+      }
+      await batch.commit();
+    }
+    await postRef.delete();
+    // await _firestore.collection('posts').doc(postId).delete();
     if (groupId != null && groupId.isNotEmpty) {
       await _firestore.collection('groups').doc(groupId).set(
         {'postCount': FieldValue.increment(-1)},
