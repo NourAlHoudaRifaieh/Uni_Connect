@@ -13,6 +13,7 @@ import 'package:uni_connect/features/feed/presentation/student/post_details_scre
 import 'package:uni_connect/features/feed/presentation/student/profile_screen.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/category_selector.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:uni_connect/features/feed/presentation/widgets/notification_bell.dart';
 import 'package:uni_connect/features/feed/presentation/widgets/post_card.dart';
 
 class HomeScreen extends StatefulWidget{
@@ -164,6 +165,8 @@ class _HomeScreenState extends State <HomeScreen>{
                             // ),
                             Text('UniConnect', style: GoogleFonts.inter(fontSize:25, fontWeight: FontWeight.bold)),
                             SizedBox(width:10),
+                            NotificationBell(),
+                            SizedBox(width:8),
                             //User Avatar
                             GestureDetector(
                               onTap: (){

@@ -77,10 +77,11 @@ service cloud.firestore {
 
     match /notifications/{notificationId} {
       allow create: if signedIn();
-      allow read: if signedIn();
-      // a user may only flip isRead on his own notifications
-      allow update: if isAdmin() || (isUserDocOwner(resource.data.userId) && onlyChanges(['isRead']));
-      allow delete: if isAdmin() || isUserDocOwner(resource.data.userId);
+      // a user reads only his own notifications (checked by the stored owner email)
+      allow read: if isAdmin() || resource.data.ownerEmail == request.auth.token.email;
+      allow update: if isAdmin()
+        || (resource.data.ownerEmail == request.auth.token.email && onlyChanges(['isRead']));
+      allow delete: if isAdmin() || resource.data.ownerEmail == request.auth.token.email;
     }
 
     // Monotonic counters that hand out the sequential ids (user_1, group_1,
