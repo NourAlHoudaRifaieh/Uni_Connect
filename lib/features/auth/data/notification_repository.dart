@@ -40,7 +40,7 @@ class NotificationRepository {
     if (ownerEmail.isEmpty) return;
     // sequential id from the counter: notif_1, notif_2, ...
     final notifId = await _ids.nextId('notifications', 'notif_');
-    await _firestore.collection('notifications').add({
+    await _firestore.collection('notifications').doc(notifId).set({
       'userId': toUserDocId,
       'ownerEmail': ownerEmail,
       'content': content,
