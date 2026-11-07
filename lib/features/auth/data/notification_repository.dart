@@ -23,6 +23,7 @@ class NotificationRepository {
     required String content,
     String senderName = '',
     String type = 'general',
+    String? postId,
   }) async {
     if(toUserDocId.isEmpty) return;
     await _firestore.collection('notifications').add({
@@ -30,6 +31,7 @@ class NotificationRepository {
       'content': content,
       'senderName': senderName,
       'type': type,
+      'postId': postId ?? '',
       'isRead': false,
       'createdAt': FieldValue.serverTimestamp(),
     });
