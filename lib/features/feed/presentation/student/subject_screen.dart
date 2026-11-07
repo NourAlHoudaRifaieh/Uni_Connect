@@ -189,46 +189,60 @@ class SubjectScreen extends StatelessWidget {
                                                 ),
                                                 child:  Column(
                                                   crossAxisAlignment: CrossAxisAlignment.start,
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                   children: [
-                                                    Container(
-                                                      width: 40,
-                                                      height: 40,
-                                                      decoration: BoxDecoration(
-                                                        color: Color(0xFF1D61FF).withOpacity(0.12),
-                                                        borderRadius: BorderRadius.circular(10),
+                                                    // استخدام Flexible عشان يتكيف النص مع الارتفاع المتاح بدون ما يعمل overflow
+                                                    Flexible(
+                                                      child: Column(
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                        mainAxisSize: MainAxisSize.min, // عشان ياخد قد حاجته فقط
+                                                        children: [
+                                                          Container(
+                                                            width: 40,
+                                                            height: 40,
+                                                            decoration: BoxDecoration(
+                                                              color: const Color(0xFF1D61FF).withOpacity(0.12),
+                                                              borderRadius: BorderRadius.circular(10),
+                                                            ),
+                                                            child: const Icon(Icons.menu_book, color: Color(0xFF1D61FF), size: 20),
+                                                          ),
+                                                          const SizedBox(height: 8),
+                                                          Text(
+                                                            subject.subjectCode ?? '',
+                                                            style: GoogleFonts.inter(
+                                                              fontSize: 11,
+                                                              color: Colors.grey.shade500,
+                                                            ),
+                                                          ),
+                                                          const SizedBox(height: 2),
+                                                          Text(
+                                                            subject.subjectName ?? '',
+                                                            maxLines: 2, // سطرين كافية جداً لاسم المادة داخل الكارت
+                                                            overflow: TextOverflow.ellipsis,
+                                                            style: GoogleFonts.inter(
+                                                              fontSize: 13, // تصغير الفونت درجة وحدة لحماية إضافية من الزيادة
+                                                              fontWeight: FontWeight.bold,
+                                                            ),
+                                                          ),
+                                                        ],
                                                       ),
-                                                      child: Icon(Icons.menu_book, color: Color(0xFF1D61FF), size:20),
                                                     ),
-                                                    SizedBox(height:10),
-                                                    Text(
-                                                      subject.subjectCode ?? '',
-                                                      style: GoogleFonts.inter(
-                                                          fontSize: 11,
-                                                          color: Colors.grey.shade500
-                                                      ),
-                                                    ),
-                                                    SizedBox(height:2),
-                                                    Text(
-                                                      subject.subjectName ?? '',
-                                                      style: GoogleFonts.inter(
-                                                          fontSize: 14, fontWeight: FontWeight.bold
-                                                      ),
-                                                    ),
-                                                    Spacer(),
+                                                    const SizedBox(height: 8),
+                                                    // الـ Row السفلي للـ posts
                                                     Row(
                                                       children: [
                                                         Container(
-                                                          width:6,
-                                                          height:6,
-                                                          decoration: BoxDecoration(
+                                                          width: 6,
+                                                          height: 6,
+                                                          decoration: const BoxDecoration(
                                                             color: Color(0xFF1D61FF),
                                                             shape: BoxShape.circle,
                                                           ),
                                                         ),
-                                                        SizedBox(width:6),
+                                                        const SizedBox(width: 6),
                                                         Text(
-                                                            '${subject.postCount ?? 0} posts',
-                                                            style: GoogleFonts.inter(fontSize: 11, color: Colors.grey.shade500)
+                                                          '${subject.postCount ?? 0} posts',
+                                                          style: GoogleFonts.inter(fontSize: 11, color: Colors.grey.shade500),
                                                         ),
                                                       ],
                                                     ),
