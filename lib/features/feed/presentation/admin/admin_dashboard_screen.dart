@@ -180,7 +180,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                     DashboardManageStatCard(
                                       icon: Icons.person_2_outlined,
                                       title: 'Manage Users',
-                                      subTitle: 'View and manage students',
+                                      subTitle: 'Manage students',
                                       onTap: (){
                                         Navigator.push(
                                             context,
