@@ -6,7 +6,8 @@ import 'package:uni_connect/features/auth/data/user_repository.dart';
 import 'package:uni_connect/features/feed/presentation/student/notification_screen.dart';
 
 class NotificationBell extends StatelessWidget {
-  const NotificationBell({super.key});
+  final Color iconColor;
+  const NotificationBell({super.key, this.iconColor = const Color(0xFF374151)});
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +33,7 @@ class NotificationBell extends StatelessWidget {
                 children: [
                   Padding(
                     padding: EdgeInsets.all(6),
-                    child: Icon(Icons.notifications_outlined, size: 26, color: Colors.grey.shade700),
+                    child: Icon(Icons.notifications_outlined, size: 26, color: iconColor),
                   ),
                   if (unread > 0)
                     Positioned(

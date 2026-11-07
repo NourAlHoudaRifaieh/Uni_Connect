@@ -9,6 +9,7 @@ import 'package:uni_connect/features/feed/presentation/admin/admin_posts_screen.
 import 'package:uni_connect/features/feed/presentation/admin/admin_subjects_screen.dart';
 import 'package:uni_connect/features/feed/presentation/admin/admin_users_screen.dart';
 import 'package:uni_connect/features/feed/presentation/student/create_post_screen.dart';
+import 'package:uni_connect/features/feed/presentation/widgets/notification_bell.dart';
 
 import '../../features/auth/data/auth_repository.dart';
 
@@ -62,8 +63,8 @@ class _AdminLayoutScreenState extends State <AdminLayoutScreen>{
             children: [
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.fromLTRB(20,50,20,20),
-                decoration: const BoxDecoration(
+                padding: EdgeInsets.fromLTRB(20,50,20,20),
+                decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [Color(0xFF2563EB), Color(0xFF1E3A8A)],
                     begin: Alignment.topLeft,
@@ -76,109 +77,118 @@ class _AdminLayoutScreenState extends State <AdminLayoutScreen>{
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                // 'Dashboard',
+                                currentHeader['title']!,
+                                style: GoogleFonts.inter(
+                                  color: Colors.white,
+                                  fontSize:25,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(height:5),
+                              Text(
+                                // 'Lebanese University - Admin',
+                                currentHeader['subtitle']!,
+                                style: GoogleFonts.inter(
+                                  color: Colors.white.withOpacity(0.7),
+                                  fontSize:15,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text(
-                              // 'Dashboard',
-                              currentHeader['title']!,
-                              style: GoogleFonts.inter(
-                                color: Colors.white,
-                                fontSize:25,
-                                fontWeight: FontWeight.bold,
+                            NotificationBell(iconColor: Colors.white),
+                            SizedBox(width: 8),
+                            if(_currentIndex == 0) ...[
+                              GestureDetector(
+                                onTap: ()async{
+                                  await AuthRepository().logout();
+                                  final prefs = await SharedPreferences.getInstance();
+                                  await prefs.remove('remember_me');
+                                  await prefs.remove('saved_email');
+                                  if(context.mounted){
+                                    context.go('/login');
+                                  }
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 14,
+                                      vertical: 6
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.2),
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.logout,
+                                        color: Colors.white,
+                                        size:16,
+                                      ),
+                                      SizedBox(width:6),
+                                      Text(
+                                        'Sign Out',
+                                        style: GoogleFonts.inter(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 13,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ),
-                            ),
-                            const SizedBox(height:5),
-                            Text(
-                              // 'Lebanese University - Admin',
-                              currentHeader['subtitle']!,
-                              style: GoogleFonts.inter(
-                                color: Colors.white.withOpacity(0.7),
-                                fontSize:15,
-                                fontWeight: FontWeight.w400,
+                            ]else if (_currentIndex == 3) ...[
+                              GestureDetector(
+                                // onTap: (){},
+                                onTap:(){
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context)=> CreatePostScreen()),
+                                  );
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 14,
+                                      vertical: 6
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.2),
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.add_outlined,
+                                        color: Colors.white,
+                                        size:16,
+                                      ),
+                                      SizedBox(width:6),
+                                      Text(
+                                        'Add Post',
+                                        style: GoogleFonts.inter(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 13,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ),
-                            ),
+                            ]
                           ],
                         ),
-                        if(_currentIndex == 0) ...[
-                          GestureDetector(
-                          onTap: ()async{
-                            await AuthRepository().logout();
-                            final prefs = await SharedPreferences.getInstance();
-                            await prefs.remove('remember_me');
-                            await prefs.remove('saved_email');
-                            if(context.mounted){
-                              context.go('/login');
-                            }
-                          },
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 14,
-                                vertical: 6
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.logout,
-                                  color: Colors.white,
-                                  size:16,
-                                ),
-                                SizedBox(width:6),
-                                Text(
-                                  'Sign Out',
-                                  style: GoogleFonts.inter(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 13,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        ]else if (_currentIndex == 3) ...[
-                          GestureDetector(
-                            // onTap: (){},
-                            onTap:(){
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (context)=> CreatePostScreen()),
-                              );
-                            },
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 14,
-                                  vertical: 6
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.2),
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.add_outlined,
-                                    color: Colors.white,
-                                    size:16,
-                                  ),
-                                  SizedBox(width:6),
-                                  Text(
-                                    'Add Post',
-                                    style: GoogleFonts.inter(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 13,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ]
                       ],
                     ),
                   ],
