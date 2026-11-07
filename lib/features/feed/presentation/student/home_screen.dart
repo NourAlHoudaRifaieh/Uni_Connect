@@ -55,21 +55,44 @@ class _HomeScreenState extends State <HomeScreen>{
     }).toList();
   }
 
+  // Stream <List<PostModel>> _postsInMySpecialty(){
+  //   return _userRepository.watchCurrentUser().asyncExpand((user) {
+  //     final groupId = user?.groupId;
+  //     return _postRepository.watchAllPosts().asyncMap((posts) async{
+  //       if(groupId == null || groupId.isEmpty) return posts;
+  //       final locked = isLockedYear(user?.academicYear);
+  //       final extra = locked ? const <String>[] : (user?.extraSubjectIds ?? const <String>[]);
+  //       //subjects that belong to my group own or shared with it
+  //       final subjects = await SubjectRepository().getSubjects();
+  //       final mySubjectIds = subjects
+  //         .where((s) => s.belongsToGroup(groupId))
+  //         .map((s) => s.subjectId)
+  //         .whereType<String>()
+  //         .toSet();
+  //       return posts
+  //           .where((p) => p.groupId == groupId || (p.subjectId != null && (mySubjectIds.contains(p.subjectId) || extra.contains(p.subjectId))))
+  //           .toList();
+  //     });
+  //   });
+  // }
   Stream <List<PostModel>> _postsInMySpecialty(){
     return _userRepository.watchCurrentUser().asyncExpand((user) {
       final groupId = user?.groupId;
+      final myId = user?.userId;
       return _postRepository.watchAllPosts().asyncMap((posts) async{
-        if(groupId == null || groupId.isEmpty) return posts;
+        // my own posts are shown only on my profile, never in the feed
+        final others = posts.where((p) => p.userId != myId).toList();
+        if(groupId == null || groupId.isEmpty) return others;
         final locked = isLockedYear(user?.academicYear);
         final extra = locked ? const <String>[] : (user?.extraSubjectIds ?? const <String>[]);
         //subjects that belong to my group own or shared with it
         final subjects = await SubjectRepository().getSubjects();
         final mySubjectIds = subjects
-          .where((s) => s.belongsToGroup(groupId))
-          .map((s) => s.subjectId)
-          .whereType<String>()
-          .toSet();
-        return posts
+            .where((s) => s.belongsToGroup(groupId))
+            .map((s) => s.subjectId)
+            .whereType<String>()
+            .toSet();
+        return others
             .where((p) => p.groupId == groupId || (p.subjectId != null && (mySubjectIds.contains(p.subjectId) || extra.contains(p.subjectId))))
             .toList();
       });
@@ -124,33 +147,39 @@ class _HomeScreenState extends State <HomeScreen>{
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children:[
-                            Text('UniConnect', style: GoogleFonts.inter(fontSize:25, fontWeight: FontWeight.bold)),
-                            SizedBox(width:25),
-                            NotificationBell(),
-                            // SizedBox(width:8),
-                            //User Avatar
-                            GestureDetector(
-                              onTap: (){
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context)=> ProfileScreen(),
+                            Expanded(
+                              child: Text('UniConnect', style: GoogleFonts.inter(fontSize:25, fontWeight: FontWeight.bold)),
+                            ),
+                            //bell and avatar grouped on the right
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                NotificationBell(),
+                                SizedBox(width:10),
+                                GestureDetector(
+                                  onTap: (){
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context)=> ProfileScreen(),
+                                      ),
+                                    );
+                                  },
+                                  child: StreamBuilder<UserModel?>(
+                                      stream: _userRepository.watchCurrentUser(),
+                                      builder: (context, userSnapshot){
+                                        final initials = userSnapshot.data?.authorInitials.isNotEmpty == true
+                                            ? userSnapshot.data!.authorInitials
+                                            : 'U';
+                                        return  CircleAvatar(
+                                            radius:20,
+                                            backgroundColor:Color(0xFF1D61FF),
+                                            child: Text( initials, style: GoogleFonts.inter(color: Colors.white, fontWeight: FontWeight.bold))
+                                        );
+                                      }
                                   ),
-                                );
-                              },
-                              child: StreamBuilder<UserModel?>(
-                                stream: _userRepository.watchCurrentUser(),
-                                builder: (context, userSnapshot){
-                                  final initials = userSnapshot.data?.authorInitials.isNotEmpty == true
-                                      ? userSnapshot.data!.authorInitials
-                                      : 'U';
-                                  return  CircleAvatar(
-                                      radius:20,
-                                      backgroundColor:Color(0xFF1D61FF),
-                                      child: Text( initials, style: GoogleFonts.inter(color: Colors.white, fontWeight: FontWeight.bold))
-                                  );
-                                }
-                              ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
