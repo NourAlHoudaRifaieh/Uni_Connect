@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:uni_connect/core/models/reply_model.dart';
 import 'package:uni_connect/core/utils/sequential_id_service.dart';
+import 'package:uni_connect/features/auth/data/notification_repository.dart';
 import 'package:uni_connect/features/auth/data/user_repository.dart';
 
 
@@ -45,6 +46,20 @@ class ReplyRepository {
       'comments': FieldValue.increment(1),
     });
     await batch.commit();
+    // notify the post author, but never when someone comments on his own post
+    try {
+      final postDoc = await postRef.get();
+      final authorId = (postDoc.data()?['userId'] ?? '').toString();
+      if (authorId.isNotEmpty && authorId != reply.userId) {
+        await NotificationRepository().send(
+          toUserDocId: authorId,
+          content: '${reply.authorName} commented on your post',
+          senderName: reply.authorName,
+          type: 'comment',
+          postId: postId,
+        );
+      }
+    } catch (_) {}
 
   }
 
